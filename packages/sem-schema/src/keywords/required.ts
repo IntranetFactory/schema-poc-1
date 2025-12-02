@@ -4,7 +4,7 @@ import Ajv, { ErrorObject } from 'ajv';
  * Add custom 'required' keyword to AJV instance
  * 
  * Supports two modes:
- * - Property-level: required: true (boolean) for strings → validates non-empty strings
+ * - Property-level: required: true (boolean) → validates value is not null/undefined, and strings are not empty
  * - Object-level: required: ["prop"] (array) for objects → validates property exists
  * 
  * This replaces AJV's built-in required keyword to support both use cases
@@ -16,7 +16,7 @@ export function addRequiredKeyword(ajv: Ajv): void {
   // Add our custom version that handles both property-level and object-level
   ajv.addKeyword({
     keyword: 'required',
-    type: ['string', 'object'],  // Support both property-level (string) and object-level (object)
+    type: ['string', 'number', 'boolean', 'object', 'array', 'null'],  // Support property-level on any type
     schemaType: ['boolean', 'array'],  // boolean for property-level, array for object-level
     compile(schema: boolean | string[]) {
       // Handle object-level required (array of property names)
@@ -41,11 +41,23 @@ export function addRequiredKeyword(ajv: Ajv): void {
         };
       }
       
-      // Handle property-level required (boolean for strings)
-      return function validate(data: string): boolean {
+      // Handle property-level required (boolean for any type)
+      return function validate(data: any): boolean {
         if (schema === true) {
-          // Empty string violates required
-          if (data === '') {
+          // null or undefined violates required
+          if (data === null || data === undefined) {
+            (validate as any).errors = [{
+              keyword: 'required',
+              message: 'must not be null or undefined',
+              params: { required: true },
+              instancePath: '',
+              schemaPath: ''
+            } as ErrorObject];
+            return false;
+          }
+          
+          // Empty string violates required (for string types in any format)
+          if (typeof data === 'string' && data === '') {
             (validate as any).errors = [{
               keyword: 'required',
               message: 'must not be empty',

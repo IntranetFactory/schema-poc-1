@@ -10,9 +10,9 @@ Custom JSON Schema vocabulary (SemSchema) with additional validation features fo
 - **`text`**: Allows multiline text strings
 
 ### Custom Keywords
-- **`required`** (property-level): Boolean keyword that validates non-empty strings
+- **`required`** (property-level): Boolean keyword that validates values are not null/undefined and strings are not empty
   - Different from object-level `required` array in standard JSON Schema
-  - When `required: true`, empty strings fail validation
+  - When `required: true`, null, undefined, and empty strings (in any format) fail validation
 - **`precision`**: Integer (0-4) limiting decimal places in numbers
   - Example: `precision: 2` allows 99.99 but rejects 99.999
 

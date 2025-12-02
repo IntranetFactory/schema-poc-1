@@ -89,7 +89,7 @@ SemSchema exports two simple methods:
 - **text**: Allows multiline text strings
 
 ### Custom Keywords
-- **required** (property-level): Boolean - validates non-empty strings
+- **required** (property-level): Boolean - validates values are not null/undefined and strings are not empty
 - **precision**: Integer (0-4) - limits decimal places in numbers
 
 ### Type Inference

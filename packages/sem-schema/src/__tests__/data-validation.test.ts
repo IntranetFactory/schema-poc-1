@@ -60,11 +60,35 @@ describe('Data Validation Tests', () => {
       expect(result.errors?.[0]?.keyword).toBe('required');
     });
 
+    it('should reject null when required is true', () => {
+      const schema = { type: ['string', 'null'], required: true };
+      
+      const result = validateData(null, schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.keyword).toBe('required');
+    });
+
     it('should accept non-empty string when required is true', () => {
       const schema = { type: 'string', required: true };
       
       expect(validateData('not empty', schema).valid).toBe(true);
       expect(validateData(' ', schema).valid).toBe(true);
+    });
+
+    it('should reject empty string with any format when required is true', () => {
+      // Empty strings are invalid for json/html formats (fail format validation)
+      // Empty strings with text format fail required validation
+      const jsonSchema = { type: 'string', format: 'json', required: true };
+      const htmlSchema = { type: 'string', format: 'html', required: true };
+      const textSchema = { type: 'string', format: 'text', required: true };
+      
+      expect(validateData('', jsonSchema).valid).toBe(false);
+      expect(validateData('', htmlSchema).valid).toBe(false);
+      
+      const textResult = validateData('', textSchema);
+      expect(textResult.valid).toBe(false);
+      expect(textResult.errors?.[0]?.keyword).toBe('required');
     });
 
     it('should accept empty string when required is false', () => {
