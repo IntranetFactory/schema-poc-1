@@ -1,13 +1,13 @@
-import { createAjvInstance, preprocessSchema } from '../validators/custom-keywords';
+import { createCustomSchemaValidator, preprocessSchema } from '../validator';
 import { SchemaObject } from 'ajv';
 import Ajv from 'ajv';
 
 describe('Schema Validation - Test if schemas are valid', () => {
-  let ajv: ReturnType<typeof createAjvInstance>;
+  let ajv: ReturnType<typeof createCustomSchemaValidator>;
   let standardAjv: Ajv;
 
   beforeEach(() => {
-    ajv = createAjvInstance(); // AJV with custom vocabulary
+    ajv = createCustomSchemaValidator(); // AJV with custom vocabulary
     standardAjv = new Ajv({ strict: true }); // Standard AJV without custom vocabulary
   });
 
@@ -132,10 +132,10 @@ describe('Schema Validation - Test if schemas are valid', () => {
 });
 
 describe('Data Validation - Test if data matches schema', () => {
-  let ajv: ReturnType<typeof createAjvInstance>;
+  let ajv: ReturnType<typeof createCustomSchemaValidator>;
 
   beforeEach(() => {
-    ajv = createAjvInstance();
+    ajv = createCustomSchemaValidator();
   });
 
   describe('Custom format: json', () => {

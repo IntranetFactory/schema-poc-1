@@ -1,23 +1,23 @@
-import { validateProduct, validateFaqItem } from '../validators';
+import { validateProduct, validateFaqItem } from '../compiled-validators';
 import productSchema from '../schemas/product.schema.json';
 import faqItemSchema from '../schemas/faqitem.schema.json';
-import { createAjvInstance } from '../validators/custom-keywords';
+import { createCustomSchemaValidator } from '../validator';
 
 describe('Schema Validity Tests', () => {
-  let ajv: ReturnType<typeof createAjvInstance>;
+  let ajv: ReturnType<typeof createCustomSchemaValidator>;
 
   beforeEach(() => {
-    ajv = createAjvInstance();
+    ajv = createCustomSchemaValidator();
   });
 
   it('product.schema.json should be a valid schema after preprocessing', () => {
-    const { preprocessSchema } = require('../validators/custom-keywords');
+    const { preprocessSchema } = require('../validator');
     const processed = preprocessSchema(productSchema as any);
     expect(() => ajv.compile(processed)).not.toThrow();
   });
 
   it('faqitem.schema.json should be a valid schema after preprocessing', () => {
-    const { preprocessSchema } = require('../validators/custom-keywords');
+    const { preprocessSchema } = require('../validator');
     const processed = preprocessSchema(faqItemSchema as any);
     expect(() => ajv.compile(processed)).not.toThrow();
   });

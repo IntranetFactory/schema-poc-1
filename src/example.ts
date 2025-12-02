@@ -1,4 +1,4 @@
-import { validateProduct, validateFaqItem } from './validators';
+import { validateProduct, validateFaqItem } from './custom-schema';
 
 console.log('=== Custom JSON Schema Vocabulary Demo ===\n');
 

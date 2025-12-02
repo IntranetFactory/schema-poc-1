@@ -90,18 +90,19 @@ is equivalent to:
 ```
 schema-poc-1/
 ├── src/
-│   ├── schemas/                    # Sample JSON Schema definitions
-│   │   ├── product.schema.json
-│   │   └── faqitem.schema.json
-│   ├── validators/                 # Validation logic
-│   │   ├── custom-keywords.ts      # Custom format & keyword implementations
-│   │   └── index.ts                # Compiled validators
-│   ├── __tests__/                  # Test files
-│   │   ├── schema-validation.test.ts   # Schema validity & data validation tests
-│   │   └── data-validation.test.ts     # Product & FAQ data validation tests
-│   ├── vocabulary.json             # Vocabulary definition
+│   ├── custom-schema/              # Custom JSON Schema vocabulary
+│   │   ├── validator.ts            # Custom keyword & format implementations
+│   │   ├── compiled-validators.ts  # Pre-compiled validators for sample schemas
+│   │   ├── vocabulary.json         # Vocabulary definition
+│   │   ├── index.ts                # Main exports
+│   │   ├── schemas/                # Sample schema definitions
+│   │   │   ├── product.schema.json
+│   │   │   └── faqitem.schema.json
+│   │   └── __tests__/              # Test files
+│   │       ├── schema-validation.test.ts
+│   │       └── data-validation.test.ts
 │   ├── example.ts                  # Usage examples
-│   └── index.ts                    # Main exports
+│   └── index.ts                    # Library entry point
 └── dist/                           # Compiled JavaScript output
 ```
 
@@ -116,7 +117,7 @@ npm install
 ### Using Pre-compiled Validators
 
 ```typescript
-import { validateProduct, validateFaqItem } from './validators';
+import { validateProduct, validateFaqItem } from './custom-schema';
 
 const product = {
   id: 'prod-123',
@@ -140,10 +141,10 @@ if (validateProduct(product)) {
 ### Creating Custom Validators
 
 ```typescript
-import { createAjvInstance, preprocessSchema } from './validators/custom-keywords';
+import { createCustomSchemaValidator, preprocessSchema } from './custom-schema';
 
-// Create AJV instance with custom keywords
-const ajv = createAjvInstance();
+// Create AJV instance with custom schema vocabulary
+const ajv = createCustomSchemaValidator();
 
 // Define schema
 const mySchema = {
@@ -238,7 +239,7 @@ npm test
 
 ### Product Schema
 
-Located in `src/schemas/product.schema.json`, demonstrates:
+Located in `src/custom-schema/schemas/product.schema.json`, demonstrates:
 - Object-level `required` array: ["id", "name"]
 - Property-level `required: true` on id and name fields
 - Custom formats: `text`, `html`, `json`
@@ -246,7 +247,7 @@ Located in `src/schemas/product.schema.json`, demonstrates:
 
 ### FAQ Item Schema
 
-Located in `src/schemas/faqitem.schema.json`, demonstrates:
+Located in `src/custom-schema/schemas/faqitem.schema.json`, demonstrates:
 - Object-level `required` array: ["id", "question", "answer"]
 - Property-level `required: true` on multiple fields
 - HTML format for answers

@@ -153,9 +153,10 @@ export function addCustomKeywords(ajv: Ajv): void {
 }
 
 /**
- * Create and configure AJV instance with custom keywords
+ * Create and configure AJV instance with custom schema vocabulary
+ * This instance supports custom formats (json, html, text), property-level required, and precision keywords
  */
-export function createAjvInstance(): Ajv {
+export function createCustomSchemaValidator(): Ajv {
   const ajv = new Ajv({
     allErrors: true,
     strict: false,
@@ -167,6 +168,9 @@ export function createAjvInstance(): Ajv {
   
   return ajv;
 }
+
+// Backward compatibility alias
+export const createAjvInstance = createCustomSchemaValidator;
 
 /**
  * Preprocess schema to handle default type as string
