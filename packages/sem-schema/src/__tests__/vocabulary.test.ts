@@ -2,16 +2,16 @@
  * Tests for sem-schema vocabulary definition
  * These tests verify that the custom vocabulary is properly defined and works
  */
-import { createCustomSchemaValidator } from '../validator';
+import { createSemSchemaValidator } from '../validator';
 import { preprocessSchema } from '../utils';
 import Ajv from 'ajv';
 
 describe('Vocabulary Definition Tests', () => {
-  let ajv: ReturnType<typeof createCustomSchemaValidator>;
+  let ajv: ReturnType<typeof createSemSchemaValidator>;
   let standardAjv: Ajv;
 
   beforeEach(() => {
-    ajv = createCustomSchemaValidator(); // AJV with custom vocabulary
+    ajv = createSemSchemaValidator(); // AJV with SemSchema vocabulary
     standardAjv = new Ajv({ strict: true }); // Standard AJV without custom vocabulary
   });
 

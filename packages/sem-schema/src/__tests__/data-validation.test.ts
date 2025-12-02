@@ -2,14 +2,14 @@
  * Tests for data validation using sem-schema vocabulary
  * These tests verify that data correctly validates against schemas using custom keywords
  */
-import { createCustomSchemaValidator } from '../validator';
+import { createSemSchemaValidator } from '../validator';
 import { preprocessSchema } from '../utils';
 
 describe('Data Validation Tests', () => {
-  let ajv: ReturnType<typeof createCustomSchemaValidator>;
+  let ajv: ReturnType<typeof createSemSchemaValidator>;
 
   beforeEach(() => {
-    ajv = createCustomSchemaValidator();
+    ajv = createSemSchemaValidator();
   });
 
   describe('Format: json', () => {

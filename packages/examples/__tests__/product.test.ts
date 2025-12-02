@@ -4,13 +4,13 @@
  */
 import { validateProduct } from '../validators';
 import productSchema from '../schemas/product.schema.json';
-import { createCustomSchemaValidator, preprocessSchema } from 'sem-schema';
+import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
 
 describe('Product Schema Tests', () => {
-  let ajv: ReturnType<typeof createCustomSchemaValidator>;
+  let ajv: ReturnType<typeof createSemSchemaValidator>;
 
   beforeEach(() => {
-    ajv = createCustomSchemaValidator();
+    ajv = createSemSchemaValidator();
   });
 
   it('product.schema.json should be a valid schema after preprocessing', () => {

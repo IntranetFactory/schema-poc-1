@@ -1,5 +1,5 @@
 /**
- * sem-schema: Custom JSON Schema Vocabulary
+ * SemSchema: Custom JSON Schema Vocabulary
  * 
  * A custom JSON Schema vocabulary with additional validation features:
  * - Custom formats: json, html, text
@@ -9,31 +9,10 @@
  */
 
 // Main validator
-export { 
-  createCustomSchemaValidator,
-  createAjvInstance // Backward compatibility
-} from './validator';
+export { createSemSchemaValidator } from './validator';
 
 // Utilities
 export { preprocessSchema } from './utils';
-
-// Formats
-export {
-  validateJsonFormat,
-  validateHtmlFormat,
-  validateTextFormat,
-  addJsonFormat,
-  addHtmlFormat,
-  addTextFormat,
-  addAllFormats
-} from './formats';
-
-// Keywords
-export {
-  addRequiredKeyword,
-  addPrecisionKeyword,
-  addAllKeywords
-} from './keywords';
 
 // Vocabulary definition
 export { default as vocabulary } from './vocabulary.json';

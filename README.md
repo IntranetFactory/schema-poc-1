@@ -1,6 +1,6 @@
 # schema-poc-1
 
-Proof of concept for custom JSON Schema vocabulary in TypeScript using pnpm workspaces.
+Proof of concept for custom JSON Schema vocabulary (SemSchema) in TypeScript using pnpm workspaces.
 
 ## Project Structure
 
@@ -8,7 +8,7 @@ This is a **pnpm workspace** with two packages:
 
 ### `packages/sem-schema`
 
-The main package implementing a custom JSON Schema vocabulary with additional validation features:
+The main package implementing SemSchema - a custom JSON Schema vocabulary with additional validation features:
 - Custom formats: `json`, `html`, `text`
 - Property-level `required` keyword (validates non-empty strings)
 - Number `precision` keyword (0-4 decimal places)
@@ -18,7 +18,7 @@ See [packages/sem-schema/README.md](packages/sem-schema/README.md) for full docu
 
 ### `packages/examples`
 
-Example schemas and validators demonstrating sem-schema usage:
+Example schemas and validators demonstrating SemSchema usage:
 - Product schema with validation
 - FAQ Item schema with validation
 - Comprehensive test suite
@@ -44,13 +44,13 @@ pnpm test:watch   # Test in watch mode
 
 ## Quick Start
 
-### Using sem-schema
+### Using SemSchema
 
 ```typescript
-import { createCustomSchemaValidator, preprocessSchema } from 'sem-schema';
+import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
 
-// Create validator with custom vocabulary
-const ajv = createCustomSchemaValidator();
+// Create validator with SemSchema vocabulary
+const ajv = createSemSchemaValidator();
 
 // Define schema
 const schema = {

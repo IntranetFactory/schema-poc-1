@@ -4,13 +4,13 @@
  */
 import { validateFaqItem } from '../validators';
 import faqItemSchema from '../schemas/faqitem.schema.json';
-import { createCustomSchemaValidator, preprocessSchema } from 'sem-schema';
+import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
 
 describe('FAQ Item Schema Tests', () => {
-  let ajv: ReturnType<typeof createCustomSchemaValidator>;
+  let ajv: ReturnType<typeof createSemSchemaValidator>;
 
   beforeEach(() => {
-    ajv = createCustomSchemaValidator();
+    ajv = createSemSchemaValidator();
   });
 
   it('faqitem.schema.json should be a valid schema after preprocessing', () => {

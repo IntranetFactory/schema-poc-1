@@ -1,6 +1,6 @@
-# sem-schema
+# SemSchema
 
-Custom JSON Schema vocabulary with additional validation features for use with AJV.
+Custom JSON Schema vocabulary (SemSchema) with additional validation features for use with AJV.
 
 ## Features
 
@@ -31,10 +31,10 @@ pnpm add sem-schema
 ### Basic Usage
 
 ```typescript
-import { createCustomSchemaValidator, preprocessSchema } from 'sem-schema';
+import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
 
-// Create AJV instance with sem-schema vocabulary
-const ajv = createCustomSchemaValidator();
+// Create AJV instance with SemSchema vocabulary
+const ajv = createSemSchemaValidator();
 
 // Define schema
 const schema = {
@@ -67,21 +67,6 @@ validate({ email: '', config: '{invalid}', price: 99.999 });
 // Returns: false (empty email, invalid JSON, too many decimals)
 ```
 
-### Individual Format/Keyword Usage
-
-```typescript
-import Ajv from 'ajv';
-import { addJsonFormat, addRequiredKeyword } from 'sem-schema';
-
-const ajv = new Ajv();
-
-// Add specific formats
-addJsonFormat(ajv);
-
-// Add specific keywords
-addRequiredKeyword(ajv);
-```
-
 ## Project Structure
 
 ```
@@ -108,9 +93,9 @@ sem-schema/
 
 ## API
 
-### `createCustomSchemaValidator()`
+### `createSemSchemaValidator()`
 
-Creates an AJV instance with all sem-schema custom formats and keywords enabled.
+Creates an AJV instance with all SemSchema custom formats and keywords enabled.
 
 **Returns**: `Ajv` instance
 
@@ -122,19 +107,6 @@ Preprocesses a schema to add default types when only format is specified.
 - `schema`: SchemaObject - The JSON Schema to preprocess
 
 **Returns**: Preprocessed SchemaObject
-
-### Format Validators
-
-- `addJsonFormat(ajv)`: Add JSON format validation
-- `addHtmlFormat(ajv)`: Add HTML format validation
-- `addTextFormat(ajv)`: Add text format validation
-- `addAllFormats(ajv)`: Add all custom formats
-
-### Keyword Validators
-
-- `addRequiredKeyword(ajv)`: Add property-level required keyword
-- `addPrecisionKeyword(ajv)`: Add precision keyword for numbers
-- `addAllKeywords(ajv)`: Add all custom keywords
 
 ## Testing
 
