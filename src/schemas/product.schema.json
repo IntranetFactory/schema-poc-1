@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/product.schema.json",
+  "title": "Product",
+  "description": "A product in the catalog",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "requiredProperty": true,
+      "description": "Unique product identifier"
+    },
+    "name": {
+      "type": "string",
+      "requiredProperty": true,
+      "description": "Product name"
+    },
+    "description": {
+      "format": "text",
+      "description": "Multiline product description"
+    },
+    "detailedDescription": {
+      "format": "html",
+      "description": "HTML formatted detailed description"
+    },
+    "metadata": {
+      "format": "json",
+      "description": "Additional metadata in JSON format"
+    },
+    "price": {
+      "type": "number",
+      "precision": 2,
+      "description": "Product price with up to 2 decimal places"
+    },
+    "stock": {
+      "type": "number",
+      "precision": 0,
+      "description": "Stock quantity (integer)"
+    },
+    "rating": {
+      "type": "number",
+      "precision": 1,
+      "description": "Average rating with up to 1 decimal place",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Product tags"
+    }
+  },
+  "required": ["id", "name"]
+}

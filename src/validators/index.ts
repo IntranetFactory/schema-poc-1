@@ -1,0 +1,16 @@
+import { SchemaObject } from 'ajv';
+import { createAjvInstance, preprocessSchema } from './custom-keywords';
+import productSchema from '../schemas/product.schema.json';
+import faqItemSchema from '../schemas/faqitem.schema.json';
+
+// Create AJV instance with custom keywords
+const ajv = createAjvInstance();
+
+// Preprocess and compile schemas
+const processedProductSchema = preprocessSchema(productSchema as SchemaObject);
+const processedFaqItemSchema = preprocessSchema(faqItemSchema as SchemaObject);
+
+export const validateProduct = ajv.compile(processedProductSchema);
+export const validateFaqItem = ajv.compile(processedFaqItemSchema);
+
+export { createAjvInstance, preprocessSchema } from './custom-keywords';

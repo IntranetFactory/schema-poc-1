@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/faqitem.schema.json",
+  "title": "FAQItem",
+  "description": "A frequently asked question item",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "requiredProperty": true,
+      "description": "Unique FAQ identifier"
+    },
+    "question": {
+      "type": "string",
+      "requiredProperty": true,
+      "description": "The question text"
+    },
+    "answer": {
+      "format": "html",
+      "requiredProperty": true,
+      "description": "HTML formatted answer"
+    },
+    "category": {
+      "format": "text",
+      "description": "FAQ category"
+    },
+    "metadata": {
+      "format": "json",
+      "description": "Additional metadata in JSON format"
+    },
+    "views": {
+      "type": "number",
+      "precision": 0,
+      "description": "Number of views (integer)"
+    },
+    "helpfulness": {
+      "type": "number",
+      "precision": 2,
+      "description": "Helpfulness score with up to 2 decimal places",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "FAQ tags"
+    }
+  },
+  "required": ["id", "question", "answer"]
+}
