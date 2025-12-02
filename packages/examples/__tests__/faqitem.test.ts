@@ -3,19 +3,12 @@
  * These tests verify that FAQ data correctly validates against the FAQ schema
  */
 import { validateFaqItem } from '../validators';
+import { validateSchema } from 'sem-schema';
 import faqItemSchema from '../schemas/faqitem.schema.json';
-import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
 
 describe('FAQ Item Schema Tests', () => {
-  let ajv: ReturnType<typeof createSemSchemaValidator>;
-
-  beforeEach(() => {
-    ajv = createSemSchemaValidator();
-  });
-
-  it('faqitem.schema.json should be a valid schema after preprocessing', () => {
-    const processed = preprocessSchema(faqItemSchema as any);
-    expect(() => ajv.compile(processed)).not.toThrow();
+  it('faqitem.schema.json should be a valid schema', () => {
+    expect(validateSchema(faqItemSchema as any)).toBe(true);
   });
 
   it('should validate valid FAQ item', () => {
@@ -30,7 +23,7 @@ describe('FAQ Item Schema Tests', () => {
       tags: ['general', 'basic']
     };
 
-    expect(validateFaqItem(validFaqItem)).toBe(true);
+    expect(validateFaqItem(validFaqItem).valid).toBe(true);
   });
 
   it('should reject FAQ without required fields', () => {
@@ -38,7 +31,7 @@ describe('FAQ Item Schema Tests', () => {
       question: 'What is this?'
     };
 
-    expect(validateFaqItem(invalidFaqItem)).toBe(false);
+    expect(validateFaqItem(invalidFaqItem).valid).toBe(false);
   });
 
   it('should reject FAQ with empty required question', () => {
@@ -48,8 +41,9 @@ describe('FAQ Item Schema Tests', () => {
       answer: '<p>Answer</p>'
     };
 
-    expect(validateFaqItem(invalidFaqItem)).toBe(false);
-    const hasRequiredError = validateFaqItem.errors?.some(
+    const result = validateFaqItem(invalidFaqItem);
+    expect(result.valid).toBe(false);
+    const hasRequiredError = result.errors?.some(
       err => err.keyword === 'required'
     );
     expect(hasRequiredError).toBe(true);
@@ -62,8 +56,9 @@ describe('FAQ Item Schema Tests', () => {
       answer: 'Plain text answer'
     };
 
-    expect(validateFaqItem(invalidFaqItem)).toBe(false);
-    const hasFormatError = validateFaqItem.errors?.some(
+    const result = validateFaqItem(invalidFaqItem);
+    expect(result.valid).toBe(false);
+    const hasFormatError = result.errors?.some(
       err => err.keyword === 'format'
     );
     expect(hasFormatError).toBe(true);
@@ -77,7 +72,7 @@ describe('FAQ Item Schema Tests', () => {
       views: 100.5 // Should be integer
     };
 
-    expect(validateFaqItem(invalidFaqItem)).toBe(false);
+    expect(validateFaqItem(invalidFaqItem).valid).toBe(false);
   });
 
   it('should reject FAQ with invalid helpfulness precision', () => {
@@ -88,8 +83,9 @@ describe('FAQ Item Schema Tests', () => {
       helpfulness: 0.999 // Too many decimal places
     };
 
-    expect(validateFaqItem(invalidFaqItem)).toBe(false);
-    const hasPrecisionError = validateFaqItem.errors?.some(
+    const result = validateFaqItem(invalidFaqItem);
+    expect(result.valid).toBe(false);
+    const hasPrecisionError = result.errors?.some(
       err => err.keyword === 'precision'
     );
     expect(hasPrecisionError).toBe(true);
@@ -103,7 +99,7 @@ describe('FAQ Item Schema Tests', () => {
       metadata: '{"key": "value"}'
     };
 
-    expect(validateFaqItem(validFaqItem)).toBe(true);
+    expect(validateFaqItem(validFaqItem).valid).toBe(true);
   });
 
   it('should reject FAQ with invalid JSON metadata', () => {
@@ -114,6 +110,6 @@ describe('FAQ Item Schema Tests', () => {
       metadata: '{invalid}'
     };
 
-    expect(validateFaqItem(invalidFaqItem)).toBe(false);
+    expect(validateFaqItem(invalidFaqItem).valid).toBe(false);
   });
 });

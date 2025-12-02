@@ -8,11 +8,5 @@
  * - Type inference (format without type defaults to string)
  */
 
-// Main validator
-export { createSemSchemaValidator } from './validator';
-
-// Utilities
-export { preprocessSchema } from './utils';
-
-// Vocabulary definition
-export { default as vocabulary } from './vocabulary.json';
+// Main API
+export { validateSchema, validateData } from './api';

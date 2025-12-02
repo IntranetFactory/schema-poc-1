@@ -3,19 +3,12 @@
  * These tests verify that product data correctly validates against the product schema
  */
 import { validateProduct } from '../validators';
+import { validateSchema } from 'sem-schema';
 import productSchema from '../schemas/product.schema.json';
-import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
 
 describe('Product Schema Tests', () => {
-  let ajv: ReturnType<typeof createSemSchemaValidator>;
-
-  beforeEach(() => {
-    ajv = createSemSchemaValidator();
-  });
-
-  it('product.schema.json should be a valid schema after preprocessing', () => {
-    const processed = preprocessSchema(productSchema as any);
-    expect(() => ajv.compile(processed)).not.toThrow();
+  it('product.schema.json should be a valid schema', () => {
+    expect(validateSchema(productSchema as any)).toBe(true);
   });
 
   it('should validate valid product', () => {
@@ -31,7 +24,7 @@ describe('Product Schema Tests', () => {
       tags: ['electronics', 'gadget']
     };
 
-    expect(validateProduct(validProduct)).toBe(true);
+    expect(validateProduct(validProduct).valid).toBe(true);
   });
 
   it('should reject product with empty required field', () => {
@@ -40,9 +33,10 @@ describe('Product Schema Tests', () => {
       name: 'Test Product'
     };
 
-    expect(validateProduct(invalidProduct)).toBe(false);
-    expect(validateProduct.errors).toBeDefined();
-    const hasRequiredError = validateProduct.errors?.some(
+    const result = validateProduct(invalidProduct);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toBeDefined();
+    const hasRequiredError = result.errors?.some(
       err => err.keyword === 'required'
     );
     expect(hasRequiredError).toBe(true);
@@ -53,7 +47,7 @@ describe('Product Schema Tests', () => {
       name: 'Test Product'
     };
 
-    expect(validateProduct(invalidProduct)).toBe(false);
+    expect(validateProduct(invalidProduct).valid).toBe(false);
   });
 
   it('should reject product without required name', () => {
@@ -61,7 +55,7 @@ describe('Product Schema Tests', () => {
       id: 'prod-123'
     };
 
-    expect(validateProduct(invalidProduct)).toBe(false);
+    expect(validateProduct(invalidProduct).valid).toBe(false);
   });
 
   it('should reject product with invalid price precision', () => {
@@ -71,8 +65,9 @@ describe('Product Schema Tests', () => {
       price: 99.999 // Too many decimal places
     };
 
-    expect(validateProduct(invalidProduct)).toBe(false);
-    const hasPrecisionError = validateProduct.errors?.some(
+    const result = validateProduct(invalidProduct);
+    expect(result.valid).toBe(false);
+    const hasPrecisionError = result.errors?.some(
       err => err.keyword === 'precision'
     );
     expect(hasPrecisionError).toBe(true);
@@ -85,8 +80,9 @@ describe('Product Schema Tests', () => {
       metadata: '{not valid json}'
     };
 
-    expect(validateProduct(invalidProduct)).toBe(false);
-    const hasFormatError = validateProduct.errors?.some(
+    const result = validateProduct(invalidProduct);
+    expect(result.valid).toBe(false);
+    const hasFormatError = result.errors?.some(
       err => err.keyword === 'format'
     );
     expect(hasFormatError).toBe(true);
@@ -99,8 +95,9 @@ describe('Product Schema Tests', () => {
       detailedDescription: 'Plain text without tags'
     };
 
-    expect(validateProduct(invalidProduct)).toBe(false);
-    const hasFormatError = validateProduct.errors?.some(
+    const result = validateProduct(invalidProduct);
+    expect(result.valid).toBe(false);
+    const hasFormatError = result.errors?.some(
       err => err.keyword === 'format'
     );
     expect(hasFormatError).toBe(true);
@@ -113,6 +110,6 @@ describe('Product Schema Tests', () => {
       description: 'Multi\nline\ntext'
     };
 
-    expect(validateProduct(validProduct)).toBe(true);
+    expect(validateProduct(validProduct).valid).toBe(true);
   });
 });

@@ -47,10 +47,7 @@ pnpm test:watch   # Test in watch mode
 ### Using SemSchema
 
 ```typescript
-import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
-
-// Create validator with SemSchema vocabulary
-const ajv = createSemSchemaValidator();
+import { validateSchema, validateData } from 'sem-schema';
 
 // Define schema
 const schema = {
@@ -63,11 +60,26 @@ const schema = {
   required: ['email']  // Property must exist
 };
 
-// Compile and validate
-const validate = ajv.compile(preprocessSchema(schema));
-console.log(validate({ email: 'user@example.com', config: '{}', price: 99.99 }));
-// true
+// Validate schema
+validateSchema(schema); // Returns true or throws
+
+// Validate data
+const result = validateData({ 
+  email: 'user@example.com', 
+  config: '{}', 
+  price: 99.99 
+}, schema);
+
+console.log(result.valid);  // true
+console.log(result.errors); // null
 ```
+
+## API
+
+SemSchema exports two simple methods:
+
+- **`validateSchema(schemaJson)`**: Validates that a schema is valid
+- **`validateData(data, schemaJson)`**: Validates data against a schema
 
 ## Features
 
@@ -102,6 +114,7 @@ Tests that verify data correctly validates against schemas:
 - **sem-schema**: Core vocabulary implementation
   - One file per format (`formats/json.ts`, `formats/html.ts`, etc.)
   - One file per keyword (`keywords/required.ts`, `keywords/precision.ts`)
+  - Simple public API: just `validateSchema` and `validateData`
   - Modular structure for easy extension
 - **examples**: Sample schemas and their validators (separate from core vocabulary)
 

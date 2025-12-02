@@ -1,14 +1,17 @@
-import { SchemaObject } from 'ajv';
-import { createSemSchemaValidator, preprocessSchema } from 'sem-schema';
+import { validateData } from 'sem-schema';
 import productSchema from '../schemas/product.schema.json';
 import faqItemSchema from '../schemas/faqitem.schema.json';
 
-// Create AJV instance with SemSchema vocabulary
-const ajv = createSemSchemaValidator();
+/**
+ * Validate product data against product schema
+ */
+export function validateProduct(data: any) {
+  return validateData(data, productSchema as any);
+}
 
-// Preprocess and compile schemas
-const processedProductSchema = preprocessSchema(productSchema as SchemaObject);
-const processedFaqItemSchema = preprocessSchema(faqItemSchema as SchemaObject);
-
-export const validateProduct = ajv.compile(processedProductSchema);
-export const validateFaqItem = ajv.compile(processedFaqItemSchema);
+/**
+ * Validate FAQ item data against FAQ schema
+ */
+export function validateFaqItem(data: any) {
+  return validateData(data, faqItemSchema as any);
+}
