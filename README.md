@@ -196,13 +196,25 @@ The project includes comprehensive tests organized into two categories:
 
 ### 1. Schema Validation Tests (`schema-validation.test.ts`)
 
-Tests that verify:
-- **Schema Validity**: Can schemas with custom keywords be compiled?
-- **Data Validation**: Does data correctly validate/fail against schemas?
+Tests that verify the custom vocabulary implementation by comparing standard AJV vs custom vocabulary AJV:
+
+**Custom Vocabulary Comparison**
+- Demonstrates that schemas with custom keywords FAIL with standard AJV
+- Proves the same schemas SUCCEED with our custom vocabulary AJV
+- Examples:
+  - `format: "json"` → fails standard AJV (unknown format), succeeds with custom vocabulary
+  - `required: true` (property-level) → fails standard AJV (expects array), succeeds with custom vocabulary
+  - `precision: 2` → fails standard AJV (unknown keyword), succeeds with custom vocabulary
+
+**Schema Validity Tests**
+- Can schemas with custom keywords be compiled?
+
+**Data Validation Tests**
+- Does data correctly validate/fail against schemas with custom keywords?
 
 Tests cover:
 - Custom formats (json, html, text)
-- Property-level `required` transformation
+- Property-level `required` keyword
 - Number `precision` validation
 - Type inference from `format`
 

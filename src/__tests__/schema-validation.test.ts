@@ -4,15 +4,62 @@ import Ajv from 'ajv';
 
 describe('Schema Validation - Test if schemas are valid', () => {
   let ajv: ReturnType<typeof createAjvInstance>;
-  let strictAjv: Ajv;
+  let standardAjv: Ajv;
 
   beforeEach(() => {
-    ajv = createAjvInstance();
-    // Create a strict AJV instance for schema validation
-    strictAjv = new Ajv({
-      strict: true,
-      validateSchema: true,
-      allErrors: true
+    ajv = createAjvInstance(); // AJV with custom vocabulary
+    standardAjv = new Ajv({ strict: true }); // Standard AJV without custom vocabulary
+  });
+
+  describe('Custom vocabulary vs Standard JSON Schema', () => {
+    it('should FAIL with standard AJV but SUCCEED with custom vocabulary for format: json', () => {
+      const schema = { type: 'string', format: 'json' };
+      
+      // Standard AJV should fail - unknown format
+      expect(() => standardAjv.compile(schema)).toThrow();
+      
+      // Our custom vocabulary AJV should succeed
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should FAIL with standard AJV but SUCCEED with custom vocabulary for format: html', () => {
+      const schema = { type: 'string', format: 'html' };
+      
+      // Standard AJV should fail - unknown format
+      expect(() => standardAjv.compile(schema)).toThrow();
+      
+      // Our custom vocabulary AJV should succeed
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should FAIL with standard AJV but SUCCEED with custom vocabulary for format: text', () => {
+      const schema = { type: 'string', format: 'text' };
+      
+      // Standard AJV should fail - unknown format
+      expect(() => standardAjv.compile(schema)).toThrow();
+      
+      // Our custom vocabulary AJV should succeed
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should FAIL with standard AJV but SUCCEED with custom vocabulary for property-level required', () => {
+      const schema = { type: 'string', required: true };
+      
+      // Standard AJV should fail - required must be array at object level
+      expect(() => standardAjv.compile(schema)).toThrow();
+      
+      // Our custom vocabulary AJV should succeed
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should FAIL with standard AJV but SUCCEED with custom vocabulary for precision keyword', () => {
+      const schema = { type: 'number', precision: 2 };
+      
+      // Standard AJV should fail - unknown keyword
+      expect(() => standardAjv.compile(schema)).toThrow();
+      
+      // Our custom vocabulary AJV should succeed
+      expect(() => ajv.compile(schema)).not.toThrow();
     });
   });
 
