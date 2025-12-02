@@ -4,10 +4,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "generate-types": "ts-node scripts/generate-types.ts",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "prebuild": "npm run generate-types"
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",

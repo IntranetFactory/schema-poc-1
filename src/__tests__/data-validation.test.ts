@@ -1,6 +1,29 @@
 import { validateProduct, validateFaqItem } from '../validators';
+import productSchema from '../schemas/product.schema.json';
+import faqItemSchema from '../schemas/faqitem.schema.json';
+import { createAjvInstance } from '../validators/custom-keywords';
 
-describe('Product Validator', () => {
+describe('Schema Validity Tests', () => {
+  let ajv: ReturnType<typeof createAjvInstance>;
+
+  beforeEach(() => {
+    ajv = createAjvInstance();
+  });
+
+  it('product.schema.json should be a valid schema after preprocessing', () => {
+    const { preprocessSchema } = require('../validators/custom-keywords');
+    const processed = preprocessSchema(productSchema as any);
+    expect(() => ajv.compile(processed)).not.toThrow();
+  });
+
+  it('faqitem.schema.json should be a valid schema after preprocessing', () => {
+    const { preprocessSchema } = require('../validators/custom-keywords');
+    const processed = preprocessSchema(faqItemSchema as any);
+    expect(() => ajv.compile(processed)).not.toThrow();
+  });
+});
+
+describe('Product Data Validation - Test if product data matches schema', () => {
   it('should validate valid product', () => {
     const validProduct = {
       id: 'prod-123',
@@ -26,7 +49,7 @@ describe('Product Validator', () => {
     expect(validateProduct(invalidProduct)).toBe(false);
     expect(validateProduct.errors).toBeDefined();
     const hasRequiredError = validateProduct.errors?.some(
-      err => err.keyword === 'requiredProperty'
+      err => err.keyword === 'required' // property-level required custom keyword
     );
     expect(hasRequiredError).toBe(true);
   });
@@ -111,7 +134,7 @@ describe('Product Validator', () => {
   });
 });
 
-describe('FAQItem Validator', () => {
+describe('FAQ Item Data Validation - Test if FAQ data matches schema', () => {
   it('should validate valid FAQ item', () => {
     const validFaqItem = {
       id: 'faq-1',
@@ -136,7 +159,7 @@ describe('FAQItem Validator', () => {
 
     expect(validateFaqItem(invalidFaqItem)).toBe(false);
     const hasRequiredError = validateFaqItem.errors?.some(
-      err => err.keyword === 'requiredProperty'
+      err => err.keyword === 'required' // property-level required custom keyword
     );
     expect(hasRequiredError).toBe(true);
   });

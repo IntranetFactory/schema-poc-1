@@ -2,52 +2,107 @@
 
 This project demonstrates a custom JSON Schema vocabulary implementation in TypeScript with AJV validation.
 
-## Features
+## Custom Vocabulary
 
-### Custom Vocabulary Extensions
+### Vocabulary Definition
 
-1. **Custom String Formats**
-   - `json`: Validates that a string contains valid JSON
-   - `html`: Validates that a string contains HTML markup (checks for HTML tags)
-   - `text`: Allows multiline text strings
+The custom vocabulary is defined in `src/vocabulary.json` and includes:
 
-2. **Property-Level Required Validation**
-   - Custom keyword: `requiredProperty` (boolean)
-   - When set to `true`, empty strings violate the constraint
-   - Addresses JSON Schema's limitation where empty strings are considered valid
+- **Custom formats**: `json`, `html`, `text` - Valid string format values
+- **Property-level `required`**: Boolean constraint for non-empty strings
+- **`precision`**: Integer constraint (0-4) for number decimal places
 
-3. **Number Precision Validation**
-   - Custom keyword: `precision` (integer, 0-4)
-   - Validates the number of decimal places in a number
-   - Example: `precision: 2` allows up to 2 decimal places (e.g., 99.99)
-   - `precision: 0` requires integers only
+### Custom Keywords
 
-4. **Default Type Inference**
-   - When no `type` is provided but `format` is specified, defaults to `string` type
-   - Allows schemas like `{ "format": "json" }` without explicitly declaring `type: "string"`
+#### 1. Custom String Formats
+
+- **`json`**: Validates that a string contains valid parseable JSON
+- **`html`**: Validates that a string contains HTML markup (requires HTML tags)
+- **`text`**: Allows multiline text strings
+
+```json
+{
+  "type": "string",
+  "format": "json"
+}
+```
+
+#### 2. Property-Level `required` (Boolean)
+
+The `required` keyword works at **two levels**:
+
+- **Property-level** `"required": true` (boolean) → string must not be empty (custom keyword)
+- **Object-level** `"required": ["field1", "field2"]` (array) → standard JSON Schema (fields must exist)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "required": ["email"]
+}
+```
+
+In the example above:
+- Object-level `required`: ["email"] means the `email` property must exist in the object
+- Property-level `required: true` means the `email` value cannot be an empty string
+
+#### 3. Number `precision` (Integer 0-4)
+
+Validates the maximum number of decimal places allowed:
+
+```json
+{
+  "type": "number",
+  "precision": 2
+}
+```
+
+- `precision: 0` → integers only (e.g., 10, -5)
+- `precision: 2` → up to 2 decimals (e.g., 99.99)
+- `precision: 4` → up to 4 decimals (e.g., 3.1415)
+
+#### 4. Default Type Inference
+
+When `format` is provided without `type`, it defaults to `"string"`:
+
+```json
+{
+  "format": "json"
+}
+```
+
+is equivalent to:
+
+```json
+{
+  "type": "string",
+  "format": "json"
+}
+```
 
 ## Project Structure
 
 ```
 schema-poc-1/
 ├── src/
-│   ├── schemas/              # JSON Schema definitions
+│   ├── schemas/                    # Sample JSON Schema definitions
 │   │   ├── product.schema.json
 │   │   └── faqitem.schema.json
-│   ├── validators/           # Validation logic
-│   │   ├── custom-keywords.ts  # AJV custom keyword implementations
-│   │   └── index.ts            # Validator exports
-│   ├── generated/            # Auto-generated TypeScript types
-│   │   ├── product.d.ts
-│   │   └── faqitem.d.ts
-│   ├── __tests__/            # Test files
-│   │   ├── custom-keywords.test.ts
-│   │   ├── validators.test.ts
-│   │   └── generated-types.test.ts
-│   └── index.ts              # Main exports
-├── scripts/
-│   └── generate-types.ts     # Build-time type generation script
-└── dist/                     # Compiled JavaScript output
+│   ├── validators/                 # Validation logic
+│   │   ├── custom-keywords.ts      # Custom format & keyword implementations
+│   │   └── index.ts                # Compiled validators
+│   ├── __tests__/                  # Test files
+│   │   ├── schema-validation.test.ts   # Schema validity & data validation tests
+│   │   └── data-validation.test.ts     # Product & FAQ data validation tests
+│   ├── vocabulary.json             # Vocabulary definition
+│   ├── example.ts                  # Usage examples
+│   └── index.ts                    # Main exports
+└── dist/                           # Compiled JavaScript output
 ```
 
 ## Installation
@@ -58,28 +113,27 @@ npm install
 
 ## Usage
 
-### Using the Validators
+### Using Pre-compiled Validators
 
 ```typescript
 import { validateProduct, validateFaqItem } from './validators';
 
-// Validate a product
 const product = {
   id: 'prod-123',
-  name: 'Test Product',
-  description: 'A test product\nwith multiple lines',
-  detailedDescription: '<p>Detailed description</p>',
-  metadata: '{"category": "electronics"}',
-  price: 99.99,
-  stock: 50,
+  name: 'Wireless Headphones',
+  description: 'Premium headphones\nwith noise cancellation',
+  detailedDescription: '<p>High quality audio</p>',
+  metadata: '{"brand": "TechCo"}',
+  price: 299.99,
+  stock: 150,
   rating: 4.5,
-  tags: ['electronics', 'gadget']
+  tags: ['electronics', 'audio']
 };
 
 if (validateProduct(product)) {
-  console.log('Product is valid!');
+  console.log('✓ Product is valid!');
 } else {
-  console.error('Validation errors:', validateProduct.errors);
+  console.error('✗ Validation errors:', validateProduct.errors);
 }
 ```
 
@@ -88,41 +142,38 @@ if (validateProduct(product)) {
 ```typescript
 import { createAjvInstance, preprocessSchema } from './validators/custom-keywords';
 
-// Create an AJV instance with custom keywords
+// Create AJV instance with custom keywords
 const ajv = createAjvInstance();
 
-// Define your schema
+// Define schema
 const mySchema = {
   type: 'object',
   properties: {
     email: {
       type: 'string',
-      requiredProperty: true  // Empty strings not allowed
+      required: true  // Property-level: no empty strings
     },
     config: {
-      format: 'json'  // Must be valid JSON string
-    },
-    description: {
-      format: 'html'  // Must contain HTML tags
+      format: 'json'  // Type: string inferred
     },
     price: {
       type: 'number',
       precision: 2  // Up to 2 decimal places
     }
-  }
+  },
+  required: ['email']  // Object-level: email property must exist
 };
 
-// Preprocess to handle default types
-const processedSchema = preprocessSchema(mySchema);
+// IMPORTANT: Preprocess schema to handle custom keywords
+const processed = preprocessSchema(mySchema);
 
-// Compile the validator
-const validate = ajv.compile(processedSchema);
+// Compile validator
+const validate = ajv.compile(processed);
 
-// Use the validator
+// Validate data
 const data = {
   email: 'user@example.com',
   config: '{"key": "value"}',
-  description: '<p>HTML content</p>',
   price: 99.99
 };
 
@@ -135,113 +186,108 @@ if (validate(data)) {
 
 ## Scripts
 
-- `npm run build` - Compile TypeScript to JavaScript (includes type generation)
-- `npm run generate-types` - Generate TypeScript types from JSON schemas
-- `npm test` - Run all tests
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm test` - Run all tests (schema validity + data validation)
 - `npm run test:watch` - Run tests in watch mode
+
+## Testing
+
+The project includes comprehensive tests organized into two categories:
+
+### 1. Schema Validation Tests (`schema-validation.test.ts`)
+
+Tests that verify:
+- **Schema Validity**: Can schemas with custom keywords be compiled?
+- **Data Validation**: Does data correctly validate/fail against schemas?
+
+Tests cover:
+- Custom formats (json, html, text)
+- Property-level `required` transformation
+- Number `precision` validation
+- Type inference from `format`
+
+### 2. Data Validation Tests (`data-validation.test.ts`)
+
+Tests that verify:
+- **Schema Validity**: Are the sample schemas (product, faqitem) valid?
+- **Data Validation**: Do product and FAQ data correctly validate against their schemas?
+
+Tests cover:
+- Valid and invalid product data
+- Valid and invalid FAQ item data
+- Error reporting for constraint violations
+
+Run tests:
+```bash
+npm test
+```
 
 ## Sample Schemas
 
 ### Product Schema
 
-Demonstrates a product catalog entry with:
-- Required string fields (`id`, `name`)
-- Multiline text description
-- HTML formatted detailed description
-- JSON metadata
-- Price with 2 decimal precision
-- Integer stock quantity
-- Rating with 1 decimal precision
+Located in `src/schemas/product.schema.json`, demonstrates:
+- Object-level `required` array: ["id", "name"]
+- Property-level `required: true` on id and name fields
+- Custom formats: `text`, `html`, `json`
+- Number `precision`: 0, 1, 2
 
 ### FAQ Item Schema
 
-Demonstrates a FAQ entry with:
-- Required string fields (`id`, `question`)
-- Required HTML formatted answer
-- Text category field
-- JSON metadata
-- Integer view count
-- Helpfulness score with 2 decimal precision
+Located in `src/schemas/faqitem.schema.json`, demonstrates:
+- Object-level `required` array: ["id", "question", "answer"]
+- Property-level `required: true` on multiple fields
+- HTML format for answers
+- Number precision validation
 
-## Testing
+## Vocabulary URI
 
-The project includes comprehensive tests for:
+The custom vocabulary is identified by:
+- `$schema`: `https://example.com/meta/custom-vocabulary`
+- `$vocabulary`: Declares which vocabularies are used
 
-1. **Custom Keywords** (`custom-keywords.test.ts`)
-   - Format validation (json, html, text)
-   - Property-level required validation
-   - Precision validation
-   - Schema preprocessing
+Each schema declares the vocabularies it uses:
+```json
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  }
+}
+```
 
-2. **Validators** (`validators.test.ts`)
-   - Product validation with various valid and invalid inputs
-   - FAQ item validation with various valid and invalid inputs
+## Implementation Notes
 
-3. **Generated Types** (`generated-types.test.ts`)
-   - TypeScript type checking for generated interfaces
+### Custom `required` Keyword
 
-Run tests with:
+The property-level `required` keyword is implemented by:
+
+1. Removing AJV's built-in object-level `required` keyword
+2. Adding our custom version that handles BOTH:
+   - Property-level: `required: true` (boolean) for strings → validates non-empty
+   - Object-level: `required: ["prop"]` (array) for objects → validates property exists
+
+This allows the same keyword name to work at different levels with different types.
+
+### Why Preprocessing is Necessary
+
+1. Handles default type inference (`format` without `type`)
+2. Must be called before `ajv.compile()` for proper validation
+
+## Example
+
+See `src/example.ts` for a comprehensive demonstration of:
+- Valid and invalid product validation
+- Valid and invalid FAQ validation
+- Error handling and reporting
+
+Run the example:
 ```bash
-npm test
+npx ts-node src/example.ts
 ```
-
-## Custom Keywords Reference
-
-### `requiredProperty`
-
-- **Type**: boolean
-- **Applies to**: string
-- **Description**: When `true`, validates that the string is not empty
-- **Example**:
-  ```json
-  {
-    "type": "string",
-    "requiredProperty": true
-  }
-  ```
-
-### `precision`
-
-- **Type**: integer (0-4)
-- **Applies to**: number
-- **Description**: Validates the maximum number of decimal places
-- **Example**:
-  ```json
-  {
-    "type": "number",
-    "precision": 2
-  }
-  ```
-
-### Custom Formats
-
-#### `json`
-- Validates that the string contains valid JSON
-- Example: `'{"key": "value"}'` ✓, `'{invalid}'` ✗
-
-#### `html`
-- Validates that the string contains HTML markup
-- Example: `'<p>text</p>'` ✓, `'plain text'` ✗
-
-#### `text`
-- Allows multiline text strings
-- Example: `'multi\nline\ntext'` ✓
-
-## Type Generation
-
-TypeScript types are automatically generated from JSON schemas during the build process. The generated types can be found in `src/generated/` and are used for type-safe data handling.
-
-```typescript
-import { Product } from './generated/product';
-import { FAQItem } from './generated/faqitem';
-
-const product: Product = {
-  id: 'prod-123',
-  name: 'My Product'
-};
-```
-
-**Note**: The json-schema-to-typescript library doesn't understand custom format keywords, so fields with only a `format` property (e.g., `{ "format": "json" }`) are generated as generic objects. The runtime validation with AJV will still correctly treat these as strings and validate them according to the custom format rules.
 
 ## License
 

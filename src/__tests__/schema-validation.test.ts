@@ -1,7 +1,90 @@
 import { createAjvInstance, preprocessSchema } from '../validators/custom-keywords';
 import { SchemaObject } from 'ajv';
+import Ajv from 'ajv';
 
-describe('Custom Keywords', () => {
+describe('Schema Validation - Test if schemas are valid', () => {
+  let ajv: ReturnType<typeof createAjvInstance>;
+  let strictAjv: Ajv;
+
+  beforeEach(() => {
+    ajv = createAjvInstance();
+    // Create a strict AJV instance for schema validation
+    strictAjv = new Ajv({
+      strict: true,
+      validateSchema: true,
+      allErrors: true
+    });
+  });
+
+  describe('Schema with custom formats should be valid', () => {
+    it('should accept schema with format: json', () => {
+      const schema = { type: 'string', format: 'json' };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should accept schema with format: html', () => {
+      const schema = { type: 'string', format: 'html' };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should accept schema with format: text', () => {
+      const schema = { type: 'string', format: 'text' };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+  });
+
+  describe('Schema with property-level required should be valid', () => {
+    it('should accept schema with property-level required: true', () => {
+      const schema = { type: 'string', required: true };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should accept schema with property-level required: false', () => {
+      const schema = { type: 'string', required: false };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should accept schema with object-level required array', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          email: { type: 'string' }
+        },
+        required: ['name', 'email']
+      };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+  });
+
+  describe('Schema with custom precision keyword should be valid', () => {
+    it('should accept schema with precision: 0', () => {
+      const schema = { type: 'number', precision: 0 };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should accept schema with precision: 2', () => {
+      const schema = { type: 'number', precision: 2 };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+
+    it('should accept schema with precision: 4', () => {
+      const schema = { type: 'number', precision: 4 };
+      expect(() => ajv.compile(schema)).not.toThrow();
+    });
+  });
+
+  describe('Schema with only format (no type) should be valid', () => {
+    it('should accept schema with only format property', () => {
+      const schema = { format: 'json' };
+      const processed = preprocessSchema(schema);
+      expect(processed.type).toBe('string');
+      expect(() => ajv.compile(processed)).not.toThrow();
+    });
+  });
+});
+
+describe('Data Validation - Test if data matches schema', () => {
   let ajv: ReturnType<typeof createAjvInstance>;
 
   beforeEach(() => {
@@ -58,29 +141,45 @@ describe('Custom Keywords', () => {
     });
   });
 
-  describe('Custom keyword: requiredProperty', () => {
-    it('should reject empty string when requiredProperty is true', () => {
-      const schema = { type: 'string', requiredProperty: true };
+  describe('Property-level required (custom keyword)', () => {
+    it('should reject empty string when property-level required is true', () => {
+      const schema = { type: 'string', required: true };
       const validate = ajv.compile(schema);
       
       expect(validate('')).toBe(false);
       expect(validate.errors).toBeDefined();
-      expect(validate.errors?.[0]?.keyword).toBe('requiredProperty');
+      expect(validate.errors?.[0]?.keyword).toBe('required');
     });
 
-    it('should accept non-empty string when requiredProperty is true', () => {
-      const schema = { type: 'string', requiredProperty: true };
+    it('should accept non-empty string when property-level required is true', () => {
+      const schema = { type: 'string', required: true };
       const validate = ajv.compile(schema);
       
       expect(validate('not empty')).toBe(true);
       expect(validate(' ')).toBe(true);
     });
 
-    it('should accept empty string when requiredProperty is false', () => {
-      const schema = { type: 'string', requiredProperty: false };
+    it('should accept empty string when property-level required is false', () => {
+      const schema = { type: 'string', required: false };
       const validate = ajv.compile(schema);
       
       expect(validate('')).toBe(true);
+    });
+
+    it('should handle object-level required array', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          email: { type: 'string' }
+        },
+        required: ['name']
+      };
+      const validate = ajv.compile(schema);
+      
+      expect(validate({ name: 'John' })).toBe(true);
+      expect(validate({ email: 'john@example.com' })).toBe(false);
+      expect(validate.errors?.[0]?.keyword).toBe('required');
     });
   });
 

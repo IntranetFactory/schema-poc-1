@@ -1,18 +1,24 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://example.com/meta/custom-vocabulary",
   "$id": "https://example.com/schemas/product.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
   "title": "Product",
   "description": "A product in the catalog",
   "type": "object",
   "properties": {
     "id": {
       "type": "string",
-      "requiredProperty": true,
+      "required": true,
       "description": "Unique product identifier"
     },
     "name": {
       "type": "string",
-      "requiredProperty": true,
+      "required": true,
       "description": "Product name"
     },
     "description": {

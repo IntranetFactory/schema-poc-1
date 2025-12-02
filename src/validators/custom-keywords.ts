@@ -52,33 +52,61 @@ export function addCustomKeywords(ajv: Ajv): void {
     validate: validateTextFormat
   });
 
-  // Add custom keyword: requiredProperty (property-level required validation)
-  // Note: We use 'requiredProperty' instead of 'required' to avoid conflict with JSON Schema's 'required' keyword
+  // Add custom keyword: required (property-level required validation)
+  // First remove the built-in object-level 'required' keyword
+  // Then add our property-level version for strings
+  ajv.removeKeyword('required');
   ajv.addKeyword({
-    keyword: 'requiredProperty',
-    type: 'string',
-    schemaType: 'boolean',
-    compile(schema: boolean) {
-      const validateFn = function validate(data: string, context?: any): boolean {
+    keyword: 'required',
+    type: ['string', 'object'],  // Support both property-level (string) and object-level (object)
+    schemaType: ['boolean', 'array'],  // boolean for property-level, array for object-level
+    compile(schema: boolean | string[]) {
+      // Handle object-level required (array of property names)
+      if (Array.isArray(schema)) {
+        return function validate(data: any): boolean {
+          if (typeof data !== 'object' || data === null) return true;
+          
+          for (const prop of schema) {
+            if (!(prop in data)) {
+              (validate as any).errors = [{
+                keyword: 'required',
+                message: `must have required property '${prop}'`,
+                params: { missingProperty: prop },
+                instancePath: '',
+                schemaPath: ''
+              } as ErrorObject];
+              return false;
+            }
+          }
+          return true;
+        };
+      }
+      
+      // Handle property-level required (boolean for strings)
+      return function validate(data: string): boolean {
         if (schema === true) {
-          // Empty string violates requiredProperty
-          // Note: null/undefined checks are not needed as AJV only passes strings to this validator
+          // Empty string violates required
           if (data === '') {
             (validate as any).errors = [{
-              keyword: 'requiredProperty',
+              keyword: 'required',
               message: 'must not be empty',
-              params: { requiredProperty: true },
-              instancePath: context?.instancePath || '',
-              schemaPath: context?.schemaPath || ''
+              params: { required: true },
+              instancePath: '',
+              schemaPath: ''
             } as ErrorObject];
             return false;
           }
         }
         return true;
       };
-      return validateFn;
     },
-    errors: true
+    errors: true,
+    metaSchema: {
+      anyOf: [
+        { type: 'boolean' },
+        { type: 'array', items: { type: 'string' } }
+      ]
+    }
   });
 
   // Add custom keyword: precision for numbers
@@ -130,7 +158,8 @@ export function createAjvInstance(): Ajv {
   const ajv = new Ajv({
     allErrors: true,
     strict: false,
-    validateFormats: true
+    validateFormats: true,
+    validateSchema: false  // Allow custom keywords in schemas
   });
   
   addCustomKeywords(ajv);

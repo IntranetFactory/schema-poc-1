@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/meta/custom-vocabulary",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/applicator": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "$dynamicAnchor": "meta",
+  "title": "Custom Schema Vocabulary",
+  "type": ["object", "boolean"],
+  "properties": {
+    "format": {
+      "type": "string",
+      "enum": ["json", "html", "text"]
+    },
+    "required": {
+      "description": "Property-level required validation - empty strings violate this constraint",
+      "type": "boolean"
+    },
+    "precision": {
+      "description": "Number of decimal places allowed (0-4)",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    }
+  }
+}

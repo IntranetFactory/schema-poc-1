@@ -1,23 +1,29 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://example.com/meta/custom-vocabulary",
   "$id": "https://example.com/schemas/faqitem.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
   "title": "FAQItem",
   "description": "A frequently asked question item",
   "type": "object",
   "properties": {
     "id": {
       "type": "string",
-      "requiredProperty": true,
+      "required": true,
       "description": "Unique FAQ identifier"
     },
     "question": {
       "type": "string",
-      "requiredProperty": true,
+      "required": true,
       "description": "The question text"
     },
     "answer": {
       "format": "html",
-      "requiredProperty": true,
+      "required": true,
       "description": "HTML formatted answer"
     },
     "category": {
