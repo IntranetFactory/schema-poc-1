@@ -6,7 +6,7 @@ import { preprocessSchema } from './utils';
  * Validate a JSON Schema against SemSchema vocabulary
  * 
  * @param schemaJson - The JSON Schema to validate
- * @returns true if the schema is valid, throws error if invalid
+ * @returns true if the schema is valid and can be compiled, throws error if invalid
  */
 export function validateSchema(schemaJson: SchemaObject): boolean {
   // Create fresh instance for schema validation
@@ -26,7 +26,9 @@ export function validateSchema(schemaJson: SchemaObject): boolean {
  * 
  * @param data - The data to validate
  * @param schemaJson - The JSON Schema to validate against
- * @returns Object with valid (boolean) and errors (array) properties
+ * @returns Object with:
+ *   - valid: boolean - true if data is valid, false otherwise
+ *   - errors: array | null - array of error objects if invalid, null if valid
  */
 export function validateData(data: any, schemaJson: SchemaObject): {
   valid: boolean;

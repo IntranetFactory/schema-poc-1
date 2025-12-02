@@ -56,7 +56,7 @@ export function addRequiredKeyword(ajv: Ajv): void {
             return false;
           }
           
-          // Empty string violates required (for string types in any format)
+          // Empty string violates required (for any string regardless of format)
           if (typeof data === 'string' && data === '') {
             (validate as any).errors = [{
               keyword: 'required',

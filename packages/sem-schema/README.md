@@ -12,7 +12,8 @@ Custom JSON Schema vocabulary (SemSchema) with additional validation features fo
 ### Custom Keywords
 - **`required`** (property-level): Boolean keyword that validates values are not null/undefined and strings are not empty
   - Different from object-level `required` array in standard JSON Schema
-  - When `required: true`, null, undefined, and empty strings (in any format) fail validation
+  - When `required: true`, null, undefined, and empty strings fail validation
+  - **Important**: Empty string validation applies to ALL string types, regardless of format (json, html, text, date, email, or any other)
 - **`precision`**: Integer (0-4) limiting decimal places in numbers
   - Example: `precision: 2` allows 99.99 but rejects 99.999
 
@@ -98,8 +99,8 @@ Validates data against a JSON Schema using SemSchema vocabulary.
 - `schemaJson`: SchemaObject - The JSON Schema to validate against
 
 **Returns**: Object with:
-- `valid`: boolean - Whether the data is valid
-- `errors`: array | null - Array of validation errors, or null if valid
+- `valid`: boolean - true if data is valid, false otherwise
+- `errors`: array | null - Array of validation error objects if invalid, null if valid
 
 ## Project Structure
 
@@ -127,7 +128,7 @@ pnpm test:watch    # Run tests in watch mode
 ```
 
 The test suite includes:
-- **Vocabulary Definition Tests**: Verify SemSchema works and standard AJV fails with custom keywords
+- **Vocabulary Definition Tests**: Verify schemas with custom keywords can be compiled
 - **Data Validation Tests**: Verify data correctly validates against schemas
 
 ## Vocabulary Definition

@@ -22,8 +22,10 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 - When `required: true`, validates that values are:
   - Not `null`
   - Not `undefined`
-  - Not empty strings (for string types in any format: json, html, text, or default string)
+  - Not empty strings (for ALL string types, regardless of format - json, html, text, date, email, or any other)
 - Still supports object-level `required` (array) for backward compatibility
+
+**Important**: The empty string validation applies to ALL strings, not just our custom formats. Any string field with `required: true` will reject empty strings, whether it has a format specified or not.
 
 **Implementation**: Replaced AJV's built-in `required` keyword with a custom version that handles both modes:
 - Property-level: `required: true` (boolean) - validates value is not null/undefined and strings are not empty

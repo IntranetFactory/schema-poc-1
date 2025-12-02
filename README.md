@@ -23,6 +23,8 @@ Example schemas and validators demonstrating SemSchema usage:
 - FAQ Item schema with validation
 - Comprehensive test suite
 
+**Note**: The examples package has its own package.json for workspace dependency management, allowing it to depend on `sem-schema` using `workspace:*`.
+
 ## Installation
 
 ```bash
@@ -78,8 +80,13 @@ console.log(result.errors); // null
 
 SemSchema exports two simple methods:
 
-- **`validateSchema(schemaJson)`**: Validates that a schema is valid
+- **`validateSchema(schemaJson)`**: Validates that a schema is valid and can be compiled
+  - Returns: `true` if valid
+  - Throws: Error if schema is invalid
 - **`validateData(data, schemaJson)`**: Validates data against a schema
+  - Returns: Object with:
+    - `valid`: boolean - true if data is valid, false otherwise
+    - `errors`: array | null - array of error objects if invalid, null if valid
 
 ## Features
 
@@ -89,8 +96,10 @@ SemSchema exports two simple methods:
 - **text**: Allows multiline text strings
 
 ### Custom Keywords
-- **required** (property-level): Boolean - validates values are not null/undefined and strings are not empty
+- **required** (property-level): Boolean - validates values are not null/undefined, and strings (in ANY format) are not empty
 - **precision**: Integer (0-4) - limits decimal places in numbers
+
+**Note on required**: The empty string validation applies to ALL string types, regardless of format. Whether it's a custom format (json, html, text) or standard format (date, email, etc.), an empty string will fail validation when `required: true`.
 
 ### Type Inference
 - Schemas with only `format` automatically get `type: "string"`
