@@ -1,7 +1,7 @@
 import { SchemaObject } from 'ajv';
-import { createCustomSchemaValidator, preprocessSchema } from './validator';
-import productSchema from './schemas/product.schema.json';
-import faqItemSchema from './schemas/faqitem.schema.json';
+import { createCustomSchemaValidator, preprocessSchema } from 'sem-schema';
+import productSchema from '../schemas/product.schema.json';
+import faqItemSchema from '../schemas/faqitem.schema.json';
 
 // Create AJV instance with custom schema vocabulary
 const ajv = createCustomSchemaValidator();

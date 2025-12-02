@@ -1,305 +1,127 @@
-# Custom JSON Schema Vocabulary POC
+# schema-poc-1
 
-This project demonstrates a custom JSON Schema vocabulary implementation in TypeScript with AJV validation.
-
-## Custom Vocabulary
-
-### Vocabulary Definition
-
-The custom vocabulary is defined in `src/vocabulary.json` and includes:
-
-- **Custom formats**: `json`, `html`, `text` - Valid string format values
-- **Property-level `required`**: Boolean constraint for non-empty strings
-- **`precision`**: Integer constraint (0-4) for number decimal places
-
-### Custom Keywords
-
-#### 1. Custom String Formats
-
-- **`json`**: Validates that a string contains valid parseable JSON
-- **`html`**: Validates that a string contains HTML markup (requires HTML tags)
-- **`text`**: Allows multiline text strings
-
-```json
-{
-  "type": "string",
-  "format": "json"
-}
-```
-
-#### 2. Property-Level `required` (Boolean)
-
-The `required` keyword works at **two levels**:
-
-- **Property-level** `"required": true` (boolean) → string must not be empty (custom keyword)
-- **Object-level** `"required": ["field1", "field2"]` (array) → standard JSON Schema (fields must exist)
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "email": {
-      "type": "string",
-      "required": true
-    }
-  },
-  "required": ["email"]
-}
-```
-
-In the example above:
-- Object-level `required`: ["email"] means the `email` property must exist in the object
-- Property-level `required: true` means the `email` value cannot be an empty string
-
-#### 3. Number `precision` (Integer 0-4)
-
-Validates the maximum number of decimal places allowed:
-
-```json
-{
-  "type": "number",
-  "precision": 2
-}
-```
-
-- `precision: 0` → integers only (e.g., 10, -5)
-- `precision: 2` → up to 2 decimals (e.g., 99.99)
-- `precision: 4` → up to 4 decimals (e.g., 3.1415)
-
-#### 4. Default Type Inference
-
-When `format` is provided without `type`, it defaults to `"string"`:
-
-```json
-{
-  "format": "json"
-}
-```
-
-is equivalent to:
-
-```json
-{
-  "type": "string",
-  "format": "json"
-}
-```
+Proof of concept for custom JSON Schema vocabulary in TypeScript using pnpm workspaces.
 
 ## Project Structure
 
-```
-schema-poc-1/
-├── src/
-│   ├── custom-schema/              # Custom JSON Schema vocabulary
-│   │   ├── validator.ts            # Custom keyword & format implementations
-│   │   ├── compiled-validators.ts  # Pre-compiled validators for sample schemas
-│   │   ├── vocabulary.json         # Vocabulary definition
-│   │   ├── index.ts                # Main exports
-│   │   ├── schemas/                # Sample schema definitions
-│   │   │   ├── product.schema.json
-│   │   │   └── faqitem.schema.json
-│   │   └── __tests__/              # Test files
-│   │       ├── schema-validation.test.ts
-│   │       └── data-validation.test.ts
-│   ├── example.ts                  # Usage examples
-│   └── index.ts                    # Library entry point
-└── dist/                           # Compiled JavaScript output
-```
+This is a **pnpm workspace** with two packages:
+
+### `packages/sem-schema`
+
+The main package implementing a custom JSON Schema vocabulary with additional validation features:
+- Custom formats: `json`, `html`, `text`
+- Property-level `required` keyword (validates non-empty strings)
+- Number `precision` keyword (0-4 decimal places)
+- Type inference (format without type defaults to string)
+
+See [packages/sem-schema/README.md](packages/sem-schema/README.md) for full documentation.
+
+### `packages/examples`
+
+Example schemas and validators demonstrating sem-schema usage:
+- Product schema with validation
+- FAQ Item schema with validation
+- Comprehensive test suite
 
 ## Installation
 
 ```bash
-npm install
+pnpm install
 ```
 
-## Usage
+## Building
 
-### Using Pre-compiled Validators
-
-```typescript
-import { validateProduct, validateFaqItem } from './custom-schema';
-
-const product = {
-  id: 'prod-123',
-  name: 'Wireless Headphones',
-  description: 'Premium headphones\nwith noise cancellation',
-  detailedDescription: '<p>High quality audio</p>',
-  metadata: '{"brand": "TechCo"}',
-  price: 299.99,
-  stock: 150,
-  rating: 4.5,
-  tags: ['electronics', 'audio']
-};
-
-if (validateProduct(product)) {
-  console.log('✓ Product is valid!');
-} else {
-  console.error('✗ Validation errors:', validateProduct.errors);
-}
+```bash
+pnpm build        # Build all packages
 ```
-
-### Creating Custom Validators
-
-```typescript
-import { createCustomSchemaValidator, preprocessSchema } from './custom-schema';
-
-// Create AJV instance with custom schema vocabulary
-const ajv = createCustomSchemaValidator();
-
-// Define schema
-const mySchema = {
-  type: 'object',
-  properties: {
-    email: {
-      type: 'string',
-      required: true  // Property-level: no empty strings
-    },
-    config: {
-      format: 'json'  // Type: string inferred
-    },
-    price: {
-      type: 'number',
-      precision: 2  // Up to 2 decimal places
-    }
-  },
-  required: ['email']  // Object-level: email property must exist
-};
-
-// IMPORTANT: Preprocess schema to handle custom keywords
-const processed = preprocessSchema(mySchema);
-
-// Compile validator
-const validate = ajv.compile(processed);
-
-// Validate data
-const data = {
-  email: 'user@example.com',
-  config: '{"key": "value"}',
-  price: 99.99
-};
-
-if (validate(data)) {
-  console.log('Valid!');
-} else {
-  console.log('Errors:', validate.errors);
-}
-```
-
-## Scripts
-
-- `npm run build` - Compile TypeScript to JavaScript
-- `npm test` - Run all tests (schema validity + data validation)
-- `npm run test:watch` - Run tests in watch mode
 
 ## Testing
 
-The project includes comprehensive tests organized into two categories:
-
-### 1. Schema Validation Tests (`schema-validation.test.ts`)
-
-Tests that verify the custom vocabulary implementation by comparing standard AJV vs custom vocabulary AJV:
-
-**Custom Vocabulary Comparison**
-- Demonstrates that schemas with custom keywords FAIL with standard AJV
-- Proves the same schemas SUCCEED with our custom vocabulary AJV
-- Examples:
-  - `format: "json"` → fails standard AJV (unknown format), succeeds with custom vocabulary
-  - `required: true` (property-level) → fails standard AJV (expects array), succeeds with custom vocabulary
-  - `precision: 2` → fails standard AJV (unknown keyword), succeeds with custom vocabulary
-
-**Schema Validity Tests**
-- Can schemas with custom keywords be compiled?
-
-**Data Validation Tests**
-- Does data correctly validate/fail against schemas with custom keywords?
-
-Tests cover:
-- Custom formats (json, html, text)
-- Property-level `required` keyword
-- Number `precision` validation
-- Type inference from `format`
-
-### 2. Data Validation Tests (`data-validation.test.ts`)
-
-Tests that verify:
-- **Schema Validity**: Are the sample schemas (product, faqitem) valid?
-- **Data Validation**: Do product and FAQ data correctly validate against their schemas?
-
-Tests cover:
-- Valid and invalid product data
-- Valid and invalid FAQ item data
-- Error reporting for constraint violations
-
-Run tests:
 ```bash
-npm test
+pnpm test         # Test all packages
+pnpm test:watch   # Test in watch mode
 ```
 
-## Sample Schemas
+## Quick Start
 
-### Product Schema
+### Using sem-schema
 
-Located in `src/custom-schema/schemas/product.schema.json`, demonstrates:
-- Object-level `required` array: ["id", "name"]
-- Property-level `required: true` on id and name fields
-- Custom formats: `text`, `html`, `json`
-- Number `precision`: 0, 1, 2
+```typescript
+import { createCustomSchemaValidator, preprocessSchema } from 'sem-schema';
 
-### FAQ Item Schema
+// Create validator with custom vocabulary
+const ajv = createCustomSchemaValidator();
 
-Located in `src/custom-schema/schemas/faqitem.schema.json`, demonstrates:
-- Object-level `required` array: ["id", "question", "answer"]
-- Property-level `required: true` on multiple fields
-- HTML format for answers
-- Number precision validation
+// Define schema
+const schema = {
+  type: 'object',
+  properties: {
+    email: { type: 'string', required: true },  // Empty strings fail
+    config: { format: 'json' },  // Type inferred as string
+    price: { type: 'number', precision: 2 }  // Max 2 decimals
+  },
+  required: ['email']  // Property must exist
+};
 
-## Vocabulary URI
-
-The custom vocabulary is identified by:
-- `$schema`: `https://example.com/meta/custom-vocabulary`
-- `$vocabulary`: Declares which vocabularies are used
-
-Each schema declares the vocabularies it uses:
-```json
-{
-  "$schema": "https://example.com/meta/custom-vocabulary",
-  "$vocabulary": {
-    "https://json-schema.org/draft/2020-12/vocab/core": true,
-    "https://json-schema.org/draft/2020-12/vocab/validation": true,
-    "https://example.com/vocab/custom-formats": true,
-    "https://example.com/vocab/custom-validation": true
-  }
-}
+// Compile and validate
+const validate = ajv.compile(preprocessSchema(schema));
+console.log(validate({ email: 'user@example.com', config: '{}', price: 99.99 }));
+// true
 ```
 
-## Implementation Notes
+## Features
 
-### Custom `required` Keyword
+### Custom Formats
+- **json**: Validates parseable JSON strings
+- **html**: Validates HTML markup (checks for tags)
+- **text**: Allows multiline text strings
 
-The property-level `required` keyword is implemented by:
+### Custom Keywords
+- **required** (property-level): Boolean - validates non-empty strings
+- **precision**: Integer (0-4) - limits decimal places in numbers
 
-1. Removing AJV's built-in object-level `required` keyword
-2. Adding our custom version that handles BOTH:
-   - Property-level: `required: true` (boolean) for strings → validates non-empty
-   - Object-level: `required: ["prop"]` (array) for objects → validates property exists
+### Type Inference
+- Schemas with only `format` automatically get `type: "string"`
 
-This allows the same keyword name to work at different levels with different types.
+## Test Organization
 
-### Why Preprocessing is Necessary
+Tests are clearly separated into two categories:
 
-1. Handles default type inference (`format` without `type`)
-2. Must be called before `ajv.compile()` for proper validation
+### Vocabulary Definition Tests
+Tests that verify the custom vocabulary is properly defined:
+- Comparison with standard JSON Schema (proves custom keywords work)
+- Schema validity tests (can schemas be compiled?)
 
-## Example
+### Data Validation Tests  
+Tests that verify data correctly validates against schemas:
+- Valid data passes
+- Invalid data fails with correct error messages
 
-See `src/example.ts` for a comprehensive demonstration of:
-- Valid and invalid product validation
-- Valid and invalid FAQ validation
-- Error handling and reporting
+## Package Organization
 
-Run the example:
+- **sem-schema**: Core vocabulary implementation
+  - One file per format (`formats/json.ts`, `formats/html.ts`, etc.)
+  - One file per keyword (`keywords/required.ts`, `keywords/precision.ts`)
+  - Modular structure for easy extension
+- **examples**: Sample schemas and their validators (separate from core vocabulary)
+
+## Development
+
 ```bash
-npx ts-node src/example.ts
+# Install dependencies
+pnpm install
+
+# Build sem-schema
+cd packages/sem-schema && pnpm build
+
+# Run sem-schema tests
+cd packages/sem-schema && pnpm test
+
+# Run examples tests
+cd packages/examples && pnpm test
+
+# Run all tests from root
+pnpm test
 ```
 
 ## License
