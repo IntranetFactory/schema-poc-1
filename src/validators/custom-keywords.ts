@@ -64,7 +64,8 @@ export function addCustomKeywords(ajv: Ajv): void {
       // Handle object-level required (array of property names)
       if (Array.isArray(schema)) {
         return function validate(data: any): boolean {
-          if (typeof data !== 'object' || data === null) return true;
+          // Only validate objects (not arrays or null)
+          if (typeof data !== 'object' || data === null || Array.isArray(data)) return true;
           
           for (const prop of schema) {
             if (!(prop in data)) {
