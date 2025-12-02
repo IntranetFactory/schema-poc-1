@@ -241,6 +241,8 @@ const product: Product = {
 };
 ```
 
+**Note**: The json-schema-to-typescript library doesn't understand custom format keywords, so fields with only a `format` property (e.g., `{ "format": "json" }`) are generated as generic objects. The runtime validation with AJV will still correctly treat these as strings and validate them according to the custom format rules.
+
 ## License
 
 ISC

@@ -62,7 +62,8 @@ export function addCustomKeywords(ajv: Ajv): void {
       const validateFn = function validate(data: string, context?: any): boolean {
         if (schema === true) {
           // Empty string violates requiredProperty
-          if (data === '' || data === null || data === undefined) {
+          // Note: null/undefined checks are not needed as AJV only passes strings to this validator
+          if (data === '') {
             (validate as any).errors = [{
               keyword: 'requiredProperty',
               message: 'must not be empty',
@@ -81,6 +82,7 @@ export function addCustomKeywords(ajv: Ajv): void {
   });
 
   // Add custom keyword: precision for numbers
+  // Precision limit is set to 0-4 to match common use cases (integers, currency, percentages, etc.)
   ajv.addKeyword({
     keyword: 'precision',
     type: 'number',
@@ -100,12 +102,14 @@ export function addCustomKeywords(ajv: Ajv): void {
         }
 
         // Check the number of decimal places
-        const decimals = (data.toString().split('.')[1] || '').length;
-        if (decimals > schema) {
+        // Note: Uses string conversion which may have floating-point precision issues
+        // For most practical cases (currency, measurements), this is acceptable
+        const decimalPart = (data.toString().split('.')[1] || '');
+        if (decimalPart.length > schema) {
           (validate as any).errors = [{
             keyword: 'precision',
             message: `must have at most ${schema} decimal places`,
-            params: { precision: schema, actual: decimals },
+            params: { precision: schema, actual: decimalPart.length },
             instancePath: '',
             schemaPath: ''
           } as ErrorObject];
