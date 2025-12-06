@@ -72,24 +72,24 @@ export function Playground() {
   }, [])
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold mb-2">Schema Validation Playground</h1>
-        <p className="text-muted-foreground">
+    <div className="h-screen flex flex-col">
+      <div className="p-4 border-b">
+        <h1 className="text-2xl font-bold">Schema Validation Playground</h1>
+        <p className="text-sm text-muted-foreground">
           Test your JSON schemas and data validation using sem-schema
         </p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-0">
         {/* Top Left: Schema Editor */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Schema</CardTitle>
+        <Card className="rounded-none border-r border-b">
+          <CardHeader className="py-2 px-4 border-b">
+            <CardTitle className="text-sm">Schema</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 h-[calc(100%-3rem)]">
             <CodeMirror
               value={schemaText}
-              height="400px"
+              height="100%"
               extensions={[json()]}
               onChange={handleSchemaChange}
               theme="light"
@@ -98,14 +98,14 @@ export function Playground() {
         </Card>
 
         {/* Top Right: Data Editor */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Data</CardTitle>
+        <Card className="rounded-none border-b">
+          <CardHeader className="py-2 px-4 border-b">
+            <CardTitle className="text-sm">Data</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 h-[calc(100%-3rem)]">
             <CodeMirror
               value={dataText}
-              height="400px"
+              height="100%"
               extensions={[json()]}
               onChange={handleDataChange}
               theme="light"
@@ -114,14 +114,14 @@ export function Playground() {
         </Card>
 
         {/* Bottom Left: Schema Validation Result */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Schema Validation Result</CardTitle>
+        <Card className="rounded-none border-r">
+          <CardHeader className="py-2 px-4 border-b">
+            <CardTitle className="text-sm">Schema Validation Result</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 h-[calc(100%-3rem)]">
             <CodeMirror
               value={schemaValidation}
-              height="200px"
+              height="100%"
               extensions={[json()]}
               readOnly
               theme="light"
@@ -130,14 +130,14 @@ export function Playground() {
         </Card>
 
         {/* Bottom Right: Data Validation Result */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Data Validation Result</CardTitle>
+        <Card className="rounded-none">
+          <CardHeader className="py-2 px-4 border-b">
+            <CardTitle className="text-sm">Data Validation Result</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 h-[calc(100%-3rem)]">
             <CodeMirror
               value={dataValidation}
-              height="200px"
+              height="100%"
               extensions={[json()]}
               readOnly
               theme="light"
