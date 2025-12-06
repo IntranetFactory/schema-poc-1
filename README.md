@@ -1,0 +1,151 @@
+# schema-poc-1
+
+Proof of concept for custom JSON Schema vocabulary (SemSchema) in TypeScript using pnpm workspaces.
+
+## Project Structure
+
+This is a **pnpm workspace** with two packages:
+
+### `packages/sem-schema`
+
+The main package implementing SemSchema - a custom JSON Schema vocabulary with additional validation features:
+- Custom formats: `json`, `html`, `text`
+- Property-level `required` keyword (validates non-empty strings)
+- Number `precision` keyword (0-4 decimal places)
+- Type inference (format without type defaults to string)
+
+See [packages/sem-schema/README.md](packages/sem-schema/README.md) for full documentation.
+
+### `packages/examples`
+
+Example schemas and validators demonstrating SemSchema usage:
+- Product schema with validation
+- FAQ Item schema with validation
+- Comprehensive test suite
+
+**Note**: The examples package has its own package.json for workspace dependency management, allowing it to depend on `sem-schema` using `workspace:*`.
+
+## Installation
+
+```bash
+pnpm install
+```
+
+## Building
+
+```bash
+pnpm build        # Build all packages
+```
+
+## Testing
+
+```bash
+pnpm test         # Test all packages
+pnpm test:watch   # Test in watch mode
+```
+
+## Quick Start
+
+### Using SemSchema
+
+```typescript
+import { validateSchema, validateData } from 'sem-schema';
+
+// Define schema
+const schema = {
+  type: 'object',
+  properties: {
+    email: { type: 'string', required: true },  // Empty strings fail
+    config: { format: 'json' },  // Type inferred as string
+    price: { type: 'number', precision: 2 }  // Max 2 decimals
+  },
+  required: ['email']  // Property must exist
+};
+
+// Validate schema
+validateSchema(schema); // Returns true or throws
+
+// Validate data
+const result = validateData({ 
+  email: 'user@example.com', 
+  config: '{}', 
+  price: 99.99 
+}, schema);
+
+console.log(result.valid);  // true
+console.log(result.errors); // null
+```
+
+## API
+
+SemSchema exports two simple methods:
+
+- **`validateSchema(schemaJson)`**: Validates that a schema is valid and can be compiled
+  - Returns: `true` if valid
+  - Throws: Error if schema is invalid
+- **`validateData(data, schemaJson)`**: Validates data against a schema
+  - Returns: Object with:
+    - `valid`: boolean - true if data is valid, false otherwise
+    - `errors`: array | null - array of error objects if invalid, null if valid
+
+## Features
+
+### Custom Formats
+- **json**: Validates parseable JSON strings
+- **html**: Validates HTML markup (checks for tags)
+- **text**: Allows multiline text strings
+
+### Custom Keywords
+- **required** (property-level): Boolean - validates values are not null/undefined, and strings (in ANY format) are not empty
+- **precision**: Integer (0-4) - limits decimal places in numbers
+
+**Note on required**: The empty string validation applies to ALL string types, regardless of format. Whether it's a custom format (json, html, text) or standard format (date, email, etc.), an empty string will fail validation when `required: true`.
+
+### Type Inference
+- Schemas with only `format` automatically get `type: "string"`
+
+## Test Organization
+
+Tests are clearly separated into two categories:
+
+### Vocabulary Definition Tests
+Tests that verify the custom vocabulary is properly defined:
+- Comparison with standard JSON Schema (proves custom keywords work)
+- Schema validity tests (can schemas be compiled?)
+
+### Data Validation Tests  
+Tests that verify data correctly validates against schemas:
+- Valid data passes
+- Invalid data fails with correct error messages
+
+## Package Organization
+
+- **sem-schema**: Core vocabulary implementation
+  - One file per format (`formats/json.ts`, `formats/html.ts`, etc.)
+  - One file per keyword (`keywords/required.ts`, `keywords/precision.ts`)
+  - Simple public API: just `validateSchema` and `validateData`
+  - Modular structure for easy extension
+- **examples**: Sample schemas and their validators (separate from core vocabulary)
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build sem-schema
+cd packages/sem-schema && pnpm build
+
+# Run sem-schema tests
+cd packages/sem-schema && pnpm test
+
+# Run examples tests
+cd packages/examples && pnpm test
+
+# Run all tests from root
+pnpm test
+```
+
+## License
+
+ISC
