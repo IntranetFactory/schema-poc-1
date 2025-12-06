@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import { validateSchema, validateData } from 'sem-schema'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 const defaultSchema = `{
   "type": "object",
@@ -72,21 +71,21 @@ export function Playground() {
   }, [])
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="p-4 border-b">
+    <div className="h-screen w-screen flex flex-col overflow-hidden">
+      <div className="flex-none p-4 border-b bg-background">
         <h1 className="text-2xl font-bold">Schema Validation Playground</h1>
         <p className="text-sm text-muted-foreground">
           Test your JSON schemas and data validation using sem-schema
         </p>
       </div>
       
-      <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-0">
+      <div className="flex-1 grid grid-cols-2 grid-rows-2 overflow-hidden">
         {/* Top Left: Schema Editor */}
-        <Card className="rounded-none border-r border-b">
-          <CardHeader className="py-2 px-4 border-b">
-            <CardTitle className="text-sm">Schema</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 h-[calc(100%-3rem)]">
+        <div className="flex flex-col border-r border-b overflow-hidden">
+          <div className="flex-none py-2 px-4 border-b bg-muted/50">
+            <h2 className="text-sm font-semibold">Schema</h2>
+          </div>
+          <div className="flex-1 overflow-hidden">
             <CodeMirror
               value={schemaText}
               height="100%"
@@ -94,15 +93,15 @@ export function Playground() {
               onChange={handleSchemaChange}
               theme="light"
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Top Right: Data Editor */}
-        <Card className="rounded-none border-b">
-          <CardHeader className="py-2 px-4 border-b">
-            <CardTitle className="text-sm">Data</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 h-[calc(100%-3rem)]">
+        <div className="flex flex-col border-b overflow-hidden">
+          <div className="flex-none py-2 px-4 border-b bg-muted/50">
+            <h2 className="text-sm font-semibold">Data</h2>
+          </div>
+          <div className="flex-1 overflow-hidden">
             <CodeMirror
               value={dataText}
               height="100%"
@@ -110,15 +109,15 @@ export function Playground() {
               onChange={handleDataChange}
               theme="light"
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Bottom Left: Schema Validation Result */}
-        <Card className="rounded-none border-r">
-          <CardHeader className="py-2 px-4 border-b">
-            <CardTitle className="text-sm">Schema Validation Result</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 h-[calc(100%-3rem)]">
+        <div className="flex flex-col border-r overflow-hidden">
+          <div className="flex-none py-2 px-4 border-b bg-muted/50">
+            <h2 className="text-sm font-semibold">Schema Validation Result</h2>
+          </div>
+          <div className="flex-1 overflow-hidden">
             <CodeMirror
               value={schemaValidation}
               height="100%"
@@ -126,15 +125,15 @@ export function Playground() {
               readOnly
               theme="light"
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Bottom Right: Data Validation Result */}
-        <Card className="rounded-none">
-          <CardHeader className="py-2 px-4 border-b">
-            <CardTitle className="text-sm">Data Validation Result</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 h-[calc(100%-3rem)]">
+        <div className="flex flex-col overflow-hidden">
+          <div className="flex-none py-2 px-4 border-b bg-muted/50">
+            <h2 className="text-sm font-semibold">Data Validation Result</h2>
+          </div>
+          <div className="flex-1 overflow-hidden">
             <CodeMirror
               value={dataValidation}
               height="100%"
@@ -142,8 +141,8 @@ export function Playground() {
               readOnly
               theme="light"
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
