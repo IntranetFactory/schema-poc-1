@@ -71,21 +71,21 @@ export function Playground() {
   }, [])
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden">
-      <div className="flex-none p-4 border-b bg-background">
-        <h1 className="text-2xl font-bold">Schema Validation Playground</h1>
-        <p className="text-sm text-muted-foreground">
+    <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>Schema Validation Playground</h1>
+        <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
           Test your JSON schemas and data validation using sem-schema
         </p>
       </div>
       
-      <div className="flex-1 grid grid-cols-2 grid-rows-2 overflow-hidden">
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', overflow: 'hidden' }}>
         {/* Top Left: Schema Editor */}
-        <div className="flex flex-col border-r border-b overflow-hidden">
-          <div className="flex-none py-2 px-4 border-b bg-muted/50">
-            <h2 className="text-sm font-semibold">Schema</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', borderRight: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', overflow: 'hidden' }}>
+          <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
+            <h2 style={{ fontSize: '0.875rem', fontWeight: '600' }}>Schema</h2>
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div style={{ flex: 1, overflow: 'hidden' }}>
             <CodeMirror
               value={schemaText}
               height="100%"
@@ -97,11 +97,11 @@ export function Playground() {
         </div>
 
         {/* Top Right: Data Editor */}
-        <div className="flex flex-col border-b overflow-hidden">
-          <div className="flex-none py-2 px-4 border-b bg-muted/50">
-            <h2 className="text-sm font-semibold">Data</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #e5e7eb', overflow: 'hidden' }}>
+          <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
+            <h2 style={{ fontSize: '0.875rem', fontWeight: '600' }}>Data</h2>
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div style={{ flex: 1, overflow: 'hidden' }}>
             <CodeMirror
               value={dataText}
               height="100%"
@@ -113,11 +113,11 @@ export function Playground() {
         </div>
 
         {/* Bottom Left: Schema Validation Result */}
-        <div className="flex flex-col border-r overflow-hidden">
-          <div className="flex-none py-2 px-4 border-b bg-muted/50">
-            <h2 className="text-sm font-semibold">Schema Validation Result</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', borderRight: '1px solid #e5e7eb', overflow: 'hidden' }}>
+          <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
+            <h2 style={{ fontSize: '0.875rem', fontWeight: '600' }}>Schema Validation Result</h2>
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div style={{ flex: 1, overflow: 'hidden' }}>
             <CodeMirror
               value={schemaValidation}
               height="100%"
@@ -129,11 +129,11 @@ export function Playground() {
         </div>
 
         {/* Bottom Right: Data Validation Result */}
-        <div className="flex flex-col overflow-hidden">
-          <div className="flex-none py-2 px-4 border-b bg-muted/50">
-            <h2 className="text-sm font-semibold">Data Validation Result</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
+            <h2 style={{ fontSize: '0.875rem', fontWeight: '600' }}>Data Validation Result</h2>
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div style={{ flex: 1, overflow: 'hidden' }}>
             <CodeMirror
               value={dataValidation}
               height="100%"
