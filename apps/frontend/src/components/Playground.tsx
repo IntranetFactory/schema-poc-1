@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import { validateSchema, validateData } from 'sem-schema'
@@ -65,10 +65,11 @@ export function Playground() {
   }, [schemaText])
 
   // Initial validation
-  useState(() => {
+  useEffect(() => {
     handleSchemaChange(schemaText)
     handleDataChange(dataText)
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="container mx-auto p-6">
