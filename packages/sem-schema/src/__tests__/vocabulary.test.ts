@@ -57,4 +57,11 @@ describe('Vocabulary Definition Tests', () => {
       expect(validateSchema(schema)).toBe(true);
     });
   });
+
+  describe('Schema Validity - Unknown formats', () => {
+    it('should reject schema with unknown format', () => {
+      const schema = { type: 'string', format: 'emailx' };
+      expect(() => validateSchema(schema)).toThrow();
+    });
+  });
 });
