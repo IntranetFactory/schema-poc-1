@@ -2,6 +2,39 @@
 
 This file documents the implementation decisions and rationale for the SemSchema custom JSON Schema vocabulary.
 
+## CRITICAL: Visual Verification Requirements
+
+**MANDATORY for ALL visual/UI changes - NO EXCEPTIONS:**
+
+1. **ALWAYS use Playwright MCP tools for visual verification** - Never rely on assumptions or code inspection
+2. **EVERY visual change MUST be verified with screenshots** using `mcp_microsoft_pla_browser_take_screenshot`
+3. **ACTUALLY LOOK AT THE SCREENSHOT** - Don't just take it, analyze what it shows
+4. **Test actual behavior, not assumptions** - Add content, resize, interact to verify the change works as expected
+5. **Use `mcp_microsoft_pla_browser_evaluate` to inspect computed styles** - Tailwind classes may not be applied, check actual CSS
+6. **Never claim a visual change is complete without visual proof** - Screenshots showing the EXACT specified behavior are required
+- **If the screenshot doesn't match the spec, the work is NOT done** - No excuses, no assumptions
+- **Never trust, always verify** - Do not assume code changes will work as expected. Always verify with Playwright.
+
+**Workflow for any UI/visual change:**
+1. Make the code change
+2. Navigate to the page with `mcp_microsoft_pla_browser_navigate`
+3. Take a screenshot with `mcp_microsoft_pla_browser_take_screenshot`
+4. **ACTUALLY EXAMINE the screenshot** - Does it match the specification exactly?
+5. Use `mcp_microsoft_pla_browser_evaluate` to check computed styles if Tailwind classes are involved
+6. If testing scrolling/overflow behavior: 
+   - Add significant content using Playwright MCP type/click tools
+   - Take another screenshot showing scrollbars
+   - Verify the container did NOT expand
+7. If testing responsiveness: Resize with `mcp_microsoft_pla_browser_resize` and screenshot at different sizes
+8. **Only claim completion when screenshots prove the specification is met**
+
+**WHY THIS IS CRITICAL:**
+- Tailwind v4 classes may not apply correctly (e.g., `grid`, `overflow-auto`)
+- CSS specificity issues can override classes
+- Assumptions about behavior are often wrong
+- Taking a screenshot without examining it is worthless
+- The user's time is valuable - don't waste it with unverified claims
+
 ## Project Overview
 
 SemSchema is a custom JSON Schema vocabulary implemented as an npm package that extends AJV with domain-specific validation constraints. It addresses common JSON Schema limitations by providing:

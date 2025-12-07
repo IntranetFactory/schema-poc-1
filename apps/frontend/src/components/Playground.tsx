@@ -71,78 +71,88 @@ export function Playground() {
   }, [])
 
   return (
-    <div className="w-screen h-screen flex flex-col overflow-hidden">
-      <div className="p-4 border-b border-gray-200">
-        <h1 className="text-2xl font-bold mb-1">Schema Validation Playground</h1>
-        <p className="text-sm text-gray-500">
-          Test your JSON schemas and data validation using sem-schema
-        </p>
+    <div style={{
+      width: '100vw',
+      height: '100vh',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gridTemplateRows: '1fr 1fr',
+      gap: 0
+    }}>
+      {/* Top Left: Schema Editor */}
+      <div style={{ border: '1px solid #d1d5db', padding: '1rem', overflow: 'auto' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '0.875rem', fontWeight: 600 }}>Schema</h2>
+        </div>
+        <CodeMirror
+          value={schemaText}
+          height="calc(50vh - 3rem)"
+          extensions={[json()]}
+          onChange={handleSchemaChange}
+          theme="light"
+          basicSetup={{
+            lineNumbers: true,
+            foldGutter: true,
+            highlightActiveLine: true,
+          }}
+        />
       </div>
-      
-      <div className="flex-1 grid grid-cols-2 grid-rows-2 overflow-hidden">
-        {/* Top Left: Schema Editor */}
-        <div className="flex flex-col border-r border-b border-gray-200 overflow-hidden">
-          <div className="py-2 px-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-sm font-semibold">Schema</h2>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <CodeMirror
-              value={schemaText}
-              height="100%"
-              extensions={[json()]}
-              onChange={handleSchemaChange}
-              theme="light"
-            />
-          </div>
-        </div>
 
-        {/* Top Right: Data Editor */}
-        <div className="flex flex-col border-b border-gray-200 overflow-hidden">
-          <div className="py-2 px-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-sm font-semibold">Data</h2>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <CodeMirror
-              value={dataText}
-              height="100%"
-              extensions={[json()]}
-              onChange={handleDataChange}
-              theme="light"
-            />
-          </div>
+      {/* Top Right: Data Editor */}
+      <div style={{ border: '1px solid #d1d5db', padding: '1rem', overflow: 'auto' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '0.875rem', fontWeight: 600 }}>Data</h2>
         </div>
+        <CodeMirror
+          value={dataText}
+          height="calc(50vh - 3rem)"
+          extensions={[json()]}
+          onChange={handleDataChange}
+          theme="light"
+          basicSetup={{
+            lineNumbers: true,
+            foldGutter: true,
+            highlightActiveLine: true,
+          }}
+        />
+      </div>
 
-        {/* Bottom Left: Schema Validation Result */}
-        <div className="flex flex-col border-r border-gray-200 overflow-hidden">
-          <div className="py-2 px-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-sm font-semibold">Schema Validation Result</h2>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <CodeMirror
-              value={schemaValidation}
-              height="100%"
-              extensions={[json()]}
-              readOnly
-              theme="light"
-            />
-          </div>
+      {/* Bottom Left: Schema Validation Result */}
+      <div style={{ border: '1px solid #d1d5db', padding: '1rem', overflow: 'auto' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '0.875rem', fontWeight: 600 }}>Schema Validation Result</h2>
         </div>
+        <CodeMirror
+          value={schemaValidation}
+          height="calc(50vh - 3rem)"
+          extensions={[json()]}
+          readOnly
+          theme="light"
+          basicSetup={{
+            lineNumbers: true,
+            foldGutter: true,
+            highlightActiveLine: false,
+          }}
+        />
+      </div>
 
-        {/* Bottom Right: Data Validation Result */}
-        <div className="flex flex-col overflow-hidden">
-          <div className="py-2 px-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-sm font-semibold">Data Validation Result</h2>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <CodeMirror
-              value={dataValidation}
-              height="100%"
-              extensions={[json()]}
-              readOnly
-              theme="light"
-            />
-          </div>
+      {/* Bottom Right: Data Validation Result */}
+      <div style={{ border: '1px solid #d1d5db', padding: '1rem', overflow: 'auto' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '0.875rem', fontWeight: 600 }}>Data Validation Result</h2>
         </div>
+        <CodeMirror
+          value={dataValidation}
+          height="calc(50vh - 3rem)"
+          extensions={[json()]}
+          readOnly
+          theme="light"
+          basicSetup={{
+            lineNumbers: true,
+            foldGutter: true,
+            highlightActiveLine: false,
+          }}
+        />
       </div>
     </div>
   )

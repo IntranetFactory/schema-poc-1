@@ -6,7 +6,8 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "test:watch": "pnpm -r test --watch"
+    "test:watch": "pnpm -r test --watch",
+    "dev": "pnpm --filter frontend dev"
   },
   "keywords": [],
   "author": "",
