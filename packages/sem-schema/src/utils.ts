@@ -146,7 +146,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
-  // Validate properties keyword usage
+  // Validate properties keyword usage and recursively validate property schemas
   if (schema.properties && typeof schema.properties === 'object') {
     // If properties is present, type must be 'object' (or not specified, which is okay for partial schemas)
     if (schema.type) {
@@ -161,10 +161,8 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
         });
       }
     }
-  }
 
-  // Recursively validate properties
-  if (schema.properties && typeof schema.properties === 'object') {
+    // Recursively validate each property
     for (const [key, value] of Object.entries(schema.properties)) {
       if (typeof value === 'object' && value !== null) {
         errors.push(...validateSchemaStructure(value as SchemaObject, `${path}/properties/${key}`));
