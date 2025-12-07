@@ -9,6 +9,16 @@ Custom JSON Schema vocabulary (SemSchema) with additional validation features fo
 - **`html`**: Validates HTML markup (requires HTML tags)
 - **`text`**: Allows multiline text strings
 
+### Standard Formats
+SemSchema also supports all standard JSON Schema formats via `ajv-formats`:
+- **Date/Time**: `date`, `time`, `date-time`, `duration`
+- **Network**: `email`, `hostname`, `ipv4`, `ipv6`, `uri`, `uri-reference`, `url`
+- **Other**: `uuid`, `regex`, `json-pointer`, and more
+
+### Format Validation
+- **Unknown formats are rejected**: Using an unrecognized format (e.g., `emailx` instead of `email`) will throw an error during schema validation
+- This prevents typos and ensures all formats are properly validated
+
 ### Custom Keywords
 - **`required`** (property-level): Boolean keyword that validates values are not null/undefined and strings are not empty
   - Different from object-level `required` array in standard JSON Schema

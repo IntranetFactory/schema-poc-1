@@ -61,7 +61,48 @@ describe('Vocabulary Definition Tests', () => {
   describe('Schema Validity - Unknown formats', () => {
     it('should reject schema with unknown format', () => {
       const schema = { type: 'string', format: 'emailx' };
-      expect(() => validateSchema(schema)).toThrow();
+      expect(() => validateSchema(schema)).toThrow('Unknown format "emailx"');
+    });
+
+    it('should reject schema with unknown format in nested properties', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          email: { type: 'string', format: 'emailx' }
+        }
+      };
+      expect(() => validateSchema(schema)).toThrow('Unknown format "emailx"');
+    });
+
+    it('should reject schema with unknown format in array items', () => {
+      const schema = {
+        type: 'array',
+        items: { type: 'string', format: 'unknownFormat' }
+      };
+      expect(() => validateSchema(schema)).toThrow('Unknown format "unknownFormat"');
+    });
+  });
+
+  describe('Schema Validity - Standard formats', () => {
+    it('should accept schema with format: email', () => {
+      const schema = { type: 'string', format: 'email' };
+      expect(validateSchema(schema)).toBe(true);
+    });
+
+    it('should accept schema with format: date', () => {
+      const schema = { type: 'string', format: 'date' };
+      expect(validateSchema(schema)).toBe(true);
+    });
+
+    it('should accept schema with format: uri', () => {
+      const schema = { type: 'string', format: 'uri' };
+      expect(validateSchema(schema)).toBe(true);
+    });
+
+    it('should accept schema with format: uuid', () => {
+      const schema = { type: 'string', format: 'uuid' };
+      expect(validateSchema(schema)).toBe(true);
     });
   });
 });

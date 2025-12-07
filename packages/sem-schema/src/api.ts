@@ -1,6 +1,6 @@
 import { SchemaObject, ValidateFunction } from 'ajv';
 import { createSemSchemaValidator } from './validator';
-import { preprocessSchema } from './utils';
+import { preprocessSchema, validateKnownFormats } from './utils';
 
 /**
  * Validate a JSON Schema against SemSchema vocabulary
@@ -9,6 +9,9 @@ import { preprocessSchema } from './utils';
  * @returns true if the schema is valid and can be compiled, throws error if invalid
  */
 export function validateSchema(schemaJson: SchemaObject): boolean {
+  // First validate that all formats are known
+  validateKnownFormats(schemaJson);
+  
   // Create fresh instance for schema validation
   const ajv = createSemSchemaValidator();
   const processed = preprocessSchema(schemaJson);
@@ -34,6 +37,9 @@ export function validateData(data: any, schemaJson: SchemaObject): {
   valid: boolean;
   errors: any[] | null;
 } {
+  // First validate that all formats are known
+  validateKnownFormats(schemaJson);
+  
   // Create fresh instance for each validation to avoid schema caching issues
   const ajv = createSemSchemaValidator();
   const processed = preprocessSchema(schemaJson);
