@@ -146,6 +146,23 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
+  // Validate properties keyword usage
+  if (schema.properties && typeof schema.properties === 'object') {
+    // If properties is present, type must be 'object' (or not specified, which is okay for partial schemas)
+    if (schema.type) {
+      const types = Array.isArray(schema.type) ? schema.type : [schema.type];
+      // Check if 'object' is one of the types
+      if (!types.includes('object')) {
+        errors.push({
+          path,
+          message: `Schema has "properties" keyword but type is "${Array.isArray(schema.type) ? schema.type.join('|') : schema.type}". When "properties" is present, type must be "object" or not specified`,
+          keyword: 'properties',
+          value: schema.properties
+        });
+      }
+    }
+  }
+
   // Recursively validate properties
   if (schema.properties && typeof schema.properties === 'object') {
     for (const [key, value] of Object.entries(schema.properties)) {

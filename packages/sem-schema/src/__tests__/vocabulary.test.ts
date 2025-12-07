@@ -195,6 +195,86 @@ describe('Vocabulary Definition Tests', () => {
     });
   });
 
+  describe('Schema Validity - Properties with wrong type', () => {
+    it('should reject schema with type: string but has properties object', () => {
+      const schema = {
+        type: 'string',
+        properties: {
+          value: {
+            type: 'string'
+          },
+          type: {
+            type: 'string'
+          }
+        }
+      };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('properties');
+      expect(result.errors?.[0]?.schemaPath).toBe('#');
+    });
+
+    it('should accept schema with properties but no type (partial schema)', () => {
+      // When type is not specified, properties is allowed (common in partial schemas)
+      const schema = {
+        properties: {
+          value: {
+            type: 'string'
+          },
+          type: {
+            type: 'string'
+          }
+        }
+      };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject complex schema from issue with incorrect email property', () => {
+      const schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Person",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "age": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 120
+          },
+          "email": {
+            "type": "string",
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": ["name", "email"],
+        "additionalProperties": false
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      // Should have an error on the email property
+      const emailError = result.errors?.find(e => e.schemaPath.includes('email'));
+      expect(emailError).toBeDefined();
+      expect(emailError?.message).toContain('properties');
+    });
+  });
+
   describe('Schema Validity - Multiple errors', () => {
     it('should report all errors in a schema', () => {
       const schema = {
