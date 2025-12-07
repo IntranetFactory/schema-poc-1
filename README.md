@@ -4,9 +4,11 @@ Proof of concept for custom JSON Schema vocabulary (SemSchema) in TypeScript usi
 
 ## Project Structure
 
-This is a **pnpm workspace** with two packages:
+This is a **pnpm workspace** with packages and applications:
 
-### `packages/sem-schema`
+### Packages
+
+#### `packages/sem-schema`
 
 The main package implementing SemSchema - a custom JSON Schema vocabulary with additional validation features:
 - Custom formats: `json`, `html`, `text`
@@ -16,14 +18,26 @@ The main package implementing SemSchema - a custom JSON Schema vocabulary with a
 
 See [packages/sem-schema/README.md](packages/sem-schema/README.md) for full documentation.
 
-### `packages/examples`
+#### `packages/examples`
 
 Example schemas and validators demonstrating SemSchema usage:
 - Product schema with validation
 - FAQ Item schema with validation
 - Comprehensive test suite
 
-**Note**: The examples package has its own package.json for workspace dependency management, allowing it to depend on `sem-schema` using `workspace:*`.
+### Applications
+
+#### `apps/frontend`
+
+Interactive web playground for testing JSON schemas and data validation:
+- Built with Vite, React, and TypeScript
+- Real-time schema and data validation
+- 2x2 layout with CodeMirror JSON editors
+- Uses sem-schema directly from source (no build required)
+
+See [apps/frontend/README.md](apps/frontend/README.md) for usage instructions.
+
+**Note**: Packages and apps use `workspace:*` for internal dependencies, allowing them to depend on sem-schema source directly.
 
 ## Installation
 
@@ -45,6 +59,17 @@ pnpm test:watch   # Test in watch mode
 ```
 
 ## Quick Start
+
+### Try the Playground
+
+Launch the interactive validation playground:
+
+```bash
+cd apps/frontend
+pnpm dev
+```
+
+Open http://localhost:5173/ in your browser to test schemas and data validation in real-time.
 
 ### Using SemSchema
 
