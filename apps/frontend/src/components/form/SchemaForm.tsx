@@ -54,6 +54,12 @@ function generateDefaultValue(schema: SchemaObject): Record<string, any> {
 
 /**
  * Validate a single field value against its schema
+ * 
+ * @param value - The value to validate
+ * @param fieldSchema - The JSON Schema for this specific field
+ * @param fieldName - The name of the field being validated
+ * @param fullSchema - The complete object schema (used to check required fields)
+ * @returns Error message if validation fails, undefined if valid
  */
 function validateField(value: any, fieldSchema: SchemaObject, fieldName: string, fullSchema: SchemaObject): string | undefined {
   // Create a temporary schema for this field within an object

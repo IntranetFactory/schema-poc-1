@@ -23,7 +23,7 @@ function FormViewer() {
   const [schema, setSchema] = useState<SchemaObject | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [submitResult, setSubmitResult] = useState<any>(null)
+  const [submitResult, setSubmitResult] = useState<Record<string, unknown> | null>(null)
 
   useEffect(() => {
     if (!schemaUrl) {
