@@ -49,6 +49,23 @@ describe('Vocabulary Definition Tests', () => {
       const schema = { type: 'number', precision: 4 };
       expect(validateSchema(schema)).toBe(true);
     });
+
+    it('should reject schema with invalid precision: -2', () => {
+      const schema = { type: 'number', precision: -2 };
+      expect(() => validateSchema(schema)).toThrow('Invalid precision value "-2"');
+      expect(() => validateSchema(schema)).toThrow('at #');
+    });
+
+    it('should reject schema with invalid precision: 1.5', () => {
+      const schema = { type: 'number', precision: 1.5 };
+      expect(() => validateSchema(schema)).toThrow('Invalid precision value "1.5"');
+      expect(() => validateSchema(schema)).toThrow('at #');
+    });
+
+    it('should reject schema with invalid precision: 5', () => {
+      const schema = { type: 'number', precision: 5 };
+      expect(() => validateSchema(schema)).toThrow('Invalid precision value "5"');
+    });
   });
 
   describe('Schema Validity - Type inference', () => {
@@ -103,6 +120,64 @@ describe('Vocabulary Definition Tests', () => {
     it('should accept schema with format: uuid', () => {
       const schema = { type: 'string', format: 'uuid' };
       expect(validateSchema(schema)).toBe(true);
+    });
+  });
+
+  describe('Schema Validity - Invalid types', () => {
+    it('should reject schema with invalid type', () => {
+      const schema = { type: 'stringy' };
+      expect(() => validateSchema(schema)).toThrow('Invalid type "stringy"');
+      expect(() => validateSchema(schema)).toThrow('at #');
+    });
+
+    it('should reject schema with invalid type in nested property', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'stringx' }
+        }
+      };
+      expect(() => validateSchema(schema)).toThrow('Invalid type "stringx"');
+      expect(() => validateSchema(schema)).toThrow('at #/properties/name');
+    });
+  });
+
+  describe('Schema Validity - Multiple errors', () => {
+    it('should report all errors in a schema', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'stringy',
+            required: true
+          },
+          email: {
+            type: 'stringx',
+            format: 'emailx'
+          },
+          age: {
+            type: 'number',
+            precision: 1.2
+          }
+        },
+        required: ['name']
+      };
+      
+      try {
+        validateSchema(schema);
+        fail('Should have thrown an error');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        // Check that all errors are present
+        expect(message).toContain('Invalid type "stringy"');
+        expect(message).toContain('#/properties/name');
+        expect(message).toContain('Invalid type "stringx"');
+        expect(message).toContain('#/properties/email');
+        expect(message).toContain('Unknown format "emailx"');
+        expect(message).toContain('#/properties/email');
+        expect(message).toContain('Invalid precision value "1.2"');
+        expect(message).toContain('#/properties/age');
+      }
     });
   });
 });

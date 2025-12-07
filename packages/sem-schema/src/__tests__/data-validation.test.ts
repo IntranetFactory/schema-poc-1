@@ -237,11 +237,4 @@ describe('Data Validation Tests', () => {
     });
   });
 
-  describe('Unknown Formats - Data validation', () => {
-    it('should reject data validation with unknown format', () => {
-      const schema = { type: 'string', format: 'emailx' };
-      
-      expect(() => validateData('test@example.com', schema)).toThrow('Unknown format "emailx"');
-    });
-  });
 });

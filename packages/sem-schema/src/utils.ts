@@ -36,66 +36,136 @@ const KNOWN_FORMATS = new Set([
 ]);
 
 /**
- * Validate that all formats in a schema are known
+ * Valid JSON Schema types
+ */
+const VALID_TYPES = new Set([
+  'string',
+  'number',
+  'integer',
+  'boolean',
+  'object',
+  'array',
+  'null'
+]);
+
+/**
+ * Schema validation error
+ */
+export interface SchemaValidationError {
+  path: string;
+  message: string;
+  keyword?: string;
+  value?: any;
+}
+
+/**
+ * Validate a schema and collect all errors
  * 
  * @param schema - The schema to validate
  * @param path - Current path in schema (for error messages)
- * @throws Error if an unknown format is found
+ * @returns Array of validation errors (empty if valid)
  */
-export function validateKnownFormats(schema: SchemaObject, path: string = '#'): void {
+export function validateSchemaStructure(schema: SchemaObject, path: string = '#'): SchemaValidationError[] {
+  const errors: SchemaValidationError[] = [];
+
   if (typeof schema !== 'object' || schema === null) {
-    return;
+    return errors;
   }
 
-  // Check if this schema object has a format
+  // Validate format
   if (schema.format && typeof schema.format === 'string') {
     if (!KNOWN_FORMATS.has(schema.format)) {
-      throw new Error(`Unknown format "${schema.format}" at ${path}`);
+      errors.push({
+        path,
+        message: `Unknown format "${schema.format}"`,
+        keyword: 'format',
+        value: schema.format
+      });
     }
   }
 
-  // Recursively check properties
-  if (schema.properties && typeof schema.properties === 'object') {
-    for (const [key, value] of Object.entries(schema.properties)) {
-      if (typeof value === 'object' && value !== null) {
-        validateKnownFormats(value as SchemaObject, `${path}/properties/${key}`);
+  // Validate type
+  if (schema.type) {
+    const types = Array.isArray(schema.type) ? schema.type : [schema.type];
+    for (const type of types) {
+      if (typeof type === 'string' && !VALID_TYPES.has(type)) {
+        errors.push({
+          path,
+          message: `Invalid type "${type}". Must be one of: ${Array.from(VALID_TYPES).join(', ')}`,
+          keyword: 'type',
+          value: type
+        });
       }
     }
   }
 
-  // Check items
-  if (schema.items && typeof schema.items === 'object') {
-    validateKnownFormats(schema.items as SchemaObject, `${path}/items`);
+  // Validate precision
+  if (schema.precision !== undefined) {
+    const precision = schema.precision;
+    if (typeof precision !== 'number' || !Number.isInteger(precision) || precision < 0 || precision > 4) {
+      errors.push({
+        path,
+        message: `Invalid precision value "${precision}". Must be an integer between 0 and 4`,
+        keyword: 'precision',
+        value: precision
+      });
+    }
   }
 
-  // Check oneOf, anyOf, allOf
+  // Validate required (property-level)
+  if (schema.required !== undefined && typeof schema.required !== 'boolean' && !Array.isArray(schema.required)) {
+    errors.push({
+      path,
+      message: `Invalid required value. Must be boolean (property-level) or array (object-level)`,
+      keyword: 'required',
+      value: schema.required
+    });
+  }
+
+  // Recursively validate properties
+  if (schema.properties && typeof schema.properties === 'object') {
+    for (const [key, value] of Object.entries(schema.properties)) {
+      if (typeof value === 'object' && value !== null) {
+        errors.push(...validateSchemaStructure(value as SchemaObject, `${path}/properties/${key}`));
+      }
+    }
+  }
+
+  // Validate items
+  if (schema.items && typeof schema.items === 'object') {
+    errors.push(...validateSchemaStructure(schema.items as SchemaObject, `${path}/items`));
+  }
+
+  // Validate oneOf, anyOf, allOf
   const compositionKeywords = ['oneOf', 'anyOf', 'allOf'] as const;
   for (const keyword of compositionKeywords) {
     const value = schema[keyword];
     if (Array.isArray(value)) {
       value.forEach((subSchema, index) => {
         if (typeof subSchema === 'object' && subSchema !== null) {
-          validateKnownFormats(subSchema as SchemaObject, `${path}/${keyword}/${index}`);
+          errors.push(...validateSchemaStructure(subSchema as SchemaObject, `${path}/${keyword}/${index}`));
         }
       });
     }
   }
 
-  // Check not
+  // Validate not
   if (schema.not && typeof schema.not === 'object') {
-    validateKnownFormats(schema.not as SchemaObject, `${path}/not`);
+    errors.push(...validateSchemaStructure(schema.not as SchemaObject, `${path}/not`));
   }
 
-  // Check if/then/else
+  // Validate if/then/else
   if (schema.if && typeof schema.if === 'object') {
-    validateKnownFormats(schema.if as SchemaObject, `${path}/if`);
+    errors.push(...validateSchemaStructure(schema.if as SchemaObject, `${path}/if`));
   }
   if (schema.then && typeof schema.then === 'object') {
-    validateKnownFormats(schema.then as SchemaObject, `${path}/then`);
+    errors.push(...validateSchemaStructure(schema.then as SchemaObject, `${path}/then`));
   }
   if (schema.else && typeof schema.else === 'object') {
-    validateKnownFormats(schema.else as SchemaObject, `${path}/else`);
+    errors.push(...validateSchemaStructure(schema.else as SchemaObject, `${path}/else`));
   }
+
+  return errors;
 }
 
 /**

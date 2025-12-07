@@ -10,3 +10,6 @@
 
 // Main API
 export { validateSchema, validateData } from './api';
+
+// Types
+export type { SchemaValidationError } from './utils';
