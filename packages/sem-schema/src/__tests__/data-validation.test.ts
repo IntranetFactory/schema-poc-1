@@ -189,4 +189,52 @@ describe('Data Validation Tests', () => {
       expect(validateData(['<p>Item 1</p>', '<p>Item 2</p>'], schema).valid).toBe(true);
     });
   });
+
+  describe('Standard Formats - email', () => {
+    it('should validate valid email addresses', () => {
+      const schema = { type: 'string', format: 'email' };
+      
+      expect(validateData('user@example.com', schema).valid).toBe(true);
+      expect(validateData('john.doe@company.co.uk', schema).valid).toBe(true);
+    });
+
+    it('should reject invalid email addresses', () => {
+      const schema = { type: 'string', format: 'email' };
+      
+      expect(validateData('not-an-email', schema).valid).toBe(false);
+      expect(validateData('missing@domain', schema).valid).toBe(false);
+    });
+  });
+
+  describe('Standard Formats - date', () => {
+    it('should validate valid dates', () => {
+      const schema = { type: 'string', format: 'date' };
+      
+      expect(validateData('2023-12-07', schema).valid).toBe(true);
+      expect(validateData('2024-01-01', schema).valid).toBe(true);
+    });
+
+    it('should reject invalid dates', () => {
+      const schema = { type: 'string', format: 'date' };
+      
+      expect(validateData('2023-13-45', schema).valid).toBe(false);
+      expect(validateData('not-a-date', schema).valid).toBe(false);
+    });
+  });
+
+  describe('Standard Formats - uri', () => {
+    it('should validate valid URIs', () => {
+      const schema = { type: 'string', format: 'uri' };
+      
+      expect(validateData('https://example.com', schema).valid).toBe(true);
+      expect(validateData('ftp://files.example.org', schema).valid).toBe(true);
+    });
+
+    it('should reject invalid URIs', () => {
+      const schema = { type: 'string', format: 'uri' };
+      
+      expect(validateData('not a uri', schema).valid).toBe(false);
+    });
+  });
+
 });

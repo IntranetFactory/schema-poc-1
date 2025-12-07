@@ -8,7 +8,9 @@ import faqItemSchema from '../schemas/faqitem.schema.json';
 
 describe('FAQ Item Schema Tests', () => {
   it('faqitem.schema.json should be a valid schema', () => {
-    expect(validateSchema(faqItemSchema as any)).toBe(true);
+    const result = validateSchema(faqItemSchema as any);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toBeNull();
   });
 
   it('should validate valid FAQ item', () => {

@@ -9,6 +9,16 @@ Custom JSON Schema vocabulary (SemSchema) with additional validation features fo
 - **`html`**: Validates HTML markup (requires HTML tags)
 - **`text`**: Allows multiline text strings
 
+### Standard Formats
+SemSchema also supports all standard JSON Schema formats via `ajv-formats`:
+- **Date/Time**: `date`, `time`, `date-time`, `duration`
+- **Network**: `email`, `hostname`, `ipv4`, `ipv6`, `uri`, `uri-reference`, `url`
+- **Other**: `uuid`, `regex`, `json-pointer`, and more
+
+### Format Validation
+- **Unknown formats are rejected**: Using an unrecognized format (e.g., `emailx` instead of `email`) will throw an error during schema validation
+- This prevents typos and ensures all formats are properly validated
+
 ### Custom Keywords
 - **`required`** (property-level): Boolean keyword that validates values are not null/undefined and strings are not empty
   - Different from object-level `required` array in standard JSON Schema
@@ -131,13 +141,143 @@ The test suite includes:
 - **Vocabulary Definition Tests**: Verify schemas with custom keywords can be compiled
 - **Data Validation Tests**: Verify data correctly validates against schemas
 
+## Extending SemSchema
+
+SemSchema is designed to be extensible. You can add custom formats and keywords to suit your needs.
+
+### Adding a Custom Format
+
+To add a new custom format:
+
+1. **Create a format validator file** in `src/formats/`:
+
+```typescript
+// src/formats/my-format.ts
+import Ajv from 'ajv';
+
+/**
+ * Validate my custom format
+ */
+export function validateMyFormat(data: string): boolean {
+  // Your validation logic here
+  return data.startsWith('MY-');
+}
+
+/**
+ * Add custom format to AJV instance
+ */
+export function addMyFormat(ajv: Ajv): void {
+  ajv.addFormat('my-format', {
+    validate: validateMyFormat
+  });
+}
+```
+
+2. **Register the format** in `src/formats/index.ts`:
+
+```typescript
+import { addMyFormat } from './my-format';
+
+export function addAllFormats(ajv: Ajv): void {
+  // ... existing formats
+  addMyFormat(ajv);
+}
+```
+
+3. **Add to known formats list** in `src/utils.ts`:
+
+```typescript
+const KNOWN_FORMATS = new Set([
+  // ... existing formats
+  'my-format',
+]);
+```
+
+4. **Add tests** in `src/__tests__/`:
+
+```typescript
+describe('Format: my-format', () => {
+  it('should validate valid my-format string', () => {
+    const schema = { type: 'string', format: 'my-format' };
+    expect(validateData('MY-123', schema).valid).toBe(true);
+  });
+});
+```
+
+### Adding a Custom Keyword
+
+To add a new custom keyword:
+
+1. **Create a keyword file** in `src/keywords/`:
+
+```typescript
+// src/keywords/my-keyword.ts
+import Ajv from 'ajv';
+
+/**
+ * Add custom 'my-keyword' keyword to AJV instance
+ */
+export function addMyKeyword(ajv: Ajv): void {
+  ajv.addKeyword({
+    keyword: 'my-keyword',
+    type: 'string', // or 'number', 'array', etc.
+    schemaType: 'boolean', // type of the keyword value in schema
+    compile(schemaValue: boolean) {
+      return function validate(data: string): boolean {
+        if (!schemaValue) return true;
+        // Your validation logic here
+        return data.length > 0;
+      };
+    },
+    errors: true
+  });
+}
+```
+
+2. **Register the keyword** in `src/keywords/index.ts`:
+
+```typescript
+import { addMyKeyword } from './my-keyword';
+
+export function addAllKeywords(ajv: Ajv): void {
+  // ... existing keywords
+  addMyKeyword(ajv);
+}
+```
+
+3. **Add validation** (optional) in `src/utils.ts` if you need schema-level validation:
+
+```typescript
+export function validateSchemaStructure(schema: SchemaObject, path: string = '#'): SchemaValidationError[] {
+  // ... existing validation
+  
+  // Validate my-keyword
+  if (schema['my-keyword'] !== undefined && typeof schema['my-keyword'] !== 'boolean') {
+    errors.push({
+      path,
+      message: 'my-keyword must be a boolean',
+      keyword: 'my-keyword',
+      value: schema['my-keyword']
+    });
+  }
+}
+```
+
+4. **Add tests** for both schema validity and data validation.
+
+### Testing Your Extensions
+
+Always add tests for your custom formats and keywords:
+
+- **Vocabulary tests** (`vocabulary.test.ts`): Test that schemas with your custom keyword/format can be compiled
+- **Data validation tests** (`data-validation.test.ts`): Test that data correctly validates
+
 ## Vocabulary Definition
 
 The vocabulary includes:
-- Valid format values: `json`, `html`, `text`
+- Custom formats: `json`, `html`, `text`
+- Standard formats: All formats from `ajv-formats` (email, date, uri, uuid, etc.)
 - Custom keywords: `required` (property-level), `precision`
-
-Schemas can reference the vocabulary using `$vocabulary` declarations.
 
 ## License
 

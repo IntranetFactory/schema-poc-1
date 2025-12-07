@@ -8,7 +8,9 @@ import productSchema from '../schemas/product.schema.json';
 
 describe('Product Schema Tests', () => {
   it('product.schema.json should be a valid schema', () => {
-    expect(validateSchema(productSchema as any)).toBe(true);
+    const result = validateSchema(productSchema as any);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toBeNull();
   });
 
   it('should validate valid product', () => {
