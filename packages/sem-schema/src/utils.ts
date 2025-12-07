@@ -1,4 +1,4 @@
-import { SchemaObject } from 'ajv';
+import type { SchemaObject } from 'ajv';
 
 /**
  * Known formats - includes both custom and standard formats
