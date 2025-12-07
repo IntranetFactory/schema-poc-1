@@ -39,7 +39,7 @@ export function Playground() {
     try {
       const schema = JSON.parse(value)
       const result = validateSchema(schema)
-      setSchemaValidation(JSON.stringify({ valid: result }, null, 2))
+      setSchemaValidation(JSON.stringify(result, null, 2))
     } catch (error) {
       setSchemaValidation(JSON.stringify({ 
         valid: false, 
