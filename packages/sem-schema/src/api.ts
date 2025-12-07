@@ -1,4 +1,4 @@
-import { SchemaObject, ValidateFunction } from 'ajv';
+import type { SchemaObject, ValidateFunction } from 'ajv';
 import { createSemSchemaValidator } from './validator';
 import { preprocessSchema, validateSchemaStructure } from './utils';
 

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$id": "https://example.com/schemas/person.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "title": "Person",
+  "description": "A person or user profile",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "required": true,
+      "description": "Unique identifier"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "minLength": 1,
+      "description": "Person's full name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "required": true,
+      "description": "Email address"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "description": "Age in years"
+    },
+    "bio": {
+      "format": "text",
+      "description": "Biography or personal description"
+    },
+    "profileHtml": {
+      "format": "html",
+      "description": "HTML formatted profile content"
+    },
+    "preferences": {
+      "format": "json",
+      "description": "User preferences in JSON format"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether the account is active"
+    }
+  },
+  "required": ["id", "name", "email"],
+  "additionalProperties": false
+}
