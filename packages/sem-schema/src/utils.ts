@@ -69,15 +69,17 @@ export function validateKnownFormats(schema: SchemaObject, path: string = '#'): 
   }
 
   // Check oneOf, anyOf, allOf
-  ['oneOf', 'anyOf', 'allOf'].forEach((keyword) => {
-    if (Array.isArray(schema[keyword])) {
-      (schema[keyword] as SchemaObject[]).forEach((subSchema, index) => {
+  const compositionKeywords = ['oneOf', 'anyOf', 'allOf'] as const;
+  for (const keyword of compositionKeywords) {
+    const value = schema[keyword];
+    if (Array.isArray(value)) {
+      value.forEach((subSchema, index) => {
         if (typeof subSchema === 'object' && subSchema !== null) {
-          validateKnownFormats(subSchema, `${path}/${keyword}/${index}`);
+          validateKnownFormats(subSchema as SchemaObject, `${path}/${keyword}/${index}`);
         }
       });
     }
-  });
+  }
 
   // Check not
   if (schema.not && typeof schema.not === 'object') {
