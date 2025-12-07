@@ -163,9 +163,10 @@ describe('Vocabulary Definition Tests', () => {
         required: ['name']
       };
       
+      expect(() => validateSchema(schema)).toThrow();
+      
       try {
         validateSchema(schema);
-        fail('Should have thrown an error');
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         // Check that all errors are present

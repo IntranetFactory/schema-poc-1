@@ -88,7 +88,14 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
   if (schema.type) {
     const types = Array.isArray(schema.type) ? schema.type : [schema.type];
     for (const type of types) {
-      if (typeof type === 'string' && !VALID_TYPES.has(type)) {
+      if (typeof type !== 'string') {
+        errors.push({
+          path,
+          message: `Invalid type value. Type must be a string, got ${typeof type}`,
+          keyword: 'type',
+          value: type
+        });
+      } else if (!VALID_TYPES.has(type)) {
         errors.push({
           path,
           message: `Invalid type "${type}". Must be one of: ${Array.from(VALID_TYPES).join(', ')}`,
@@ -112,14 +119,31 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
-  // Validate required (property-level)
-  if (schema.required !== undefined && typeof schema.required !== 'boolean' && !Array.isArray(schema.required)) {
-    errors.push({
-      path,
-      message: `Invalid required value. Must be boolean (property-level) or array (object-level)`,
-      keyword: 'required',
-      value: schema.required
-    });
+  // Validate required (property-level boolean or object-level array)
+  if (schema.required !== undefined) {
+    if (typeof schema.required === 'boolean') {
+      // Property-level: valid
+    } else if (Array.isArray(schema.required)) {
+      // Object-level: validate array contents
+      for (const item of schema.required) {
+        if (typeof item !== 'string') {
+          errors.push({
+            path,
+            message: `Invalid required array. All elements must be strings, got ${typeof item}`,
+            keyword: 'required',
+            value: schema.required
+          });
+          break; // Only report once per array
+        }
+      }
+    } else {
+      errors.push({
+        path,
+        message: `Invalid required value. Must be boolean (property-level) or array (object-level)`,
+        keyword: 'required',
+        value: schema.required
+      });
+    }
   }
 
   // Recursively validate properties
