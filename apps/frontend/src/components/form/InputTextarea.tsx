@@ -1,5 +1,5 @@
 import { Textarea } from '@/components/ui/textarea'
-import type { FormControlProps} from './types'
+import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
 import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'

@@ -26,7 +26,18 @@ export function InputDateTime({
         name={name}
         type="datetime-local"
         value={value ? value.replace('Z', '').replace(/\.\d+/, '') : ''}
-        onChange={(e) => onChange(e.target.value ? new Date(e.target.value).toISOString() : '')}
+        onChange={(e) => {
+          if (e.target.value) {
+            try {
+              const date = new Date(e.target.value)
+              onChange(isNaN(date.getTime()) ? '' : date.toISOString())
+            } catch {
+              onChange('')
+            }
+          } else {
+            onChange('')
+          }
+        }}
         onBlur={onBlur}
         disabled={disabled}
         aria-invalid={!!error}
