@@ -1,10 +1,10 @@
 import { Link } from '@tanstack/react-router'
 
 const schemaFiles = [
-  { name: 'Product Schema', path: '/schemas/product.schema.json' },
-  { name: 'FAQ Item Schema', path: '/schemas/faqitem.schema.json' },
-  { name: 'Person Schema', path: '/schemas/person.schema.json' },
-  { name: 'Blog Post Schema', path: '/schemas/blogpost.schema.json' },
+  { name: 'Product Schema', path: '/schemas/product.schema.json', id: 'product' },
+  { name: 'FAQ Item Schema', path: '/schemas/faqitem.schema.json', id: 'faqitem' },
+  { name: 'Person Schema', path: '/schemas/person.schema.json', id: 'person' },
+  { name: 'Blog Post Schema', path: '/schemas/blogpost.schema.json', id: 'blogpost' },
 ]
 
 export function Home() {
@@ -43,17 +43,27 @@ export function Home() {
             <p className="text-gray-600 mb-4">
               Explore our sample schemas to understand the custom vocabulary features:
             </p>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {schemaFiles.map((schema) => (
-                <li key={schema.path}>
+                <li key={schema.path} className="flex items-center gap-3">
+                  <span className="font-medium text-gray-900">{schema.name}</span>
+                  <span className="text-gray-400">|</span>
                   <a
                     href={schema.path}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                    className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
                   >
-                    {schema.name}
+                    View Schema
                   </a>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    to="/form-viewer"
+                    search={{ schema: schema.path }}
+                    className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
+                  >
+                    View Form
+                  </Link>
                 </li>
               ))}
             </ul>
