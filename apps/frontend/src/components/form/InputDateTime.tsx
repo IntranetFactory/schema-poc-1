@@ -25,18 +25,17 @@ export function InputDateTime({
         id={name}
         name={name}
         type="datetime-local"
-        value={value ? value.replace('Z', '').replace(/\.\d+/, '') : ''}
+        // Convert ISO 8601 to datetime-local format by removing timezone and milliseconds
+        value={value ? value.split('.')[0].replace('Z', '') : ''}
         onChange={(e) => {
-          if (e.target.value) {
-            try {
-              const date = new Date(e.target.value)
-              onChange(Number.isNaN(date.getTime()) ? '' : date.toISOString())
-            } catch {
-              onChange('')
-            }
-          } else {
+          if (!e.target.value) {
             onChange('')
+            return
           }
+          // datetime-local input returns format: YYYY-MM-DDTHH:mm
+          const date = new Date(e.target.value)
+          // Validate date is valid before converting to ISO string
+          onChange(Number.isNaN(date.getTime()) ? '' : date.toISOString())
         }}
         onBlur={onBlur}
         disabled={disabled}

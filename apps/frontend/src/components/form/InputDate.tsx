@@ -19,11 +19,15 @@ export function InputDate({
   // Access form context - validates that component is used within SchemaForm
   useFormContext()
   
-  // Convert string to Date if needed
-  const dateValue = value ? (typeof value === 'string' ? (() => {
-    const date = new Date(value)
+  // Convert string to Date if needed, validate the date is valid
+  const parseDateValue = (val: any): Date | undefined => {
+    if (!val) return undefined
+    if (typeof val !== 'string') return val
+    const date = new Date(val)
     return Number.isNaN(date.getTime()) ? undefined : date
-  })() : value) : undefined
+  }
+  
+  const dateValue = parseDateValue(value)
 
   const handleDateChange = (date: Date | undefined) => {
     // Convert Date to ISO string for form data, only if valid
