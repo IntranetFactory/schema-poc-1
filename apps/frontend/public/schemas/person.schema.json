@@ -19,7 +19,6 @@
     "name": {
       "type": "string",
       "required": true,
-      "minLength": 1,
       "description": "Person's full name"
     },
     "email": {
