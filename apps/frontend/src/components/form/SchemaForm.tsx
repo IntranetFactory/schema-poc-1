@@ -1,8 +1,9 @@
 import { useForm } from '@tanstack/react-form'
 import { validateData } from 'sem-schema'
-import { getFormControl } from './controls'
+import { controls } from './controls'
 import { Button } from '@/components/ui/button'
 import type { SchemaObject } from 'ajv'
+import { TextInput } from './TextInput'
 
 interface SchemaFormProps {
   schema: SchemaObject
@@ -158,8 +159,9 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
                 onBlur: field.handleBlur,
               }
 
-              // Get the appropriate control component from the registry
-              const ControlComponent = getFormControl(type as string, format as string)
+              // Use format if available, otherwise use type as format
+              const controlKey = (format || type) as string
+              const ControlComponent = controls[controlKey] || TextInput
               return <ControlComponent {...commonProps} />
             }}
           </form.Field>
