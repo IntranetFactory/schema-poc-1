@@ -1,6 +1,7 @@
 import { Label } from '@/components/ui/label'
 import { DatePicker } from '@/components/ui/date-picker'
 import type { FormControlProps } from './types'
+import { useFormContext } from './FormContext'
 
 export function DateInput({
   name,
@@ -13,6 +14,9 @@ export function DateInput({
   onChange,
   onBlur,
 }: FormControlProps) {
+  // Access form context - validates that component is used within SchemaForm
+  useFormContext()
+  
   // Convert string to Date if needed
   const dateValue = value ? (typeof value === 'string' ? new Date(value) : value) : undefined
 

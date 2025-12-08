@@ -6,8 +6,9 @@ This directory contains form components for rendering dynamic forms based on JSO
 
 The form engine consists of:
 1. **Form Controls** - Individual input components for each data type and format
-2. **SchemaForm** - Main component that renders a complete form from a JSON Schema
-3. **FormControlProps** - Shared interface for all form controls
+2. **SchemaForm** - Main component that renders a complete form from a JSON Schema and provides form context
+3. **FormContext** - React Context for accessing schema and validation within form controls
+4. **FormControlProps** - Shared interface for all form controls
 
 ## Form Controls
 
@@ -41,6 +42,19 @@ interface FormControlProps {
   onBlur?: () => void   // Blur event handler
 }
 ```
+
+### Form Context
+
+All form controls **must** be used within a `SchemaForm` component. They access the form context to:
+- Validate that they're properly nested
+- Access the full schema for validation purposes
+
+```typescript
+// Inside each form control
+const formContext = useFormContext() // Throws error if not in SchemaForm
+```
+
+This ensures form controls are always used in the correct context with TanStack Form.
 
 ## SchemaForm Component
 

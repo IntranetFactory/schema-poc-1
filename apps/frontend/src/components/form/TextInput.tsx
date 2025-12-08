@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { FormControlProps } from './types'
+import { useFormContext } from './FormContext'
 
 export function TextInput({
   name,
@@ -13,6 +14,8 @@ export function TextInput({
   onChange,
   onBlur,
 }: FormControlProps) {
+  // Access form context - validates that component is used within SchemaForm
+  useFormContext()
   return (
     <div className="space-y-2">
       {label && (

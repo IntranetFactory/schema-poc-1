@@ -4,6 +4,7 @@ import { controls } from './controls'
 import { Button } from '@/components/ui/button'
 import type { SchemaObject } from 'ajv'
 import { TextInput } from './TextInput'
+import { FormProvider } from './FormContext'
 
 interface SchemaFormProps {
   schema: SchemaObject
@@ -120,15 +121,26 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
   const properties = schema.properties as Record<string, SchemaObject>
   const requiredFields = Array.isArray(schema.required) ? schema.required : []
 
+  // Create context value for form controls
+  const formContextValue = {
+    schema,
+    validateField: (value: any, fieldName: string) => {
+      const fieldSchema = properties[fieldName]
+      if (!fieldSchema) return undefined
+      return validateField(value, fieldSchema, fieldName, schema)
+    },
+  }
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        form.handleSubmit()
-      }}
-      className="space-y-6"
-    >
+    <FormProvider value={formContextValue}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit()
+        }}
+        className="space-y-6"
+      >
       {Object.entries(properties).map(([key, propSchema]) => {
         if (typeof propSchema !== 'object') return null
 
@@ -179,5 +191,6 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         </Button>
       </div>
     </form>
+    </FormProvider>
   )
 }

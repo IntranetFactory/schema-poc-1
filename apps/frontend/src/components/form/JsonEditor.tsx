@@ -2,6 +2,7 @@ import { Label } from '@/components/ui/label'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import type { FormControlProps } from './types'
+import { useFormContext } from './FormContext'
 
 export function JsonEditor({
   name,
@@ -14,6 +15,9 @@ export function JsonEditor({
   onChange,
   onBlur,
 }: FormControlProps) {
+  // Access form context - validates that component is used within SchemaForm
+  useFormContext()
+  
   // Ensure value is a string (prettify if it's an object)
   const stringValue = typeof value === 'string' 
     ? value 

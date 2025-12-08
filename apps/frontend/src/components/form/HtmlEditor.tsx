@@ -2,6 +2,7 @@ import { Label } from '@/components/ui/label'
 import CodeMirror from '@uiw/react-codemirror'
 import { html } from '@codemirror/lang-html'
 import type { FormControlProps } from './types'
+import { useFormContext } from './FormContext'
 
 export function HtmlEditor({
   name,
@@ -14,6 +15,9 @@ export function HtmlEditor({
   onChange,
   onBlur,
 }: FormControlProps) {
+  // Access form context - validates that component is used within SchemaForm
+  useFormContext()
+  
   return (
     <div className="space-y-2">
       {label && (
