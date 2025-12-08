@@ -1,13 +1,6 @@
 import { useForm } from '@tanstack/react-form'
 import { validateData } from 'sem-schema'
-import { TextInput } from './TextInput'
-import { EmailInput } from './EmailInput'
-import { NumberInput } from './NumberInput'
-import { TextareaInput } from './TextareaInput'
-import { CheckboxInput } from './CheckboxInput'
-import { DateInput } from './DateInput'
-import { JsonEditor } from './JsonEditor'
-import { HtmlEditor } from './HtmlEditor'
+import { getFormControl } from './controls'
 import { Button } from '@/components/ui/button'
 import type { SchemaObject } from 'ajv'
 
@@ -165,25 +158,9 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
                 onBlur: field.handleBlur,
               }
 
-              // Determine which component to render based on type and format
-              if (type === 'boolean') {
-                return <CheckboxInput {...commonProps} />
-              } else if (type === 'integer' || type === 'number') {
-                return <NumberInput {...commonProps} />
-              } else if (format === 'json') {
-                return <JsonEditor {...commonProps} />
-              } else if (format === 'html') {
-                return <HtmlEditor {...commonProps} />
-              } else if (format === 'text') {
-                return <TextareaInput {...commonProps} />
-              } else if (format === 'email') {
-                return <EmailInput {...commonProps} />
-              } else if (format === 'date') {
-                return <DateInput {...commonProps} />
-              } else {
-                // Default to text input
-                return <TextInput {...commonProps} />
-              }
+              // Get the appropriate control component from the registry
+              const ControlComponent = getFormControl(type as string, format as string)
+              return <ControlComponent {...commonProps} />
             }}
           </form.Field>
         )

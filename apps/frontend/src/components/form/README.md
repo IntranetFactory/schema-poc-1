@@ -148,9 +148,33 @@ See the form viewer at `/form-viewer` with various schema URLs:
 
 ## Adding New Form Controls
 
-To add a new form control:
+To add a new form control, you only need to update the `controls.ts` file:
 
 1. Create a new file in this directory (e.g., `MyInput.tsx`)
 2. Implement the `FormControlProps` interface
-3. Export it from `index.ts`
-4. Update `SchemaForm.tsx` to use your control based on type/format
+3. Open `controls.ts` and make two changes:
+   - Add the import: `import { MyInput } from './MyInput'`
+   - Add to the appropriate map:
+     - For format-based controls: `formatControls: { myformat: MyInput }`
+     - For type-based controls: `typeControls: { mytype: MyInput }`
+
+The `SchemaForm` component will automatically use your control based on the schema's type or format.
+
+### Example: Adding a URL Input
+
+```typescript
+// 1. Create URLInput.tsx
+export function URLInput(props: FormControlProps) {
+  // ... implementation
+}
+
+// 2. Update controls.ts
+import { URLInput } from './URLInput'
+
+export const formatControls = {
+  // ... existing controls
+  url: URLInput,  // Add this line
+}
+```
+
+That's it! The form engine will now use `URLInput` for any field with `format: "url"`.
