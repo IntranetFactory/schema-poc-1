@@ -30,7 +30,7 @@ export function InputDateTime({
           if (e.target.value) {
             try {
               const date = new Date(e.target.value)
-              onChange(isNaN(date.getTime()) ? '' : date.toISOString())
+              onChange(Number.isNaN(date.getTime()) ? '' : date.toISOString())
             } catch {
               onChange('')
             }

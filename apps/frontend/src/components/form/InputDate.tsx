@@ -20,11 +20,18 @@ export function InputDate({
   useFormContext()
   
   // Convert string to Date if needed
-  const dateValue = value ? (typeof value === 'string' ? new Date(value) : value) : undefined
+  const dateValue = value ? (typeof value === 'string' ? (() => {
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? undefined : date
+  })() : value) : undefined
 
   const handleDateChange = (date: Date | undefined) => {
-    // Convert Date to ISO string for form data
-    onChange(date ? date.toISOString().split('T')[0] : undefined)
+    // Convert Date to ISO string for form data, only if valid
+    if (date && !Number.isNaN(date.getTime())) {
+      onChange(date.toISOString().split('T')[0])
+    } else {
+      onChange(undefined)
+    }
     if (onBlur) onBlur()
   }
 
