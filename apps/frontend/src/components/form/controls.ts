@@ -9,14 +9,14 @@
  * Note: When a schema property has no format, its type is used as the format.
  */
 
-import { TextInput } from './TextInput'
-import { EmailInput } from './EmailInput'
-import { NumberInput } from './NumberInput'
-import { TextareaInput } from './TextareaInput'
-import { CheckboxInput } from './CheckboxInput'
-import { DateInput } from './DateInput'
-import { JsonEditor } from './JsonEditor'
-import { HtmlEditor } from './HtmlEditor'
+import { InputText } from './InputText'
+import { InputEmail } from './InputEmail'
+import { InputNumber } from './InputNumber'
+import { InputTextarea } from './InputTextarea'
+import { InputBoolean } from './InputBoolean'
+import { InputDate } from './InputDate'
+import { InputJson } from './InputJson'
+import { InputHtml } from './InputHtml'
 import { InputDateTime } from './InputDateTime'
 import { InputTime } from './InputTime'
 import { InputDuration } from './InputDuration'
@@ -56,11 +56,11 @@ export const controls: Record<string, React.ComponentType<FormControlProps>> = {
   // Standard JSON Schema 2020-12 Time formats
   'date-time': InputDateTime,
   time: InputTime,
-  date: DateInput,
+  date: InputDate,
   duration: InputDuration,
   
   // Email formats
-  email: EmailInput,
+  email: InputEmail,
   'idn-email': InputIdnEmail,
   
   // Hostname formats
@@ -87,13 +87,13 @@ export const controls: Record<string, React.ComponentType<FormControlProps>> = {
   regex: InputRegex,
   
   // Custom formats
-  text: TextareaInput,
-  json: JsonEditor,
-  html: HtmlEditor,
+  text: InputTextarea,
+  json: InputJson,
+  html: InputHtml,
   
   // Type-based controls (when no format is specified)
-  boolean: CheckboxInput,
-  integer: NumberInput,
-  number: NumberInput,
-  string: TextInput,
+  boolean: InputBoolean,
+  integer: InputNumber,
+  number: InputNumber,
+  string: InputText,
 }

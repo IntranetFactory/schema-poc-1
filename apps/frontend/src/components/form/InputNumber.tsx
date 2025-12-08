@@ -5,11 +5,11 @@ import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
-export function TextInput({
+export function InputNumber({
   name,
   label,
   description,
-  value = '',
+  value,
   error,
   required,
   disabled,
@@ -18,15 +18,19 @@ export function TextInput({
 }: FormControlProps) {
   // Access form context - validates that component is used within SchemaForm
   useFormContext()
+  
   return (
     <div className="space-y-2">
       {label && <FormLabel htmlFor={name} label={label} required={required} error={!!error} />}
       <Input
         id={name}
         name={name}
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        type="number"
+        value={value === undefined || value === null ? '' : value}
+        onChange={(e) => {
+          const val = e.target.value
+          onChange(val === '' ? undefined : Number(val))
+        }}
         onBlur={onBlur}
         disabled={disabled}
         aria-invalid={!!error}

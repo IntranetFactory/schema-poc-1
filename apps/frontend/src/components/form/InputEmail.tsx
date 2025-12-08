@@ -5,11 +5,11 @@ import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
-export function NumberInput({
+export function InputEmail({
   name,
   label,
   description,
-  value,
+  value = '',
   error,
   required,
   disabled,
@@ -25,12 +25,9 @@ export function NumberInput({
       <Input
         id={name}
         name={name}
-        type="number"
-        value={value === undefined || value === null ? '' : value}
-        onChange={(e) => {
-          const val = e.target.value
-          onChange(val === '' ? undefined : Number(val))
-        }}
+        type="email"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         disabled={disabled}
         aria-invalid={!!error}

@@ -1,12 +1,11 @@
-import CodeMirror from '@uiw/react-codemirror'
-import { html } from '@codemirror/lang-html'
-import type { FormControlProps } from './types'
+import { Textarea } from '@/components/ui/textarea'
+import type { FormControlProps} from './types'
 import { useFormContext } from './FormContext'
 import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
-export function HtmlEditor({
+export function InputTextarea({
   name,
   label,
   description,
@@ -23,22 +22,17 @@ export function HtmlEditor({
   return (
     <div className="space-y-2">
       {label && <FormLabel htmlFor={name} label={label} required={required} error={!!error} />}
-      <div className={`border rounded-md overflow-hidden ${error ? 'border-destructive' : 'border-input'}`}>
-        <CodeMirror
-          value={value}
-          height="200px"
-          extensions={[html()]}
-          onChange={onChange}
-          onBlur={onBlur}
-          editable={!disabled}
-          theme="light"
-          basicSetup={{
-            lineNumbers: true,
-            foldGutter: true,
-            highlightActiveLine: true,
-          }}
-        />
-      </div>
+      <Textarea
+        id={name}
+        name={name}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        disabled={disabled}
+        rows={5}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${name}-error` : undefined}
+      />
       {description && <FormDescription description={description} />}
       {error && <FormError name={name} error={error} />}
     </div>

@@ -5,7 +5,7 @@ import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
-export function EmailInput({
+export function InputText({
   name,
   label,
   description,
@@ -18,14 +18,13 @@ export function EmailInput({
 }: FormControlProps) {
   // Access form context - validates that component is used within SchemaForm
   useFormContext()
-  
   return (
     <div className="space-y-2">
       {label && <FormLabel htmlFor={name} label={label} required={required} error={!!error} />}
       <Input
         id={name}
         name={name}
-        type="email"
+        type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}

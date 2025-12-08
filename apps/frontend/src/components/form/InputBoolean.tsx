@@ -4,7 +4,7 @@ import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
 import { FormError } from './FormError'
 
-export function CheckboxInput({
+export function InputBoolean({
   name,
   label,
   description,

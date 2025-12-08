@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { TextInput } from './TextInput'
-import { EmailInput } from './EmailInput'
-import { NumberInput } from './NumberInput'
-import { CheckboxInput } from './CheckboxInput'
+import { InputText } from './InputText'
+import { InputEmail } from './InputEmail'
+import { InputNumber } from './InputNumber'
+import { InputBoolean } from './InputBoolean'
 import { FormProvider } from './FormContext'
 import type { FormContextValue } from './FormContext'
 
@@ -21,34 +21,34 @@ describe('Form Controls', () => {
   }
 
   describe('Context Requirement', () => {
-    it('TextInput should throw error when used outside SchemaForm', () => {
+    it('InputText should throw error when used outside SchemaForm', () => {
       // Suppress console.error for this test
       const originalError = console.error
       console.error = () => {}
 
       expect(() => {
-        render(<TextInput {...mockProps} />)
+        render(<InputText {...mockProps} />)
       }).toThrow('useFormContext must be used within a SchemaForm component')
 
       console.error = originalError
     })
 
-    it('EmailInput should work when used inside FormProvider', () => {
+    it('InputEmail should work when used inside FormProvider', () => {
       expect(() => {
         render(
           <FormProvider value={mockContext}>
-            <EmailInput {...mockProps} />
+            <InputEmail {...mockProps} />
           </FormProvider>
         )
       }).not.toThrow()
     })
   })
 
-  describe('TextInput', () => {
+  describe('InputText', () => {
     it('should render with label', () => {
       render(
         <FormProvider value={mockContext}>
-          <TextInput {...mockProps} label="Username" />
+          <InputText {...mockProps} label="Username" />
         </FormProvider>
       )
 
@@ -58,7 +58,7 @@ describe('Form Controls', () => {
     it('should show required indicator', () => {
       render(
         <FormProvider value={mockContext}>
-          <TextInput {...mockProps} label="Username" required />
+          <InputText {...mockProps} label="Username" required />
         </FormProvider>
       )
 
@@ -68,7 +68,7 @@ describe('Form Controls', () => {
     it('should display error message', () => {
       render(
         <FormProvider value={mockContext}>
-          <TextInput {...mockProps} error="This field is required" />
+          <InputText {...mockProps} error="This field is required" />
         </FormProvider>
       )
 
@@ -78,7 +78,7 @@ describe('Form Controls', () => {
     it('should display description', () => {
       render(
         <FormProvider value={mockContext}>
-          <TextInput {...mockProps} description="Enter your username" />
+          <InputText {...mockProps} description="Enter your username" />
         </FormProvider>
       )
 
@@ -86,11 +86,11 @@ describe('Form Controls', () => {
     })
   })
 
-  describe('EmailInput', () => {
+  describe('InputEmail', () => {
     it('should render email input type', () => {
       render(
         <FormProvider value={mockContext}>
-          <EmailInput {...mockProps} />
+          <InputEmail {...mockProps} />
         </FormProvider>
       )
 
@@ -99,11 +99,11 @@ describe('Form Controls', () => {
     })
   })
 
-  describe('NumberInput', () => {
+  describe('InputNumber', () => {
     it('should render number input type', () => {
       render(
         <FormProvider value={mockContext}>
-          <NumberInput {...mockProps} />
+          <InputNumber {...mockProps} />
         </FormProvider>
       )
 
@@ -114,7 +114,7 @@ describe('Form Controls', () => {
     it('should handle number values', () => {
       render(
         <FormProvider value={mockContext}>
-          <NumberInput {...mockProps} value={42} />
+          <InputNumber {...mockProps} value={42} />
         </FormProvider>
       )
 
@@ -123,11 +123,11 @@ describe('Form Controls', () => {
     })
   })
 
-  describe('CheckboxInput', () => {
+  describe('InputBoolean', () => {
     it('should render checkbox', () => {
       render(
         <FormProvider value={mockContext}>
-          <CheckboxInput {...mockProps} />
+          <InputBoolean {...mockProps} />
         </FormProvider>
       )
 
@@ -138,7 +138,7 @@ describe('Form Controls', () => {
     it('should be checked when value is true', () => {
       render(
         <FormProvider value={mockContext}>
-          <CheckboxInput {...mockProps} value={true} />
+          <InputBoolean {...mockProps} value={true} />
         </FormProvider>
       )
 
@@ -152,7 +152,7 @@ describe('Form Controls', () => {
     it('should disable input when disabled prop is true', () => {
       render(
         <FormProvider value={mockContext}>
-          <TextInput {...mockProps} disabled={true} />
+          <InputText {...mockProps} disabled={true} />
         </FormProvider>
       )
 
@@ -165,7 +165,7 @@ describe('Form Controls', () => {
     it('should have proper aria-invalid when error exists', () => {
       render(
         <FormProvider value={mockContext}>
-          <TextInput {...mockProps} error="Invalid value" />
+          <InputText {...mockProps} error="Invalid value" />
         </FormProvider>
       )
 
@@ -176,7 +176,7 @@ describe('Form Controls', () => {
     it('should link error message with aria-describedby', () => {
       render(
         <FormProvider value={mockContext}>
-          <TextInput {...mockProps} name="username" error="Invalid value" />
+          <InputText {...mockProps} name="username" error="Invalid value" />
         </FormProvider>
       )
 

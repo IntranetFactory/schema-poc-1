@@ -6,7 +6,7 @@ import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
-export function JsonEditor({
+export function InputJson({
   name,
   label,
   description,
