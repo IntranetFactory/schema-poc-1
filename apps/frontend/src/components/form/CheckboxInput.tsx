@@ -2,6 +2,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
+import { FormError } from './FormError'
 
 export function CheckboxInput({
   name,
@@ -49,11 +50,7 @@ export function CheckboxInput({
           )}
         </div>
       </div>
-      {error && (
-        <p id={`${name}-error`} className="text-[0.8rem] font-medium text-destructive">
-          {error}
-        </p>
-      )}
+      {error && <FormError name={name} error={error} />}
     </div>
   )
 }

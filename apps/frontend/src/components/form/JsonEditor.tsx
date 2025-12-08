@@ -1,8 +1,10 @@
-import { Label } from '@/components/ui/label'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
+import { FormLabel } from './FormLabel'
+import { FormDescription } from './FormDescription'
+import { FormError } from './FormError'
 
 export function JsonEditor({
   name,
@@ -27,15 +29,7 @@ export function JsonEditor({
 
   return (
     <div className="space-y-2">
-      {label && (
-        <Label htmlFor={name} className={error ? 'text-destructive' : ''}>
-          {label}
-          {required && <span className="text-destructive ml-1">*</span>}
-        </Label>
-      )}
-      {description && (
-        <p className="text-[0.8rem] text-muted-foreground">{description}</p>
-      )}
+      {label && <FormLabel htmlFor={name} label={label} required={required} error={!!error} />}
       <div className={`border rounded-md overflow-hidden ${error ? 'border-destructive' : 'border-input'}`}>
         <CodeMirror
           value={stringValue}
@@ -52,11 +46,8 @@ export function JsonEditor({
           }}
         />
       </div>
-      {error && (
-        <p id={`${name}-error`} className="text-[0.8rem] font-medium text-destructive">
-          {error}
-        </p>
-      )}
+      {description && <FormDescription description={description} />}
+      {error && <FormError name={name} error={error} />}
     </div>
   )
 }

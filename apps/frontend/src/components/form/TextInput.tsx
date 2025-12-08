@@ -1,7 +1,9 @@
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
+import { FormLabel } from './FormLabel'
+import { FormDescription } from './FormDescription'
+import { FormError } from './FormError'
 
 export function TextInput({
   name,
@@ -18,15 +20,7 @@ export function TextInput({
   useFormContext()
   return (
     <div className="space-y-2">
-      {label && (
-        <Label htmlFor={name} className={error ? 'text-destructive' : ''}>
-          {label}
-          {required && <span className="text-destructive ml-1">*</span>}
-        </Label>
-      )}
-      {description && (
-        <p className="text-[0.8rem] text-muted-foreground">{description}</p>
-      )}
+      {label && <FormLabel htmlFor={name} label={label} required={required} error={!!error} />}
       <Input
         id={name}
         name={name}
@@ -38,11 +32,8 @@ export function TextInput({
         aria-invalid={!!error}
         aria-describedby={error ? `${name}-error` : undefined}
       />
-      {error && (
-        <p id={`${name}-error`} className="text-[0.8rem] font-medium text-destructive">
-          {error}
-        </p>
-      )}
+      {description && <FormDescription description={description} />}
+      {error && <FormError name={name} error={error} />}
     </div>
   )
 }
