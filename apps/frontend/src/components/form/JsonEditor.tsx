@@ -30,9 +30,9 @@ export function JsonEditor({
         </Label>
       )}
       {description && (
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-[0.8rem] text-muted-foreground">{description}</p>
       )}
-      <div className={`border rounded-md ${error ? 'border-destructive' : ''}`}>
+      <div className={`border rounded-md overflow-hidden ${error ? 'border-destructive' : 'border-input'}`}>
         <CodeMirror
           value={stringValue}
           height="200px"
@@ -48,7 +48,11 @@ export function JsonEditor({
           }}
         />
       </div>
-      {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+      {error && (
+        <p id={`${name}-error`} className="text-[0.8rem] font-medium text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

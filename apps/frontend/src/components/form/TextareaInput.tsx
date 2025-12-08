@@ -22,7 +22,7 @@ export function TextareaInput({
         </Label>
       )}
       {description && (
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-[0.8rem] text-muted-foreground">{description}</p>
       )}
       <Textarea
         id={name}
@@ -31,10 +31,15 @@ export function TextareaInput({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         disabled={disabled}
-        className={error ? 'border-destructive' : ''}
         rows={5}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${name}-error` : undefined}
       />
-      {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+      {error && (
+        <p id={`${name}-error`} className="text-[0.8rem] font-medium text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

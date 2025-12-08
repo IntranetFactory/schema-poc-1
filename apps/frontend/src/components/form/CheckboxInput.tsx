@@ -15,7 +15,7 @@ export function CheckboxInput({
 }: FormControlProps) {
   return (
     <div className="space-y-2">
-      <div className="flex items-center space-x-2">
+      <div className="flex items-start space-x-3">
         <Checkbox
           id={name}
           name={name}
@@ -23,21 +23,33 @@ export function CheckboxInput({
           onCheckedChange={onChange}
           onBlur={onBlur}
           disabled={disabled}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${name}-error` : description ? `${name}-description` : undefined}
         />
-        {label && (
-          <Label
-            htmlFor={name}
-            className={`${error ? 'text-destructive' : ''} cursor-pointer`}
-          >
-            {label}
-            {required && <span className="text-destructive ml-1">*</span>}
-          </Label>
-        )}
+        <div className="grid gap-1.5 leading-none">
+          {label && (
+            <Label
+              htmlFor={name}
+              className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                error ? 'text-destructive' : ''
+              }`}
+            >
+              {label}
+              {required && <span className="text-destructive ml-1">*</span>}
+            </Label>
+          )}
+          {description && (
+            <p id={`${name}-description`} className="text-[0.8rem] text-muted-foreground">
+              {description}
+            </p>
+          )}
+        </div>
       </div>
-      {description && (
-        <p className="text-sm text-muted-foreground ml-6">{description}</p>
+      {error && (
+        <p id={`${name}-error`} className="text-[0.8rem] font-medium text-destructive">
+          {error}
+        </p>
       )}
-      {error && <p className="text-sm font-medium text-destructive ml-6">{error}</p>}
     </div>
   )
 }
