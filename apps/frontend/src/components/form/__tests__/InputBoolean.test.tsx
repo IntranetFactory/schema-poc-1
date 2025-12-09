@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { useForm } from '@tanstack/react-form'
-import { InputBoolean } from './InputBoolean'
-import { FormProvider } from './FormContext'
-import type { FormContextValue } from './FormContext'
+import { InputBoolean } from '../InputBoolean'
+import { FormProvider } from '../FormContext'
+import type { FormContextValue } from '../FormContext'
 
 describe('InputBoolean', () => {
   function TestWrapper({ children, defaultValue }: { children: React.ReactNode, defaultValue?: boolean }) {

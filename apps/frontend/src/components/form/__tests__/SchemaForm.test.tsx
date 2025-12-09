@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SchemaForm } from './SchemaForm'
+import { SchemaForm } from '../SchemaForm'
 import type { SchemaObject } from 'ajv'
 
 describe('SchemaForm', () => {
