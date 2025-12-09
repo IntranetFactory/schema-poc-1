@@ -147,12 +147,13 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
 
         const type = propSchema.type
         const format = propSchema.format
+        const hasEnum = 'enum' in propSchema && Array.isArray((propSchema as any).enum)
         const isRequired = (propSchema as any).required === true || requiredFields.includes(key)
         const label = propSchema.title || key
         const description = propSchema.description
 
-        // Use format if available, otherwise use type as format
-        const controlKey = (format || type) as string
+        // Use format if available, otherwise check for enum, otherwise use type as format
+        const controlKey = format || (hasEnum ? 'enum' : type) as string
         const ControlComponent = controls[controlKey] || InputText
 
         return (
