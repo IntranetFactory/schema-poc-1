@@ -84,7 +84,7 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
   }, [])
 
   return (
-    <div className="w-screen h-screen overflow-hidden">
+    <div className="fixed inset-0 overflow-hidden">
       <PanelGroup direction="horizontal">
         {/* Left Panel: Schema Editor */}
         <Panel defaultSize={33} minSize={20}>
