@@ -14,38 +14,46 @@
     "id": {
       "type": "string",
       "required": true,
+      "title": "ID",
       "description": "Unique product identifier"
     },
     "name": {
       "type": "string",
       "required": true,
+      "title": "Name",
       "description": "Product name"
     },
     "description": {
       "format": "text",
+      "title": "Description",
       "description": "Multiline product description"
     },
     "detailedDescription": {
       "format": "html",
+      "title": "Detailed Description",
       "description": "HTML formatted detailed description"
     },
     "metadata": {
       "format": "json",
+      "title": "Metadata",
       "description": "Additional metadata in JSON format"
     },
     "price": {
       "type": "number",
       "precision": 2,
+      "title": "Price",
       "description": "Product price with up to 2 decimal places"
     },
     "stock": {
       "type": "number",
       "precision": 0,
+      "title": "Stock",
       "description": "Stock quantity (integer)"
     },
     "rating": {
       "type": "number",
       "precision": 1,
+      "title": "Rating",
       "description": "Average rating with up to 1 decimal place",
       "minimum": 0,
       "maximum": 5
@@ -55,6 +63,7 @@
       "items": {
         "type": "string"
       },
+      "title": "Tags",
       "description": "Product tags"
     }
   },

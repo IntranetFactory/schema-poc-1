@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import { useForm } from '@tanstack/react-form'
-import { InputEmail } from './InputEmail'
-import { FormProvider } from './FormContext'
-import type { FormContextValue } from './FormContext'
+import { InputUuid } from '../InputUuid'
+import { FormProvider } from '../FormContext'
+import type { FormContextValue } from '../FormContext'
 
-describe('InputEmail', () => {
+describe('InputUuid', () => {
   function TestWrapper({ children }: { children: React.ReactNode }) {
     const form = useForm({
-      defaultValues: { email: '' },
+      defaultValues: { uuid: '' },
       onSubmit: async () => {},
     })
 
@@ -21,13 +21,13 @@ describe('InputEmail', () => {
     return <FormProvider value={mockContext}>{children}</FormProvider>
   }
 
-  it('should render email input type', () => {
+  it('should render uuid input', () => {
     const { container } = render(
       <TestWrapper>
-        <InputEmail name="email" />
+        <InputUuid name="uuid" />
       </TestWrapper>
     )
     const input = container.querySelector('input')
-    expect(input).toHaveAttribute('type', 'email')
+    expect(input).toHaveAttribute('type', 'text')
   })
 })

@@ -14,27 +14,32 @@
     "id": {
       "type": "string",
       "required": true,
+      "title": "ID",
       "description": "Unique post identifier"
     },
     "title": {
       "type": "string",
       "required": true,
       "minLength": 1,
+      "title": "Title",
       "description": "Post title"
     },
     "slug": {
       "type": "string",
       "required": true,
       "pattern": "^[a-z0-9-]+$",
+      "title": "Slug",
       "description": "URL-friendly slug"
     },
     "excerpt": {
       "format": "text",
+      "title": "Excerpt",
       "description": "Short excerpt or summary"
     },
     "content": {
       "format": "html",
       "required": true,
+      "title": "Content",
       "description": "HTML formatted post content"
     },
     "author": {
@@ -42,28 +47,34 @@
       "properties": {
         "name": {
           "type": "string",
-          "required": true
+          "required": true,
+          "title": "Name"
         },
         "email": {
           "type": "string",
-          "format": "email"
+          "format": "email",
+          "title": "Email"
         }
       },
       "required": ["name"],
+      "title": "Author",
       "description": "Post author information"
     },
     "publishedAt": {
       "type": "string",
       "format": "date-time",
+      "title": "Published At",
       "description": "Publication date and time"
     },
     "metadata": {
       "format": "json",
+      "title": "Metadata",
       "description": "Additional metadata in JSON format"
     },
     "viewCount": {
       "type": "number",
       "precision": 0,
+      "title": "View Count",
       "description": "Number of views"
     },
     "rating": {
@@ -71,6 +82,7 @@
       "precision": 1,
       "minimum": 0,
       "maximum": 5,
+      "title": "Rating",
       "description": "Average rating"
     },
     "tags": {
@@ -78,10 +90,12 @@
       "items": {
         "type": "string"
       },
+      "title": "Tags",
       "description": "Post tags"
     },
     "published": {
       "type": "boolean",
+      "title": "Published",
       "description": "Whether the post is published"
     }
   },

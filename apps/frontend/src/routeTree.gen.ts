@@ -9,18 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as SchemaPlaygroundRouteImport } from './routes/schema-playground'
 import { Route as FormViewerRouteImport } from './routes/form-viewer'
+import { Route as FormPlaygroundRouteImport } from './routes/form-playground'
 import { Route as IndexRouteImport } from './routes/index'
 
-const PlaygroundRoute = PlaygroundRouteImport.update({
-  id: '/playground',
-  path: '/playground',
+const SchemaPlaygroundRoute = SchemaPlaygroundRouteImport.update({
+  id: '/schema-playground',
+  path: '/schema-playground',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormViewerRoute = FormViewerRouteImport.update({
   id: '/form-viewer',
   path: '/form-viewer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormPlaygroundRoute = FormPlaygroundRouteImport.update({
+  id: '/form-playground',
+  path: '/form-playground',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,41 +37,50 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/form-playground': typeof FormPlaygroundRoute
   '/form-viewer': typeof FormViewerRoute
-  '/playground': typeof PlaygroundRoute
+  '/schema-playground': typeof SchemaPlaygroundRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/form-playground': typeof FormPlaygroundRoute
   '/form-viewer': typeof FormViewerRoute
-  '/playground': typeof PlaygroundRoute
+  '/schema-playground': typeof SchemaPlaygroundRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/form-playground': typeof FormPlaygroundRoute
   '/form-viewer': typeof FormViewerRoute
-  '/playground': typeof PlaygroundRoute
+  '/schema-playground': typeof SchemaPlaygroundRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/form-viewer' | '/playground'
+  fullPaths: '/' | '/form-playground' | '/form-viewer' | '/schema-playground'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/form-viewer' | '/playground'
-  id: '__root__' | '/' | '/form-viewer' | '/playground'
+  to: '/' | '/form-playground' | '/form-viewer' | '/schema-playground'
+  id:
+    | '__root__'
+    | '/'
+    | '/form-playground'
+    | '/form-viewer'
+    | '/schema-playground'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FormPlaygroundRoute: typeof FormPlaygroundRoute
   FormViewerRoute: typeof FormViewerRoute
-  PlaygroundRoute: typeof PlaygroundRoute
+  SchemaPlaygroundRoute: typeof SchemaPlaygroundRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/playground': {
-      id: '/playground'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof PlaygroundRouteImport
+    '/schema-playground': {
+      id: '/schema-playground'
+      path: '/schema-playground'
+      fullPath: '/schema-playground'
+      preLoaderRoute: typeof SchemaPlaygroundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/form-viewer': {
@@ -73,6 +88,13 @@ declare module '@tanstack/react-router' {
       path: '/form-viewer'
       fullPath: '/form-viewer'
       preLoaderRoute: typeof FormViewerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/form-playground': {
+      id: '/form-playground'
+      path: '/form-playground'
+      fullPath: '/form-playground'
+      preLoaderRoute: typeof FormPlaygroundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,8 +109,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FormPlaygroundRoute: FormPlaygroundRoute,
   FormViewerRoute: FormViewerRoute,
-  PlaygroundRoute: PlaygroundRoute,
+  SchemaPlaygroundRoute: SchemaPlaygroundRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

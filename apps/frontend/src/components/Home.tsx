@@ -5,6 +5,7 @@ const schemaFiles = [
   { name: 'FAQ Item Schema', path: '/schemas/faqitem.schema.json', id: 'faqitem' },
   { name: 'Person Schema', path: '/schemas/person.schema.json', id: 'person' },
   { name: 'Blog Post Schema', path: '/schemas/blogpost.schema.json', id: 'blogpost' },
+  { name: 'All Formats Schema', path: '/schemas/all-formats.schema.json', id: 'all-formats' },
 ]
 
 export function Home() {
@@ -63,6 +64,14 @@ export function Home() {
                     className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
                   >
                     View Form
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    to="/form-playground"
+                    search={{ schema: schema.path }}
+                    className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
+                  >
+                    Playground
                   </Link>
                 </li>
               ))}

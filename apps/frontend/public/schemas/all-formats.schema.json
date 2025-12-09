@@ -1,0 +1,144 @@
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$id": "https://example.com/schemas/all-formats.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "title": "All Formats",
+  "description": "A schema showcasing all supported format values",
+  "type": "object",
+  "properties": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Date Time",
+      "description": "Date and time format"
+    },
+    "time": {
+      "type": "string",
+      "format": "time",
+      "title": "Time",
+      "description": "Time format"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date",
+      "description": "Date format"
+    },
+    "duration": {
+      "type": "string",
+      "format": "duration",
+      "title": "Duration",
+      "description": "Duration format"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email",
+      "description": "Email format"
+    },
+    "idnEmail": {
+      "type": "string",
+      "format": "idn-email",
+      "title": "IDN Email",
+      "description": "Internationalized email format"
+    },
+    "hostname": {
+      "type": "string",
+      "format": "hostname",
+      "title": "Hostname",
+      "description": "Hostname format"
+    },
+    "idnHostname": {
+      "type": "string",
+      "format": "idn-hostname",
+      "title": "IDN Hostname",
+      "description": "Internationalized hostname format"
+    },
+    "ipv4": {
+      "type": "string",
+      "format": "ipv4",
+      "title": "IPv4",
+      "description": "IPv4 address format"
+    },
+    "ipv6": {
+      "type": "string",
+      "format": "ipv6",
+      "title": "IPv6",
+      "description": "IPv6 address format"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "title": "URI",
+      "description": "URI format"
+    },
+    "uriReference": {
+      "type": "string",
+      "format": "uri-reference",
+      "title": "URI Reference",
+      "description": "URI reference format"
+    },
+    "iri": {
+      "type": "string",
+      "format": "iri",
+      "title": "IRI",
+      "description": "IRI format"
+    },
+    "iriReference": {
+      "type": "string",
+      "format": "iri-reference",
+      "title": "IRI Reference",
+      "description": "IRI reference format"
+    },
+    "uriTemplate": {
+      "type": "string",
+      "format": "uri-template",
+      "title": "URI Template",
+      "description": "URI template format"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "UUID",
+      "description": "UUID format"
+    },
+    "jsonPointer": {
+      "type": "string",
+      "format": "json-pointer",
+      "title": "JSON Pointer",
+      "description": "JSON pointer format"
+    },
+    "relativeJsonPointer": {
+      "type": "string",
+      "format": "relative-json-pointer",
+      "title": "Relative JSON Pointer",
+      "description": "Relative JSON pointer format"
+    },
+    "regex": {
+      "type": "string",
+      "format": "regex",
+      "title": "Regex",
+      "description": "Regular expression format"
+    },
+    "text": {
+      "format": "text",
+      "title": "Text",
+      "description": "Multiline text format (custom)"
+    },
+    "json": {
+      "format": "json",
+      "title": "JSON",
+      "description": "JSON format (custom)"
+    },
+    "html": {
+      "format": "html",
+      "title": "HTML",
+      "description": "HTML format (custom)"
+    }
+  }
+}

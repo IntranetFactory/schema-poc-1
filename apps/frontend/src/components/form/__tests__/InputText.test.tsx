@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { useForm } from '@tanstack/react-form'
-import { InputText } from './InputText'
-import { FormProvider } from './FormContext'
-import type { FormContextValue } from './FormContext'
+import { InputText } from '../InputText'
+import { FormProvider } from '../FormContext'
+import type { FormContextValue } from '../FormContext'
 
 describe('InputText', () => {
   function TestWrapper({ children }: { children: React.ReactNode }) {

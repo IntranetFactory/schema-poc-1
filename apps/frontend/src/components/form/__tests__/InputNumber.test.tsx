@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import { useForm } from '@tanstack/react-form'
-import { InputNumber } from './InputNumber'
-import { FormProvider } from './FormContext'
-import type { FormContextValue } from './FormContext'
+import { InputNumber } from '../InputNumber'
+import { FormProvider } from '../FormContext'
+import type { FormContextValue } from '../FormContext'
 
 describe('InputNumber', () => {
   function TestWrapper({ children, defaultValue }: { children: React.ReactNode, defaultValue?: number }) {

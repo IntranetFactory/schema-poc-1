@@ -14,39 +14,47 @@
     "id": {
       "type": "string",
       "required": true,
+      "title": "ID",
       "description": "Unique identifier"
     },
     "name": {
       "type": "string",
       "required": true,
+      "title": "Name",
       "description": "Person's full name"
     },
     "email": {
       "type": "string",
       "format": "email",
       "required": true,
+      "title": "Email",
       "description": "Email address"
     },
     "age": {
       "type": "integer",
       "minimum": 0,
       "maximum": 120,
+      "title": "Age",
       "description": "Age in years"
     },
     "bio": {
       "format": "text",
+      "title": "Bio",
       "description": "Biography or personal description"
     },
     "profileHtml": {
       "format": "html",
+      "title": "Profile HTML",
       "description": "HTML formatted profile content"
     },
     "preferences": {
       "format": "json",
+      "title": "Preferences",
       "description": "User preferences in JSON format"
     },
     "isActive": {
       "type": "boolean",
+      "title": "Is Active",
       "description": "Whether the account is active"
     }
   },
