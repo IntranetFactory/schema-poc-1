@@ -53,9 +53,5 @@ function FormPlaygroundWrapper() {
     )
   }
 
-  return (
-    <div className="w-screen h-screen overflow-hidden">
-      <FormPlayground initialSchema={initialSchema} />
-    </div>
-  )
+  return <FormPlayground initialSchema={initialSchema} />
 }
