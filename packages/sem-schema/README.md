@@ -20,10 +20,41 @@ SemSchema also supports all standard JSON Schema formats via `ajv-formats`:
 - This prevents typos and ensures all formats are properly validated
 
 ### Custom Keywords
-- **`required`** (property-level): Boolean keyword that validates values are not null/undefined and strings are not empty
-  - Different from object-level `required` array in standard JSON Schema
-  - When `required: true`, null, undefined, and empty strings fail validation
-  - **Important**: Empty string validation applies to ALL string types, regardless of format (json, html, text, date, email, or any other)
+
+#### ⚠️ CRITICAL: Property-Level `required` Keyword
+
+SemSchema extends JSON Schema with a **property-level `required: true`** keyword that is fundamentally different from standard JSON Schema:
+
+- **Standard JSON Schema**: `required: ["fieldName"]` at object level only checks if property EXISTS
+  - An empty string `""` satisfies the requirement
+- **SemSchema Property-Level**: `required: true` on individual properties validates MEANINGFUL values
+  - `null` → FAILS validation
+  - `undefined` → FAILS validation  
+  - `""` (empty string) → FAILS validation
+  - **Applies to ALL string types** (json, html, text, date, email, enum, or any format)
+
+**Example**:
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true    // ← Property-level: empty string FAILS
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "required": true    // ← Also validates empty string
+    }
+  },
+  "required": ["name"]   // ← Object-level: only checks property exists
+}
+```
+
+**Important for Form Validation**: When implementing form validation with SchemaForm, the `validateField` function must check for empty values (undefined, null, '') BEFORE calling `validateData` for required fields, since this is the intended behavior of the custom vocabulary.
+
+#### `precision` Keyword
 - **`precision`**: Integer (0-4) limiting decimal places in numbers
   - Example: `precision: 2` allows 99.99 but rejects 99.999
 

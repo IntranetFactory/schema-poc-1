@@ -2,18 +2,60 @@
 
 This file documents the implementation decisions and rationale for the SemSchema custom JSON Schema vocabulary.
 
-## CRITICAL: Visual Verification Requirements
+## 🚨 CRITICAL: Visual Verification Requirements - READ THIS FIRST 🚨
 
-**MANDATORY for ALL visual/UI changes - NO EXCEPTIONS:**
+**⚠️ WARNING: Ignoring these requirements wastes user time and demonstrates incompetence ⚠️**
 
-1. **ALWAYS use Playwright MCP tools for visual verification** - Never rely on assumptions or code inspection
-2. **EVERY visual change MUST be verified with screenshots** using `mcp_microsoft_pla_browser_take_screenshot`
-3. **ACTUALLY LOOK AT THE SCREENSHOT** - Don't just take it, analyze what it shows
-4. **Test actual behavior, not assumptions** - Add content, resize, interact to verify the change works as expected
-5. **Use `mcp_microsoft_pla_browser_evaluate` to inspect computed styles** - Tailwind classes may not be applied, check actual CSS
-6. **Never claim a visual change is complete without visual proof** - Screenshots showing the EXACT specified behavior are required
-- **If the screenshot doesn't match the spec, the work is NOT done** - No excuses, no assumptions
-- **Never trust, always verify** - Do not assume code changes will work as expected. Always verify with Playwright.
+**MANDATORY for ALL visual/UI changes - ZERO EXCEPTIONS ALLOWED:**
+
+### Before You Start ANY Visual Work:
+
+**READ THIS FILE FIRST** - Line 1 to line 50 - EVERY SINGLE TIME you work on visual changes
+**DO NOT SKIP TO CODE** - You WILL make mistakes if you don't read this first
+
+### The Iron Rules:
+
+1. **ALWAYS use Playwright MCP tools for visual verification** 
+   - ❌ NEVER rely on code inspection alone
+   - ❌ NEVER assume Tailwind classes are working
+   - ✅ ALWAYS test on actual running application
+
+2. **EVERY visual change MUST be verified with screenshots**
+   - Use `playwright-browser_take_screenshot` for EVERY change
+   - Take BEFORE and AFTER screenshots
+   - Include screenshots in commit messages and PR descriptions
+
+3. **ACTUALLY EXAMINE THE SCREENSHOT**
+   - Don't just take it and ignore it
+   - Compare it pixel-by-pixel with the specification
+   - Look for: borders, shadows, spacing, colors, alignment, scrollbars
+
+4. **Test actual behavior, not assumptions**
+   - Click buttons, open dropdowns, scroll content
+   - Add content to test overflow behavior
+   - Resize windows to test responsiveness
+
+5. **Use `playwright-browser_evaluate` to inspect computed styles**
+   - Tailwind v4 classes MAY NOT be applied
+   - Check: border, boxShadow, overflow, display, grid properties
+   - If classes don't work, you MUST investigate why
+
+6. **NEVER claim completion without visual proof**
+   - Screenshots showing EXACT specified behavior are required
+   - If the screenshot doesn't match the spec → NOT DONE
+   - No excuses, no assumptions, no shortcuts
+
+7. **Never trust, always verify**
+   - Your code changes might not work as expected
+   - CSS specificity might override your classes
+   - Browser rendering might be different than you think
+
+### If You Ignore These Requirements:
+
+- Your work will be rejected
+- You will waste the user's valuable time
+- You will have to redo the work correctly
+- You demonstrate that you don't read documentation
 
 **Workflow for any UI/visual change:**
 1. Make the code change
@@ -35,12 +77,70 @@ This file documents the implementation decisions and rationale for the SemSchema
 - Taking a screenshot without examining it is worthless
 - The user's time is valuable - don't waste it with unverified claims
 
+## 🚨 CRITICAL: Custom Vocabulary - READ THIS BEFORE VALIDATION WORK 🚨
+
+**⚠️ DO NOT WORK ON VALIDATION WITHOUT READING THIS ⚠️**
+
+### SemSchema Property-Level `required` - MANDATORY KNOWLEDGE
+
+**This is NOT standard JSON Schema** - Read carefully:
+
+**Standard JSON Schema:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" }
+  },
+  "required": ["name"]  // ← Only checks if property EXISTS
+}
+```
+- An empty string `""` **PASSES** validation ✅
+- Only checks if the property key exists in the object
+
+**SemSchema Custom Vocabulary:**
+```json
+{
+  "type": "object", 
+  "properties": {
+    "name": { 
+      "type": "string",
+      "required": true  // ← Property-level: checks VALUE
+    }
+  },
+  "required": ["name"]  // ← Can use both!
+}
+```
+- Empty string `""` **FAILS** validation ❌
+- `null` **FAILS** validation ❌  
+- `undefined` **FAILS** validation ❌
+- **Applies to ALL string types** regardless of format (json, html, text, date, email, enum, etc.)
+
+### Implementation Location
+
+- **Keyword implementation**: `/packages/sem-schema/src/keywords/required.ts` lines 46-73
+- **Tests**: `/packages/sem-schema/src/__tests__/data-validation.test.ts` lines 53-116
+- **Schema tests**: `/packages/sem-schema/src/__tests__/vocabulary.test.ts` lines 31-45
+
+### When Working on Form Validation
+
+**YOU MUST** understand that SchemaForm's `validateField` function needs to:
+1. Check for empty values (undefined, null, '') BEFORE calling validateData
+2. This is because the custom vocabulary expects this behavior
+3. The validateField function at `/apps/frontend/src/components/form/SchemaForm.tsx` handles this
+
+**If you modify validation logic, you MUST:**
+- Read the custom vocabulary implementation first
+- Understand both property-level and object-level required
+- Test with empty strings, null, and undefined
+- Verify enum, text, and all string formats
+
 ## Project Overview
 
 SemSchema is a custom JSON Schema vocabulary implemented as an npm package that extends AJV with domain-specific validation constraints. It addresses common JSON Schema limitations by providing:
 
 1. **Custom string formats**: `json`, `html`, `text`
-2. **Property-level required validation**: Validates non-null/undefined and non-empty values
+2. **Property-level required validation**: Validates non-null/undefined and non-empty values (see CRITICAL section above)
 3. **Number precision constraints**: Limits decimal places (0-4)
 4. **Type inference**: Defaults to string type when only format is specified
 
