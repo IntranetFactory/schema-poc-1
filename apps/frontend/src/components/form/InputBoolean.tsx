@@ -1,7 +1,8 @@
 import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
 import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
+import { FormLabel } from './FormLabel'
+import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputBoolean({
@@ -31,25 +32,11 @@ export function InputBoolean({
               aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : description ? `${name}-description` : undefined}
             />
             <div className="grid gap-1.5 leading-none">
-              {label && (
-                <Label
-                  htmlFor={name}
-                  className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
-                    field.state.meta.errors?.[0] ? 'text-destructive' : ''
-                  }`}
-                >
-                  {label}
-                  {required && <span className="text-destructive ml-1">*</span>}
-                </Label>
-              )}
-              {description && (
-                <p id={`${name}-description`} className="text-[0.8rem] text-muted-foreground">
-                  {description}
-                </p>
-              )}
+              <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
+              <FormDescription description={description} />
             </div>
           </div>
-          {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
+          <FormError name={name} error={field.state.meta.errors?.[0]} />
         </div>
       )}
     </form.Field>

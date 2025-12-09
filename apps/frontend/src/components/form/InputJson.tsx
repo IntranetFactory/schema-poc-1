@@ -29,7 +29,7 @@ export function InputJson({
 
         return (
           <div className="space-y-2">
-            {label && <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />}
+            <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
             <div className={`border rounded-md overflow-hidden ${field.state.meta.errors?.[0] ? 'border-destructive' : 'border-input'}`}>
               <CodeMirror
                 value={stringValue}
@@ -46,8 +46,8 @@ export function InputJson({
                 }}
               />
             </div>
-            {description && <FormDescription description={description} />}
-            {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
+            <FormDescription description={description} />
+            <FormError name={name} error={field.state.meta.errors?.[0]} />
           </div>
         )
       }}

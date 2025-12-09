@@ -435,25 +435,22 @@ describe('InputControlName', () => {
 3. **Limited validation feedback**: Only shows first error per field
 4. **No field dependencies**: Can't conditionally show/hide fields based on other values
 5. **No custom validation rules**: Only schema-based validation supported
-6. **DRY Violations in Input Components**: All Input* components have repetitive boilerplate code
-   - Every component repeats identical pattern for label rendering:
+6. **DRY Violations FIXED**: Removed repetitive conditional checks from Input components
+   - **Previously**: Every component had conditional rendering:
      ```tsx
-     {label && <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />}
+     {label && <FormLabel ... />}
+     {description && <FormDescription ... />}
+     {field.state.meta.errors?.[0] && <FormError ... />}
      ```
-   - Every component repeats identical pattern for description:
+   - **Solution implemented**: Moved conditional checks into the components themselves:
      ```tsx
-     {description && <FormDescription description={description} />}
+     // FormLabel, FormDescription, and FormError now handle null/undefined internally
+     <FormLabel label={label} ... />  // Returns null if label is falsy
+     <FormDescription description={description} />  // Returns null if description is falsy
+     <FormError error={field.state.meta.errors?.[0]} />  // Returns null if error is falsy
      ```
-   - Every component repeats identical pattern for error:
-     ```tsx
-     {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
-     ```
-   - **Solution needed**: Create a `FormFieldWrapper` component that handles common layout:
-     ```tsx
-     <FormFieldWrapper label={label} description={description} error={error} required={required}>
-       {/* Input element */}
-     </FormFieldWrapper>
-     ```
+   - **Result**: All Input* components now have clean, consistent rendering without DRY violations
+   - **Pattern to follow**: When adding new shared components, handle empty/null checks internally rather than in calling code
 7. **Incomplete Test Coverage**: Some input controls still have minimal tests
    - **Fully tested** (5-6 tests each): Email, Number, Json, Date, DateTime, Duration, Hostname, Textarea, IPv4, Uri, Uuid
    - **Needs tests**: Time, Regex, IdnEmail, IdnHostname, IPv6, Iri, IriReference, JsonPointer, RelativeJsonPointer, UriReference, UriTemplate, Html, Boolean
