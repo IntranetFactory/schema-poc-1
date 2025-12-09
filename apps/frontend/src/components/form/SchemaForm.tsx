@@ -57,6 +57,17 @@ function generateDefaultValue(schema: SchemaObject): Record<string, any> {
  * @returns Error message if validation fails, undefined if valid
  */
 function validateField(value: any, fieldSchema: SchemaObject, fieldName: string, fullSchema: SchemaObject): string | undefined {
+  // Check if field is required
+  const isRequired = fullSchema.required && Array.isArray(fullSchema.required) && fullSchema.required.includes(fieldName)
+  
+  // For required fields, check for empty values
+  // JSON Schema's 'required' only checks property existence, not meaningful values
+  if (isRequired) {
+    if (value === undefined || value === null || value === '') {
+      return 'must not be empty'
+    }
+  }
+
   // Create a temporary schema for this field within an object
   const tempSchema: SchemaObject = {
     type: 'object',
@@ -64,9 +75,7 @@ function validateField(value: any, fieldSchema: SchemaObject, fieldName: string,
       [fieldName]: fieldSchema
     },
     // Include required if this field is required at object level
-    ...(fullSchema.required && Array.isArray(fullSchema.required) && fullSchema.required.includes(fieldName)
-      ? { required: [fieldName] }
-      : {})
+    ...(isRequired ? { required: [fieldName] } : {})
   }
 
   const tempData = { [fieldName]: value }
