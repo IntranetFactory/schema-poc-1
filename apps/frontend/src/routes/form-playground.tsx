@@ -47,18 +47,15 @@ function FormPlaygroundWrapper() {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        fontSize: '1rem',
-        color: '#6b7280'
-      }}>
+      <div className="flex items-center justify-center h-screen text-base text-muted-foreground">
         Loading schema...
       </div>
     )
   }
 
-  return <FormPlayground initialSchema={initialSchema} />
+  return (
+    <div className="w-screen h-screen overflow-hidden">
+      <FormPlayground initialSchema={initialSchema} />
+    </div>
+  )
 }

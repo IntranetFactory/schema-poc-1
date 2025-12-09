@@ -1,5 +1,6 @@
 export { SchemaForm } from './SchemaForm'
 export { InputText } from './InputText'
+export { InputText as InputString } from './InputText' // Alias for plain string type
 export { InputEmail } from './InputEmail'
 export { InputNumber } from './InputNumber'
 export { InputTextarea } from './InputTextarea'
