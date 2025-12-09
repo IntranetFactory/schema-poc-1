@@ -3,7 +3,7 @@ import { validateData } from 'sem-schema'
 import { controls } from './controls'
 import { Button } from '@/components/ui/button'
 import type { SchemaObject } from 'ajv'
-import { TextInput } from './TextInput'
+import { InputText } from './InputText'
 import { FormProvider } from './FormContext'
 
 interface SchemaFormProps {
@@ -121,8 +121,9 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
   const properties = schema.properties as Record<string, SchemaObject>
   const requiredFields = Array.isArray(schema.required) ? schema.required : []
 
-  // Create context value for form controls
+  // Create context value for form controls - includes form instance
   const formContextValue = {
+    form,
     schema,
     validateField: (value: any, fieldName: string) => {
       const fieldSchema = properties[fieldName]
@@ -150,33 +151,22 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         const label = propSchema.title || key
         const description = propSchema.description
 
+        // Use format if available, otherwise use type as format
+        const controlKey = (format || type) as string
+        const ControlComponent = controls[controlKey] || InputText
+
         return (
-          <form.Field
+          <ControlComponent
             key={key}
             name={key}
+            label={label}
+            description={description}
+            required={isRequired}
+            disabled={false}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),
             }}
-          >
-            {(field) => {
-              const commonProps = {
-                name: key,
-                label,
-                description,
-                value: field.state.value,
-                error: field.state.meta.errors?.[0],
-                required: isRequired,
-                disabled: false,
-                onChange: field.handleChange,
-                onBlur: field.handleBlur,
-              }
-
-              // Use format if available, otherwise use type as format
-              const controlKey = (format || type) as string
-              const ControlComponent = controls[controlKey] || TextInput
-              return <ControlComponent {...commonProps} />
-            }}
-          </form.Field>
+          />
         )
       })}
 

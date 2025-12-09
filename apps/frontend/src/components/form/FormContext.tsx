@@ -4,10 +4,11 @@ import type { SchemaObject } from 'ajv'
 /**
  * Form Context
  * 
- * Provides access to the form schema and validation state for all form controls.
- * Form controls use this context to access schema information and perform validation.
+ * Provides access to the TanStack Form instance, schema, and validation state for all form controls.
+ * Form controls use this context to access the form instance and schema information.
  */
 export interface FormContextValue {
+  form: any // TanStack Form instance
   schema: SchemaObject
   /** Validate a single field value against its schema */
   validateField: (value: any, fieldName: string) => string | undefined
