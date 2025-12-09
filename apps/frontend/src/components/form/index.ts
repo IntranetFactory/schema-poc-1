@@ -1,6 +1,7 @@
 export { SchemaForm } from './SchemaForm'
 export { InputText } from './InputText'
-export { InputText as InputString } from './InputText' // Alias for plain string type
+// Note: InputText handles type="string" (single-line input)
+// InputTextarea handles format="text" (multi-line textarea)
 export { InputEmail } from './InputEmail'
 export { InputNumber } from './InputNumber'
 export { InputTextarea } from './InputTextarea'
