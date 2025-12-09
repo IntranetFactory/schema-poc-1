@@ -1,9 +1,9 @@
 /**
  * Common interface for all form control components
  * Each control wraps itself with form.Field and manages its own state
+ * Form instance is accessed via useFormContext() hook
  */
 export interface FormControlProps {
-  form: any // FormApi from TanStack Form
   name: string
   label?: string
   description?: string

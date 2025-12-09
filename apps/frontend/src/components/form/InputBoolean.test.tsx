@@ -6,49 +6,37 @@ import { FormProvider } from './FormContext'
 import type { FormContextValue } from './FormContext'
 
 describe('InputBoolean', () => {
-  const mockContext: FormContextValue = {
-    schema: { type: 'object', properties: {} },
-    validateField: () => undefined,
-  }
+  function TestWrapper({ children, defaultValue }: { children: React.ReactNode, defaultValue?: boolean }) {
+    const form = useForm({
+      defaultValues: { agree: defaultValue || false },
+      onSubmit: async () => {},
+    })
 
-  function TestWrapper({ children }: { children: React.ReactNode }) {
+    const mockContext: FormContextValue = {
+      form,
+      schema: { type: 'object', properties: {} },
+      validateField: () => undefined,
+    }
+
     return <FormProvider value={mockContext}>{children}</FormProvider>
   }
 
   it('should render checkbox', () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { agree: false },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputBoolean form={form} name="agree" />
-        </TestWrapper>
-      )
-    }
-
-    render(<FormWithField />)
+    render(
+      <TestWrapper>
+        <InputBoolean name="agree" />
+      </TestWrapper>
+    )
     const checkbox = screen.getByRole('checkbox')
     expect(checkbox).toBeInTheDocument()
   })
 
   it('should be checked when value is true', () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { agree: true },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputBoolean form={form} name="agree" />
-        </TestWrapper>
-      )
-    }
-
-    render(<FormWithField />)
+    render(
+      <TestWrapper defaultValue={true}>
+        <InputBoolean name="agree" />
+      </TestWrapper>
+    )
     const checkbox = screen.getByRole('checkbox')
     expect(checkbox).toHaveAttribute('data-state', 'checked')
   })

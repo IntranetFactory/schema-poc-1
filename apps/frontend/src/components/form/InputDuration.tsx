@@ -6,7 +6,7 @@ import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputDuration({
-  form,
+
   name,
   label,
   description,
@@ -14,8 +14,7 @@ export function InputDuration({
   disabled,
   validators,
 }: FormControlProps) {
-  // Access form context - validates that component is used within SchemaForm
-  useFormContext()
+  const { form } = useFormContext()
   
   return (
     <form.Field name={name} validators={validators}>

@@ -6,49 +6,37 @@ import { FormProvider } from './FormContext'
 import type { FormContextValue } from './FormContext'
 
 describe('InputNumber', () => {
-  const mockContext: FormContextValue = {
-    schema: { type: 'object', properties: {} },
-    validateField: () => undefined,
-  }
+  function TestWrapper({ children, defaultValue }: { children: React.ReactNode, defaultValue?: number }) {
+    const form = useForm({
+      defaultValues: { age: defaultValue },
+      onSubmit: async () => {},
+    })
 
-  function TestWrapper({ children }: { children: React.ReactNode }) {
+    const mockContext: FormContextValue = {
+      form,
+      schema: { type: 'object', properties: {} },
+      validateField: () => undefined,
+    }
+
     return <FormProvider value={mockContext}>{children}</FormProvider>
   }
 
   it('should render number input type', () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { age: undefined },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputNumber form={form} name="age" />
-        </TestWrapper>
-      )
-    }
-
-    const { container } = render(<FormWithField />)
+    const { container } = render(
+      <TestWrapper>
+        <InputNumber name="age" />
+      </TestWrapper>
+    )
     const input = container.querySelector('input')
     expect(input).toHaveAttribute('type', 'number')
   })
 
   it('should handle number values', () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { age: 42 },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputNumber form={form} name="age" />
-        </TestWrapper>
-      )
-    }
-
-    const { container } = render(<FormWithField />)
+    const { container } = render(
+      <TestWrapper defaultValue={42}>
+        <InputNumber name="age" />
+      </TestWrapper>
+    )
     const input = container.querySelector('input') as HTMLInputElement
     expect(input.value).toBe('42')
   })

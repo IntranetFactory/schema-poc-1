@@ -6,12 +6,18 @@ import { FormProvider } from './FormContext'
 import type { FormContextValue } from './FormContext'
 
 describe('InputText', () => {
-  const mockContext: FormContextValue = {
-    schema: { type: 'object', properties: {} },
-    validateField: () => undefined,
-  }
-
   function TestWrapper({ children }: { children: React.ReactNode }) {
+    const form = useForm({
+      defaultValues: { testField: '' },
+      onSubmit: async () => {},
+    })
+
+    const mockContext: FormContextValue = {
+      form,
+      schema: { type: 'object', properties: {} },
+      validateField: () => undefined,
+    }
+
     return (
       <FormProvider value={mockContext}>
         {children}
@@ -20,81 +26,45 @@ describe('InputText', () => {
   }
 
   it('should render with label', () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { testField: '' },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputText form={form} name="testField" label="Username" />
-        </TestWrapper>
-      )
-    }
-
-    render(<FormWithField />)
+    render(
+      <TestWrapper>
+        <InputText name="testField" label="Username" />
+      </TestWrapper>
+    )
     expect(screen.getByText('Username')).toBeInTheDocument()
   })
 
   it('should show required indicator', () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { testField: '' },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputText form={form} name="testField" label="Username" required />
-        </TestWrapper>
-      )
-    }
-
-    render(<FormWithField />)
+    render(
+      <TestWrapper>
+        <InputText name="testField" label="Username" required />
+      </TestWrapper>
+    )
     expect(screen.getByText('*')).toBeInTheDocument()
   })
 
   it('should display description', () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { testField: '' },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputText form={form} name="testField" description="Enter your username" />
-        </TestWrapper>
-      )
-    }
-
-    render(<FormWithField />)
+    render(
+      <TestWrapper>
+        <InputText name="testField" description="Enter your username" />
+      </TestWrapper>
+    )
     expect(screen.getByText('Enter your username')).toBeInTheDocument()
   })
 
   it('should execute validator and show error', async () => {
-    function FormWithField() {
-      const form = useForm({
-        defaultValues: { testField: '' },
-        onSubmit: async () => {},
-      })
-      
-      return (
-        <TestWrapper>
-          <InputText 
-            form={form} 
-            name="testField" 
-            label="Username"
-            validators={{
-              onBlur: ({ value }) => value ? undefined : 'This field is required'
-            }}
-          />
-        </TestWrapper>
-      )
-    }
-
-    const { container } = render(<FormWithField />)
+    const { container } = render(
+      <TestWrapper>
+        <InputText 
+          name="testField" 
+          label="Username"
+          validators={{
+            onBlur: ({ value }) => value ? undefined : 'This field is required'
+          }}
+        />
+      </TestWrapper>
+    )
+    
     const input = container.querySelector('input')
     
     // Trigger blur to run validation

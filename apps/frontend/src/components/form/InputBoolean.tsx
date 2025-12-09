@@ -5,7 +5,7 @@ import { useFormContext } from './FormContext'
 import { FormError } from './FormError'
 
 export function InputBoolean({
-  form,
+
   name,
   label,
   description,
@@ -13,8 +13,7 @@ export function InputBoolean({
   disabled,
   validators,
 }: FormControlProps) {
-  // Access form context - validates that component is used within SchemaForm
-  useFormContext()
+  const { form } = useFormContext()
   
   return (
     <form.Field name={name} validators={validators}>

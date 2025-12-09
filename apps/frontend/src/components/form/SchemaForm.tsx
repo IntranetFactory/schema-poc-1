@@ -121,8 +121,9 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
   const properties = schema.properties as Record<string, SchemaObject>
   const requiredFields = Array.isArray(schema.required) ? schema.required : []
 
-  // Create context value for form controls
+  // Create context value for form controls - includes form instance
   const formContextValue = {
+    form,
     schema,
     validateField: (value: any, fieldName: string) => {
       const fieldSchema = properties[fieldName]
@@ -157,7 +158,6 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         return (
           <ControlComponent
             key={key}
-            form={form}
             name={key}
             label={label}
             description={description}
