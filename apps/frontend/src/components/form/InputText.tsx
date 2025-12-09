@@ -6,34 +6,37 @@ import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputText({
+  form,
   name,
   label,
   description,
-  value = '',
-  error,
   required,
   disabled,
-  onChange,
-  onBlur,
+  validators,
 }: FormControlProps) {
   // Access form context - validates that component is used within SchemaForm
   useFormContext()
+  
   return (
-    <div className="space-y-2">
-      {label && <FormLabel htmlFor={name} label={label} required={required} error={!!error} />}
-      <Input
-        id={name}
-        name={name}
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
-        disabled={disabled}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${name}-error` : undefined}
-      />
-      {description && <FormDescription description={description} />}
-      {error && <FormError name={name} error={error} />}
-    </div>
+    <form.Field name={name} validators={validators}>
+      {(field: any) => (
+        <div className="space-y-2">
+          {label && <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />}
+          <Input
+            id={name}
+            name={name}
+            type="text"
+            value={field.state.value || ''}
+            onChange={(e) => field.handleChange(e.target.value)}
+            onBlur={field.handleBlur}
+            disabled={disabled}
+            aria-invalid={!!field.state.meta.errors?.[0]}
+            aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+          />
+          {description && <FormDescription description={description} />}
+          {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
+        </div>
+      )}
+    </form.Field>
   )
 }

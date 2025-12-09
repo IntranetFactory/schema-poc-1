@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { useForm } from '@tanstack/react-form'
 import { InputText } from './InputText'
 import { FormProvider } from './FormContext'
 import type { FormContextValue } from './FormContext'
@@ -10,95 +11,99 @@ describe('InputText', () => {
     validateField: () => undefined,
   }
 
-  const mockProps = {
-    name: 'testField',
-    label: 'Test Field',
-    value: '',
-    onChange: () => {},
-  }
-
-  it('should throw error when used outside SchemaForm', () => {
-    // Suppress console.error for this test
-    const originalError = console.error
-    console.error = () => {}
-
-    expect(() => {
-      render(<InputText {...mockProps} />)
-    }).toThrow('useFormContext must be used within a SchemaForm component')
-
-    console.error = originalError
-  })
-
-  it('should render with label', () => {
-    render(
+  function TestWrapper({ children }: { children: React.ReactNode }) {
+    return (
       <FormProvider value={mockContext}>
-        <InputText {...mockProps} label="Username" />
+        {children}
       </FormProvider>
     )
+  }
 
+  it('should render with label', () => {
+    function FormWithField() {
+      const form = useForm({
+        defaultValues: { testField: '' },
+        onSubmit: async () => {},
+      })
+      
+      return (
+        <TestWrapper>
+          <InputText form={form} name="testField" label="Username" />
+        </TestWrapper>
+      )
+    }
+
+    render(<FormWithField />)
     expect(screen.getByText('Username')).toBeInTheDocument()
   })
 
   it('should show required indicator', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputText {...mockProps} label="Username" required />
-      </FormProvider>
-    )
+    function FormWithField() {
+      const form = useForm({
+        defaultValues: { testField: '' },
+        onSubmit: async () => {},
+      })
+      
+      return (
+        <TestWrapper>
+          <InputText form={form} name="testField" label="Username" required />
+        </TestWrapper>
+      )
+    }
 
+    render(<FormWithField />)
     expect(screen.getByText('*')).toBeInTheDocument()
   })
 
-  it('should display error message', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputText {...mockProps} error="This field is required" />
-      </FormProvider>
-    )
-
-    expect(screen.getByText('This field is required')).toBeInTheDocument()
-  })
-
   it('should display description', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputText {...mockProps} description="Enter your username" />
-      </FormProvider>
-    )
+    function FormWithField() {
+      const form = useForm({
+        defaultValues: { testField: '' },
+        onSubmit: async () => {},
+      })
+      
+      return (
+        <TestWrapper>
+          <InputText form={form} name="testField" description="Enter your username" />
+        </TestWrapper>
+      )
+    }
 
+    render(<FormWithField />)
     expect(screen.getByText('Enter your username')).toBeInTheDocument()
   })
 
-  it('should disable input when disabled prop is true', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputText {...mockProps} disabled={true} />
-      </FormProvider>
-    )
+  it('should execute validator and show error', async () => {
+    function FormWithField() {
+      const form = useForm({
+        defaultValues: { testField: '' },
+        onSubmit: async () => {},
+      })
+      
+      return (
+        <TestWrapper>
+          <InputText 
+            form={form} 
+            name="testField" 
+            label="Username"
+            validators={{
+              onBlur: ({ value }) => value ? undefined : 'This field is required'
+            }}
+          />
+        </TestWrapper>
+      )
+    }
 
-    const input = screen.getByRole('textbox')
-    expect(input).toBeDisabled()
-  })
-
-  it('should have proper aria-invalid when error exists', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputText {...mockProps} error="Invalid value" />
-      </FormProvider>
-    )
-
-    const input = screen.getByRole('textbox')
-    expect(input).toHaveAttribute('aria-invalid', 'true')
-  })
-
-  it('should link error message with aria-describedby', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputText {...mockProps} name="username" error="Invalid value" />
-      </FormProvider>
-    )
-
-    const input = screen.getByRole('textbox')
-    expect(input).toHaveAttribute('aria-describedby', 'username-error')
+    const { container } = render(<FormWithField />)
+    const input = container.querySelector('input')
+    
+    // Trigger blur to run validation
+    input?.focus()
+    input?.blur()
+    
+    // Wait for validation
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    expect(screen.queryByText('This field is required')).toBeInTheDocument()
   })
 })

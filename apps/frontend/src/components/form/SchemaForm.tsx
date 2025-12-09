@@ -150,33 +150,23 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         const label = propSchema.title || key
         const description = propSchema.description
 
+        // Use format if available, otherwise use type as format
+        const controlKey = (format || type) as string
+        const ControlComponent = controls[controlKey] || InputText
+
         return (
-          <form.Field
+          <ControlComponent
             key={key}
+            form={form}
             name={key}
+            label={label}
+            description={description}
+            required={isRequired}
+            disabled={false}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),
             }}
-          >
-            {(field) => {
-              const commonProps = {
-                name: key,
-                label,
-                description,
-                value: field.state.value,
-                error: field.state.meta.errors?.[0],
-                required: isRequired,
-                disabled: false,
-                onChange: field.handleChange,
-                onBlur: field.handleBlur,
-              }
-
-              // Use format if available, otherwise use type as format
-              const controlKey = (format || type) as string
-              const ControlComponent = controls[controlKey] || InputText
-              return <ControlComponent {...commonProps} />
-            }}
-          </form.Field>
+          />
         )
       })}
 

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import { useForm } from '@tanstack/react-form'
 import { InputEmail } from './InputEmail'
 import { FormProvider } from './FormContext'
 import type { FormContextValue } from './FormContext'
@@ -10,31 +11,26 @@ describe('InputEmail', () => {
     validateField: () => undefined,
   }
 
-  const mockProps = {
-    name: 'testField',
-    label: 'Test Field',
-    value: '',
-    onChange: () => {},
+  function TestWrapper({ children }: { children: React.ReactNode }) {
+    return <FormProvider value={mockContext}>{children}</FormProvider>
   }
 
-  it('should work when used inside FormProvider', () => {
-    expect(() => {
-      render(
-        <FormProvider value={mockContext}>
-          <InputEmail {...mockProps} />
-        </FormProvider>
-      )
-    }).not.toThrow()
-  })
-
   it('should render email input type', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputEmail {...mockProps} />
-      </FormProvider>
-    )
+    function FormWithField() {
+      const form = useForm({
+        defaultValues: { email: '' },
+        onSubmit: async () => {},
+      })
+      
+      return (
+        <TestWrapper>
+          <InputEmail form={form} name="email" />
+        </TestWrapper>
+      )
+    }
 
-    const input = screen.getByRole('textbox')
+    const { container } = render(<FormWithField />)
+    const input = container.querySelector('input')
     expect(input).toHaveAttribute('type', 'email')
   })
 })

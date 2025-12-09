@@ -5,52 +5,54 @@ import { useFormContext } from './FormContext'
 import { FormError } from './FormError'
 
 export function InputBoolean({
+  form,
   name,
   label,
   description,
-  value = false,
-  error,
   required,
   disabled,
-  onChange,
-  onBlur,
+  validators,
 }: FormControlProps) {
   // Access form context - validates that component is used within SchemaForm
   useFormContext()
   
   return (
-    <div className="space-y-2">
-      <div className="flex items-start space-x-3">
-        <Checkbox
-          id={name}
-          name={name}
-          checked={value}
-          onCheckedChange={onChange}
-          onBlur={onBlur}
-          disabled={disabled}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${name}-error` : description ? `${name}-description` : undefined}
-        />
-        <div className="grid gap-1.5 leading-none">
-          {label && (
-            <Label
-              htmlFor={name}
-              className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
-                error ? 'text-destructive' : ''
-              }`}
-            >
-              {label}
-              {required && <span className="text-destructive ml-1">*</span>}
-            </Label>
-          )}
-          {description && (
-            <p id={`${name}-description`} className="text-[0.8rem] text-muted-foreground">
-              {description}
-            </p>
-          )}
+    <form.Field name={name} validators={validators}>
+      {(field: any) => (
+        <div className="space-y-2">
+          <div className="flex items-start space-x-3">
+            <Checkbox
+              id={name}
+              name={name}
+              checked={field.state.value || false}
+              onCheckedChange={field.handleChange}
+              onBlur={field.handleBlur}
+              disabled={disabled}
+              aria-invalid={!!field.state.meta.errors?.[0]}
+              aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : description ? `${name}-description` : undefined}
+            />
+            <div className="grid gap-1.5 leading-none">
+              {label && (
+                <Label
+                  htmlFor={name}
+                  className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                    field.state.meta.errors?.[0] ? 'text-destructive' : ''
+                  }`}
+                >
+                  {label}
+                  {required && <span className="text-destructive ml-1">*</span>}
+                </Label>
+              )}
+              {description && (
+                <p id={`${name}-description`} className="text-[0.8rem] text-muted-foreground">
+                  {description}
+                </p>
+              )}
+            </div>
+          </div>
+          {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
         </div>
-      </div>
-      {error && <FormError name={name} error={error} />}
-    </div>
+      )}
+    </form.Field>
   )
 }

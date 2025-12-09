@@ -7,40 +7,42 @@ import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputHtml({
+  form,
   name,
   label,
   description,
-  value = '',
-  error,
   required,
   disabled,
-  onChange,
-  onBlur,
+  validators,
 }: FormControlProps) {
   // Access form context - validates that component is used within SchemaForm
   useFormContext()
   
   return (
-    <div className="space-y-2">
-      {label && <FormLabel htmlFor={name} label={label} required={required} error={!!error} />}
-      <div className={`border rounded-md overflow-hidden ${error ? 'border-destructive' : 'border-input'}`}>
-        <CodeMirror
-          value={value}
-          height="200px"
-          extensions={[html()]}
-          onChange={onChange}
-          onBlur={onBlur}
-          editable={!disabled}
-          theme="light"
-          basicSetup={{
-            lineNumbers: true,
-            foldGutter: true,
-            highlightActiveLine: true,
-          }}
-        />
-      </div>
-      {description && <FormDescription description={description} />}
-      {error && <FormError name={name} error={error} />}
-    </div>
+    <form.Field name={name} validators={validators}>
+      {(field: any) => (
+        <div className="space-y-2">
+          {label && <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />}
+          <div className={`border rounded-md overflow-hidden ${field.state.meta.errors?.[0] ? 'border-destructive' : 'border-input'}`}>
+            <CodeMirror
+              value={field.state.value || ''}
+              height="200px"
+              extensions={[html()]}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              editable={!disabled}
+              theme="light"
+              basicSetup={{
+                lineNumbers: true,
+                foldGutter: true,
+                highlightActiveLine: true,
+              }}
+            />
+          </div>
+          {description && <FormDescription description={description} />}
+          {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
+        </div>
+      )}
+    </form.Field>
   )
 }

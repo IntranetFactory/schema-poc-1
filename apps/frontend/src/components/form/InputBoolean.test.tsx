@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { useForm } from '@tanstack/react-form'
 import { InputBoolean } from './InputBoolean'
 import { FormProvider } from './FormContext'
 import type { FormContextValue } from './FormContext'
@@ -10,33 +11,45 @@ describe('InputBoolean', () => {
     validateField: () => undefined,
   }
 
-  const mockProps = {
-    name: 'testField',
-    label: 'Test Field',
-    value: false,
-    onChange: () => {},
+  function TestWrapper({ children }: { children: React.ReactNode }) {
+    return <FormProvider value={mockContext}>{children}</FormProvider>
   }
 
   it('should render checkbox', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputBoolean {...mockProps} />
-      </FormProvider>
-    )
+    function FormWithField() {
+      const form = useForm({
+        defaultValues: { agree: false },
+        onSubmit: async () => {},
+      })
+      
+      return (
+        <TestWrapper>
+          <InputBoolean form={form} name="agree" />
+        </TestWrapper>
+      )
+    }
 
+    render(<FormWithField />)
     const checkbox = screen.getByRole('checkbox')
     expect(checkbox).toBeInTheDocument()
   })
 
   it('should be checked when value is true', () => {
-    render(
-      <FormProvider value={mockContext}>
-        <InputBoolean {...mockProps} value={true} />
-      </FormProvider>
-    )
+    function FormWithField() {
+      const form = useForm({
+        defaultValues: { agree: true },
+        onSubmit: async () => {},
+      })
+      
+      return (
+        <TestWrapper>
+          <InputBoolean form={form} name="agree" />
+        </TestWrapper>
+      )
+    }
 
+    render(<FormWithField />)
     const checkbox = screen.getByRole('checkbox')
-    // Radix UI Checkbox uses data-state attribute
     expect(checkbox).toHaveAttribute('data-state', 'checked')
   })
 })
