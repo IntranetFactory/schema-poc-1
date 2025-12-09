@@ -9,15 +9,17 @@ import type { FormContextValue } from '../FormContext'
 describe('InputEmail', () => {
   function TestWrapper({ 
     children, 
+    defaultValue,
     required = false,
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
+    defaultValue?: string
     required?: boolean
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
-      defaultValues: { email: '' },
+      defaultValues: { email: defaultValue || '' },
       onSubmit: async () => {},
     })
 
@@ -147,5 +149,15 @@ describe('InputEmail', () => {
       expect(screen.queryByText(/must match format "email"/i)).not.toBeInTheDocument()
       expect(input.value).toBe('user@example.com')
     })
+  })
+
+  it('should handle default value', () => {
+    const { container } = render(
+      <TestWrapper defaultValue="default@example.com">
+        <InputEmail name="email" />
+      </TestWrapper>
+    )
+    const input = container.querySelector('input') as HTMLInputElement
+    expect(input.value).toBe('default@example.com')
   })
 })

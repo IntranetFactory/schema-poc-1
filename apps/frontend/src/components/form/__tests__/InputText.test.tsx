@@ -6,9 +6,9 @@ import { FormProvider } from '../FormContext'
 import type { FormContextValue } from '../FormContext'
 
 describe('InputText', () => {
-  function TestWrapper({ children }: { children: React.ReactNode }) {
+  function TestWrapper({ children, defaultValue }: { children: React.ReactNode, defaultValue?: string }) {
     const form = useForm({
-      defaultValues: { testField: '' },
+      defaultValues: { testField: defaultValue || '' },
       onSubmit: async () => {},
     })
 
@@ -75,5 +75,15 @@ describe('InputText', () => {
     await new Promise(resolve => setTimeout(resolve, 100))
     
     expect(screen.queryByText('This field is required')).toBeInTheDocument()
+  })
+
+  it('should handle default value', () => {
+    const { container } = render(
+      <TestWrapper defaultValue="default text">
+        <InputText name="testField" />
+      </TestWrapper>
+    )
+    const input = container.querySelector('input') as HTMLInputElement
+    expect(input.value).toBe('default text')
   })
 })

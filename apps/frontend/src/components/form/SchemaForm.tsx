@@ -156,13 +156,16 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         const controlKey = format || (hasEnum ? 'enum' : type) as string
         const ControlComponent = controls[controlKey] || InputText
 
+        // Boolean types should not support required
+        const shouldShowRequired = type !== 'boolean' && isRequired
+
         return (
           <ControlComponent
             key={key}
             name={key}
             label={label}
             description={description}
-            required={isRequired}
+            required={shouldShowRequired}
             disabled={false}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),
