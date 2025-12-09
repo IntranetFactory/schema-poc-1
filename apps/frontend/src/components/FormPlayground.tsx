@@ -84,36 +84,22 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
   }, [])
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div className="w-screen h-screen overflow-hidden">
       <PanelGroup direction="horizontal">
         {/* Left Panel: Schema Editor */}
         <Panel defaultSize={33} minSize={20}>
-          <div style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            borderRight: '1px solid #d1d5db',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              padding: '1rem',
-              borderBottom: '1px solid #d1d5db',
-              backgroundColor: '#f9fafb'
-            }}>
-              <h2 style={{ fontSize: '0.875rem', fontWeight: 600, margin: 0 }}>
+          <div className="h-full flex flex-col border-r border-gray-300 overflow-hidden">
+            <div className="p-4 border-b border-gray-300 bg-gray-50">
+              <h2 className="text-sm font-semibold m-0">
                 Schema
               </h2>
               {schemaError && (
-                <div style={{
-                  color: '#dc2626',
-                  fontSize: '0.75rem',
-                  marginTop: '0.25rem'
-                }}>
+                <div className="text-red-600 text-xs mt-1">
                   {schemaError}
                 </div>
               )}
             </div>
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div className="flex-1 overflow-auto">
               <CodeMirror
                 value={schemaText}
                 height="100%"
@@ -130,41 +116,22 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
           </div>
         </Panel>
 
-        <PanelResizeHandle style={{
-          width: '4px',
-          backgroundColor: '#e5e7eb',
-          cursor: 'col-resize',
-          transition: 'background-color 0.2s'
-        }} />
+        <PanelResizeHandle className="w-1 bg-gray-200 cursor-col-resize hover:bg-gray-300 transition-colors" />
 
         {/* Middle Panel: Data Editor */}
         <Panel defaultSize={33} minSize={20}>
-          <div style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            borderRight: '1px solid #d1d5db',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              padding: '1rem',
-              borderBottom: '1px solid #d1d5db',
-              backgroundColor: '#f9fafb'
-            }}>
-              <h2 style={{ fontSize: '0.875rem', fontWeight: 600, margin: 0 }}>
+          <div className="h-full flex flex-col border-r border-gray-300 overflow-hidden">
+            <div className="p-4 border-b border-gray-300 bg-gray-50">
+              <h2 className="text-sm font-semibold m-0">
                 Data
               </h2>
               {dataError && (
-                <div style={{
-                  color: '#dc2626',
-                  fontSize: '0.75rem',
-                  marginTop: '0.25rem'
-                }}>
+                <div className="text-red-600 text-xs mt-1">
                   {dataError}
                 </div>
               )}
             </div>
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div className="flex-1 overflow-auto">
               <CodeMirror
                 value={dataText}
                 height="100%"
@@ -181,31 +148,17 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
           </div>
         </Panel>
 
-        <PanelResizeHandle style={{
-          width: '4px',
-          backgroundColor: '#e5e7eb',
-          cursor: 'col-resize',
-          transition: 'background-color 0.2s'
-        }} />
+        <PanelResizeHandle className="w-1 bg-gray-200 cursor-col-resize hover:bg-gray-300 transition-colors" />
 
         {/* Right Panel: Form Preview */}
         <Panel defaultSize={34} minSize={20}>
-          <div style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              padding: '1rem',
-              borderBottom: '1px solid #d1d5db',
-              backgroundColor: '#f9fafb'
-            }}>
-              <h2 style={{ fontSize: '0.875rem', fontWeight: 600, margin: 0 }}>
+          <div className="h-full flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-gray-300 bg-gray-50">
+              <h2 className="text-sm font-semibold m-0">
                 Form Preview
               </h2>
             </div>
-            <div style={{ flex: 1, overflow: 'auto', padding: '1rem' }}>
+            <div className="flex-1 overflow-auto p-4">
               {schema && data ? (
                 <SchemaForm
                   key={schemaText} // Force re-render when schema changes
@@ -214,7 +167,7 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
                   onSubmit={handleFormSubmit}
                 />
               ) : (
-                <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                <div className="text-muted-foreground text-sm">
                   {!schema && 'Invalid schema'}
                   {!data && schema && 'Invalid data'}
                 </div>

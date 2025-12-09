@@ -41,14 +41,14 @@ export function InputDate({
 
         return (
           <div className="space-y-2">
-            {label && <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />}
+            <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
             <DatePicker
               date={dateValue}
               onDateChange={handleDateChange}
               disabled={disabled}
             />
-            {description && <FormDescription description={description} />}
-            {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
+            <FormDescription description={description} />
+            <FormError name={name} error={field.state.meta.errors?.[0]} />
           </div>
         )
       }}

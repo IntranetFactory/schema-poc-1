@@ -20,7 +20,7 @@ export function InputTime({
     <form.Field name={name} validators={validators}>
       {(field: any) => (
     <div className="space-y-2">
-      {label && <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />}
+      <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
       <Input
         id={name}
         name={name}
@@ -32,8 +32,8 @@ export function InputTime({
         aria-invalid={!!field.state.meta.errors?.[0]}
         aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
       />
-      {description && <FormDescription description={description} />}
-      {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
+      <FormDescription description={description} />
+      <FormError name={name} error={field.state.meta.errors?.[0]} />
     </div>
         )}
     </form.Field>

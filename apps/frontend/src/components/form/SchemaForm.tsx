@@ -166,6 +166,7 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
             disabled={false}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),
+              onSubmit: ({ value }) => validateField(value, propSchema, key, schema),
             }}
           />
         )
