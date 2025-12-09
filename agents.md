@@ -50,12 +50,19 @@ This file documents the implementation decisions and rationale for the SemSchema
    - CSS specificity might override your classes
    - Browser rendering might be different than you think
 
+8. **Provide COMPREHENSIVE screenshots for ALL visual issues**
+   - If an issue mentions multiple visual problems, take screenshots for EACH ONE
+   - Use long-form schemas that trigger scrollbars when testing layout
+   - Include computed style inspection results in replies
+   - Never provide partial screenshots - cover all aspects mentioned in issue
+
 ### If You Ignore These Requirements:
 
 - Your work will be rejected
 - You will waste the user's valuable time
 - You will have to redo the work correctly
 - You demonstrate that you don't read documentation
+- You will be asked repeatedly to provide screenshots you should have included initially
 
 **Workflow for any UI/visual change:**
 1. Make the code change
