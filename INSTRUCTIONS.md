@@ -428,13 +428,36 @@ describe('InputControlName', () => {
 - **Valid value tests** ensure good data is accepted (prevents false positives)
 - Tests failing means the control is broken - they MUST pass
 
-## Known Limitations
+## Known Limitations & Code Quality Issues
 
 1. **Tailwind v4 Styling Issue**: Utility classes not generating CSS (see Styling section)
 2. **No array/object field support**: Only primitive types and string formats supported
 3. **Limited validation feedback**: Only shows first error per field
 4. **No field dependencies**: Can't conditionally show/hide fields based on other values
 5. **No custom validation rules**: Only schema-based validation supported
+6. **DRY Violations in Input Components**: All Input* components have repetitive boilerplate code
+   - Every component repeats identical pattern for label rendering:
+     ```tsx
+     {label && <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />}
+     ```
+   - Every component repeats identical pattern for description:
+     ```tsx
+     {description && <FormDescription description={description} />}
+     ```
+   - Every component repeats identical pattern for error:
+     ```tsx
+     {field.state.meta.errors?.[0] && <FormError name={name} error={field.state.meta.errors[0]} />}
+     ```
+   - **Solution needed**: Create a `FormFieldWrapper` component that handles common layout:
+     ```tsx
+     <FormFieldWrapper label={label} description={description} error={error} required={required}>
+       {/* Input element */}
+     </FormFieldWrapper>
+     ```
+7. **Incomplete Test Coverage**: Some input controls still have minimal tests
+   - **Fully tested** (5-6 tests each): Email, Number, Json, Date, DateTime, Duration, Hostname, Textarea, IPv4, Uri, Uuid
+   - **Needs tests**: Time, Regex, IdnEmail, IdnHostname, IPv6, Iri, IriReference, JsonPointer, RelativeJsonPointer, UriReference, UriTemplate, Html, Boolean
+   - All new tests must follow the mandatory template in Testing section
 
 ## Future Enhancements
 
