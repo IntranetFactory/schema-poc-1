@@ -152,24 +152,98 @@ When properly styled with shadcn/Tailwind, forms should have:
 
 ## Testing
 
+### Quality Standards
+
+**CRITICAL**: All code changes MUST meet these quality standards before submission:
+
+1. **Visual Verification Required**
+   - ALWAYS use Playwright to visually verify UI changes
+   - Take screenshots of BEFORE and AFTER states
+   - Include screenshots in PR descriptions
+   - Verify on actual running application, not just tests
+
+2. **Form Validation Testing**
+   - Test submit button with empty required fields
+   - Verify error messages appear correctly
+   - Test field-level validation (onBlur)
+   - Test form-level validation (onSubmit)
+   - Ensure validation errors are displayed to users
+
+3. **Layout and Styling**
+   - Verify no unwanted scrollbars appear on viewport
+   - Ensure form areas scroll when content overflows
+   - Check all inputs have proper borders and shadows
+   - Verify date pickers and dropdowns render correctly
+   - Test responsive behavior
+
+4. **Test Coverage**
+   - ALL new input controls MUST have tests
+   - Tests must verify rendering, validation, and user interaction
+   - Failing tests indicate failing functionality
+   - Run full test suite before committing: `pnpm test`
+
 ### Manual Testing
 
 1. Start dev server: `pnpm dev`
-2. Navigate to: `http://localhost:5173/form-viewer?schema=http://localhost:5173/schemas/person.schema.json`
+2. Navigate to: `http://localhost:5173/form-playground?schema=/schemas/all-formats.schema.json`
 3. Verify:
-   - All field types render
+   - No scrollbars on page viewport
+   - Form area scrolls when content overflows
+   - All field types render with proper styling
    - Field validation triggers onBlur
-   - Form validation triggers on submit
+   - Form validation triggers on submit  
    - Error messages display correctly
    - CodeMirror editors work for HTML/JSON
+   - Date picker has shadow/border
+   - Date picker calendar displays correctly
 
 ### Automated Tests
 
-Currently no automated tests exist for form components. Future additions should include:
-- Unit tests for each form control component
-- Integration tests for SchemaForm
-- E2E tests for form-viewer route
-- Visual regression tests once styling is fixed
+All form components have comprehensive test coverage:
+- **Unit tests** for each form control component (26 test files, 57 tests)
+- **Integration tests** for SchemaForm (15 tests)
+  - Field-level validation (onBlur)
+  - Form-level validation (onSubmit)
+  - Required field validation
+  - Default value handling
+  - Reset functionality
+- **E2E tests** should be added for form-playground route
+
+#### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode during development  
+pnpm test:watch
+
+# Run tests for a specific component
+pnpm test InputDate
+```
+
+#### Test Requirements for New Components
+
+When adding new input controls, MUST include:
+
+1. **Rendering Test**: Verify component renders correctly
+2. **Styling Test**: Check proper CSS classes are applied
+3. **Required Field Test**: Show asterisk when required
+4. **Validation Test**: Accept validators prop
+5. **Label/Description Test**: Display label and description
+6. **User Interaction Test**: Test typing/interaction where applicable
+
+Example test structure:
+```typescript
+describe('InputNewControl', () => {
+  it('should render control with proper type', () => { ... })
+  it('should have proper styling with border', () => { ... })
+  it('should show required indicator when field is required', () => { ... })
+  it('should support validation via validators prop', () => { ... })
+  it('should display label and description', () => { ... })
+  it('should accept user input', () => { ... })
+})
+```
 
 ## Known Limitations
 
