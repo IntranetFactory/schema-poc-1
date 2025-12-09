@@ -14,34 +14,41 @@
     "id": {
       "type": "string",
       "required": true,
+      "title": "ID",
       "description": "Unique FAQ identifier"
     },
     "question": {
       "type": "string",
       "required": true,
+      "title": "Question",
       "description": "The question text"
     },
     "answer": {
       "format": "html",
       "required": true,
+      "title": "Answer",
       "description": "HTML formatted answer"
     },
     "category": {
       "format": "text",
+      "title": "Category",
       "description": "FAQ category"
     },
     "metadata": {
       "format": "json",
+      "title": "Metadata",
       "description": "Additional metadata in JSON format"
     },
     "views": {
       "type": "number",
       "precision": 0,
+      "title": "Views",
       "description": "Number of views (integer)"
     },
     "helpfulness": {
       "type": "number",
       "precision": 2,
+      "title": "Helpfulness",
       "description": "Helpfulness score with up to 2 decimal places",
       "minimum": 0,
       "maximum": 1
@@ -51,6 +58,7 @@
       "items": {
         "type": "string"
       },
+      "title": "Tags",
       "description": "FAQ tags"
     }
   },
