@@ -139,6 +139,32 @@
       "format": "html",
       "title": "HTML",
       "description": "HTML format (custom)"
+    },
+    "plainString": {
+      "type": "string",
+      "title": "Plain String",
+      "description": "Plain string without format"
+    },
+    "plainNumber": {
+      "type": "number",
+      "title": "Plain Number",
+      "description": "Plain number without format"
+    },
+    "plainInteger": {
+      "type": "integer",
+      "title": "Plain Integer",
+      "description": "Plain integer without format"
+    },
+    "booleanField": {
+      "type": "boolean",
+      "title": "Boolean",
+      "description": "Boolean true/false"
+    },
+    "enumField": {
+      "type": "string",
+      "enum": ["option1", "option2", "option3"],
+      "title": "Enum",
+      "description": "Enumerated values"
     }
   }
 }

@@ -34,6 +34,7 @@ import { InputUriTemplate } from './InputUriTemplate'
 import { InputJsonPointer } from './InputJsonPointer'
 import { InputRelativeJsonPointer } from './InputRelativeJsonPointer'
 import { InputRegex } from './InputRegex'
+import { InputEnum } from './InputEnum'
 import type { FormControlProps } from './types'
 
 /**
@@ -96,4 +97,7 @@ export const controls: Record<string, React.ComponentType<FormControlProps>> = {
   integer: InputNumber,
   number: InputNumber,
   string: InputText,
+  
+  // Enum control (when enum array is present)
+  enum: InputEnum,
 }

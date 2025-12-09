@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { useForm } from '@tanstack/react-form'
 import { InputRegex } from '../InputRegex'
 import { FormProvider } from '../FormContext'
-import { FormContextValue } from '../FormContext'
+import type { FormContextValue } from '../FormContext'
 
 describe('InputRegex', () => {
   function TestWrapper({ children }: { children: React.ReactNode }) {
