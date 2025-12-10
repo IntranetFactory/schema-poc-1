@@ -6,6 +6,7 @@ const schemaFiles = [
   { name: 'Person Schema', path: '/schemas/person.schema.json', id: 'person' },
   { name: 'Blog Post Schema', path: '/schemas/blogpost.schema.json', id: 'blogpost' },
   { name: 'All Formats Schema', path: '/schemas/all-formats.schema.json', id: 'all-formats' },
+   { name: 'Test Schema', path: '/schemas/test.schema.json', id: 'test' },
 ]
 
 export function Home() {

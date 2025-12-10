@@ -1,0 +1,75 @@
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$id": "https://example.com/schemas/all-formats.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "title": "Test Formats",
+  "description": "A schema showcasing all broken formats",
+  "type": "object",
+  "properties": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Date Time",
+      "description": "Date and time format",
+      "required": true
+    },
+    "time": {
+      "type": "string",
+      "format": "time",
+      "title": "Time",
+      "description": "Time format",
+        "required": true
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date",
+      "description": "Date format",
+        "required": true
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "UUID",
+      "description": "UUID format",
+        "required": true
+    },
+    "text": {
+      "format": "text",
+      "title": "Text",
+      "description": "Multiline text format (custom)"
+    },
+    "json": {
+      "format": "json",
+      "title": "JSON",
+      "description": "JSON format (custom)"
+    },
+    "plainString": {
+      "type": "string",
+      "title": "Plain String",
+      "description": "Plain string without format"
+    },
+    "plainNumber": {
+      "type": "number",
+      "title": "Plain Number",
+      "description": "Plain number without format"
+    },
+    "plainInteger": {
+      "type": "integer",
+      "title": "Plain Integer",
+      "description": "Plain integer without format"
+    },
+
+    "enumField": {
+      "type": "string",
+      "enum": ["option1", "option2", "option3"],
+      "title": "Enum",
+      "description": "Enumerated values"
+    }
+  }
+}
