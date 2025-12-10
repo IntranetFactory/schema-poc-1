@@ -108,7 +108,11 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         // Set errors on all fields with validation issues
         if (result.errors) {
           result.errors.forEach((error: any) => {
-            const fieldPath = error.instancePath.replace(/^\//, '') // Remove leading slash
+            // Remove leading slash from instancePath to get field name
+            const fieldPath = error.instancePath.startsWith('/') 
+              ? error.instancePath.substring(1) 
+              : error.instancePath
+            
             if (fieldPath) {
               form.setFieldMeta(fieldPath, (meta) => ({
                 ...meta,
