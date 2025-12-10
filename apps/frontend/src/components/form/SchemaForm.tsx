@@ -57,6 +57,17 @@ function generateDefaultValue(schema: SchemaObject): Record<string, any> {
  * @returns Error message if validation fails, undefined if valid
  */
 function validateField(value: any, fieldSchema: SchemaObject, fieldName: string, fullSchema: SchemaObject): string | undefined {
+  // Check if field is required
+  const isRequired = fullSchema.required && Array.isArray(fullSchema.required) && fullSchema.required.includes(fieldName)
+  
+  // For required fields, check for empty values
+  // JSON Schema's 'required' only checks property existence, not meaningful values
+  if (isRequired) {
+    if (value === undefined || value === null || value === '') {
+      return 'must not be empty'
+    }
+  }
+
   // Create a temporary schema for this field within an object
   const tempSchema: SchemaObject = {
     type: 'object',
@@ -64,9 +75,7 @@ function validateField(value: any, fieldSchema: SchemaObject, fieldName: string,
       [fieldName]: fieldSchema
     },
     // Include required if this field is required at object level
-    ...(fullSchema.required && Array.isArray(fullSchema.required) && fullSchema.required.includes(fieldName)
-      ? { required: [fieldName] }
-      : {})
+    ...(isRequired ? { required: [fieldName] } : {})
   }
 
   const tempData = { [fieldName]: value }
@@ -156,13 +165,16 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         const controlKey = format || (hasEnum ? 'enum' : type) as string
         const ControlComponent = controls[controlKey] || InputText
 
+        // Boolean types should not support required
+        const shouldShowRequired = type !== 'boolean' && isRequired
+
         return (
           <ControlComponent
             key={key}
             name={key}
             label={label}
             description={description}
-            required={isRequired}
+            required={shouldShowRequired}
             disabled={false}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),

@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input'
+import { DateTimePicker } from '@/components/ui/date-time-picker'
 import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
 import { FormLabel } from './FormLabel'
@@ -18,34 +18,40 @@ export function InputDateTime({
   
   return (
     <form.Field name={name} validators={validators}>
-      {(field: any) => (
-        <div className="space-y-2">
-          <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
-          <Input
-            id={name}
-            name={name}
-            type="datetime-local"
-            // Convert ISO 8601 to datetime-local format by removing timezone and milliseconds
-            value={field.state.value ? field.state.value.split('.')[0].replace('Z', '') : ''}
-            onChange={(e) => {
-              if (!e.target.value) {
-                field.handleChange('')
-                return
-              }
-              // datetime-local input returns format: YYYY-MM-DDTHH:mm
-              const date = new Date(e.target.value)
-              // Validate date is valid before converting to ISO string
-              field.handleChange(Number.isNaN(date.getTime()) ? '' : date.toISOString())
-            }}
-            onBlur={field.handleBlur}
-            disabled={disabled}
-            aria-invalid={!!field.state.meta.errors?.[0]}
-            aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
-          />
-          <FormDescription description={description} />
-          <FormError name={name} error={field.state.meta.errors?.[0]} />
-        </div>
-      )}
+      {(field: any) => {
+        // Convert string to Date if needed, validate the date is valid
+        const parseDateValue = (val: any): Date | undefined => {
+          if (!val) return undefined
+          if (typeof val !== 'string') return val
+          const date = new Date(val)
+          return Number.isNaN(date.getTime()) ? undefined : date
+        }
+        
+        const dateValue = parseDateValue(field.state.value)
+
+        const handleDateTimeChange = (date: Date | undefined) => {
+          // Convert Date to ISO string for form data, only if valid
+          if (date && !Number.isNaN(date.getTime())) {
+            field.handleChange(date.toISOString())
+          } else {
+            field.handleChange(undefined)
+          }
+          field.handleBlur()
+        }
+
+        return (
+          <div className="space-y-2">
+            <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
+            <DateTimePicker
+              date={dateValue}
+              onDateTimeChange={handleDateTimeChange}
+              disabled={disabled}
+            />
+            <FormDescription description={description} />
+            <FormError name={name} error={field.state.meta.errors?.[0]} />
+          </div>
+        )
+      }}
     </form.Field>
   )
 }

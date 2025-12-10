@@ -40,4 +40,34 @@ describe('InputBoolean', () => {
     const checkbox = screen.getByRole('checkbox')
     expect(checkbox).toHaveAttribute('data-state', 'checked')
   })
+
+  it('should not show required indicator even when required prop is passed', () => {
+    render(
+      <TestWrapper>
+        <InputBoolean name="agree" label="I agree" required={true} />
+      </TestWrapper>
+    )
+    // Should not show required asterisk for boolean/checkbox
+    expect(screen.queryByText('*')).not.toBeInTheDocument()
+  })
+
+  it('should handle default value of false', () => {
+    render(
+      <TestWrapper defaultValue={false}>
+        <InputBoolean name="agree" />
+      </TestWrapper>
+    )
+    const checkbox = screen.getByRole('checkbox')
+    expect(checkbox).toHaveAttribute('data-state', 'unchecked')
+  })
+
+  it('should handle default value of true', () => {
+    render(
+      <TestWrapper defaultValue={true}>
+        <InputBoolean name="agree" />
+      </TestWrapper>
+    )
+    const checkbox = screen.getByRole('checkbox')
+    expect(checkbox).toHaveAttribute('data-state', 'checked')
+  })
 })

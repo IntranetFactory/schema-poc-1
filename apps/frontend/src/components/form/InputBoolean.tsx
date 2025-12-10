@@ -32,7 +32,7 @@ export function InputBoolean({
               aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : description ? `${name}-description` : undefined}
             />
             <div className="grid gap-1.5 leading-none">
-              <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
+              <FormLabel htmlFor={name} label={label} required={false} error={!!field.state.meta.errors?.[0]} />
               <FormDescription description={description} />
             </div>
           </div>

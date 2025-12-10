@@ -168,13 +168,18 @@ When properly styled with shadcn/Tailwind, forms should have:
 
 ### Quality Standards
 
-**CRITICAL**: All code changes MUST meet these quality standards before submission:
+**🚨 CRITICAL: READ agents.md FIRST BEFORE ANY VISUAL WORK 🚨**
 
-1. **Visual Verification Required**
+All code changes MUST meet these quality standards before submission:
+
+1. **Visual Verification Required - NO EXCEPTIONS**
+   - **READ agents.md lines 1-50 BEFORE starting visual work**
    - ALWAYS use Playwright to visually verify UI changes
-   - Take screenshots of BEFORE and AFTER states
+   - Take screenshots of BEFORE and AFTER states  
+   - Use `playwright-browser_evaluate` to check computed styles
    - Include screenshots in PR descriptions
    - Verify on actual running application, not just tests
+   - **If you skip visual verification, your work will be rejected**
 
 2. **Form Validation Testing**
    - Test submit button with empty required fields

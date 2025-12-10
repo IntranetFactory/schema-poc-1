@@ -25,7 +25,7 @@
     "schema"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "peerDependencies": {
     "ajv": "^8.0.0"
   },

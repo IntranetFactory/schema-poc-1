@@ -9,15 +9,17 @@ import type { FormContextValue } from '../FormContext'
 describe('InputDate', () => {
   function TestWrapper({ 
     children, 
+    defaultValue,
     required = false,
     validators = {}
   }: { 
     children: React.ReactNode
+    defaultValue?: string
     required?: boolean
     validators?: any
   }) {
     const form = useForm({
-      defaultValues: { date: '' },
+      defaultValues: { date: defaultValue || '' },
       onSubmit: async () => {},
     })
 
@@ -90,5 +92,17 @@ describe('InputDate', () => {
     )
     expect(screen.getByText('Birth Date')).toBeInTheDocument()
     expect(screen.getByText('Select your birth date')).toBeInTheDocument()
+  })
+
+  it('should handle default value', () => {
+    const { container } = render(
+      <TestWrapper defaultValue="2024-01-15">
+        <InputDate name="date" />
+      </TestWrapper>
+    )
+    const button = container.querySelector('button')
+    // Date should be formatted and displayed
+    expect(button).toBeTruthy()
+    expect(button?.textContent).toContain('Jan')
   })
 })

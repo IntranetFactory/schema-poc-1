@@ -14,14 +14,19 @@ The form engine consists of:
 
 Each form control provides a consistent interface defined in `types.ts`:
 
+### Design Principle
+
+**IMPORTANT**: All form controls MUST use [shadcn/ui](https://ui.shadcn.com/) components whenever possible for consistent styling, accessibility, and maintainability. Do not create custom implementations when shadcn provides the component.
+
 ### Available Controls
 
-- **TextInput** - Basic text input (default for string type)
-- **EmailInput** - Email input with validation (format: "email")
-- **NumberInput** - Number/integer input with proper type handling
-- **TextareaInput** - Multi-line text input (format: "text")
-- **CheckboxInput** - Boolean checkbox input
-- **DateInput** - Date picker with calendar UI (format: "date")
+- **TextInput** - Basic text input (default for string type) - uses shadcn Input
+- **EmailInput** - Email input with validation (format: "email") - uses shadcn Input
+- **NumberInput** - Number/integer input with proper type handling - uses shadcn Input
+- **TextareaInput** - Multi-line text input (format: "text") - uses shadcn Textarea
+- **CheckboxInput** - Boolean checkbox input - uses shadcn Checkbox
+- **DateInput** - Date picker with calendar UI (format: "date") - uses shadcn DatePicker
+- **DateTimeInput** - Date and time picker (format: "date-time") - uses shadcn-based DateTimePicker
 - **HtmlEditor** - CodeMirror editor with HTML syntax highlighting (format: "html")
 - **JsonEditor** - CodeMirror editor with JSON syntax highlighting (format: "json")
 
@@ -100,18 +105,19 @@ function MyComponent() {
 
 ### Field Type Mapping
 
-The SchemaForm automatically maps schema types/formats to appropriate controls:
+The SchemaForm automatically maps schema types/formats to appropriate shadcn-based controls:
 
-| Type/Format | Control |
-|------------|---------|
-| type: "boolean" | CheckboxInput |
-| type: "integer" or "number" | NumberInput |
-| format: "json" | JsonEditor |
-| format: "html" | HtmlEditor |
-| format: "text" | TextareaInput |
-| format: "email" | EmailInput |
-| format: "date" | DateInput |
-| default (type: "string") | TextInput |
+| Type/Format | Control | shadcn Component |
+|------------|---------|------------------|
+| type: "boolean" | CheckboxInput | Checkbox |
+| type: "integer" or "number" | NumberInput | Input (type="number") |
+| format: "json" | JsonEditor | CodeMirror |
+| format: "html" | HtmlEditor | CodeMirror |
+| format: "text" | TextareaInput | Textarea |
+| format: "email" | EmailInput | Input (type="email") |
+| format: "date" | DateInput | DatePicker (Calendar + Popover) |
+| format: "date-time" | DateTimeInput | DateTimePicker (Calendar + Time inputs + Popover) |
+| default (type: "string") | TextInput | Input |
 
 ## Validation
 
@@ -165,8 +171,9 @@ See the form viewer at `/form-viewer` with various schema URLs:
 To add a new form control, you only need to update the `controls.ts` file:
 
 1. Create a new file in this directory (e.g., `URLInput.tsx`)
-2. Implement the `FormControlProps` interface
-3. Open `controls.ts` and make two changes:
+2. **IMPORTANT**: Use shadcn/ui components - check https://ui.shadcn.com/docs/components first
+3. Implement the `FormControlProps` interface
+4. Open `controls.ts` and make two changes:
    - Add the import: `import { URLInput } from './URLInput'`
    - Add to the controls map: `controls: { url: URLInput }`
 
@@ -177,9 +184,36 @@ The `SchemaForm` component will automatically use your control for fields with t
 ### Example: Adding a URL Input
 
 ```typescript
-// 1. Create URLInput.tsx
+// 1. Create URLInput.tsx using shadcn Input component
+import { Input } from '@/components/ui/input'
+import type { FormControlProps } from './types'
+import { useFormContext } from './FormContext'
+import { FormLabel } from './FormLabel'
+import { FormDescription } from './FormDescription'
+import { FormError } from './FormError'
+
 export function URLInput(props: FormControlProps) {
-  // ... implementation
+  const { form } = useFormContext()
+  
+  return (
+    <form.Field name={props.name} validators={props.validators}>
+      {(field: any) => (
+        <div className="space-y-2">
+          <FormLabel htmlFor={props.name} label={props.label} required={props.required} />
+          <Input
+            id={props.name}
+            type="url"
+            value={field.state.value || ''}
+            onChange={(e) => field.handleChange(e.target.value)}
+            onBlur={field.handleBlur}
+            disabled={props.disabled}
+          />
+          <FormDescription description={props.description} />
+          <FormError name={props.name} error={field.state.meta.errors?.[0]} />
+        </div>
+      )}
+    </form.Field>
+  )
 }
 
 // 2. Update controls.ts

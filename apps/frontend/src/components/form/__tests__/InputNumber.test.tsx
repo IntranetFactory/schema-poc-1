@@ -152,4 +152,14 @@ describe('InputNumber', () => {
       expect(input.value).toBe('25')
     })
   })
+
+  it('should handle default value', () => {
+    const { container } = render(
+      <TestWrapper defaultValue={99}>
+        <InputNumber name="age" />
+      </TestWrapper>
+    )
+    const input = container.querySelector('input') as HTMLInputElement
+    expect(input.value).toBe('99')
+  })
 })
