@@ -1,0 +1,197 @@
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$id": "https://example.com/schemas/all-formats-default.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "title": "All Formats (Default Values)",
+  "description": "A schema showcasing all supported format values with valid default values",
+  "type": "object",
+  "properties": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Date Time",
+      "description": "Date and time format",
+      "default": "2024-01-15T10:30:00Z"
+    },
+    "time": {
+      "type": "string",
+      "format": "time",
+      "title": "Time",
+      "description": "Time format",
+      "default": "10:30:00"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date",
+      "description": "Date format",
+      "default": "2024-01-15"
+    },
+    "duration": {
+      "type": "string",
+      "format": "duration",
+      "title": "Duration",
+      "description": "Duration format",
+      "default": "P1DT12H30M"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email",
+      "description": "Email format",
+      "default": "user@example.com"
+    },
+    "idnEmail": {
+      "type": "string",
+      "format": "idn-email",
+      "title": "IDN Email",
+      "description": "Internationalized email format",
+      "default": "用户@例え.jp"
+    },
+    "hostname": {
+      "type": "string",
+      "format": "hostname",
+      "title": "Hostname",
+      "description": "Hostname format",
+      "default": "example.com"
+    },
+    "idnHostname": {
+      "type": "string",
+      "format": "idn-hostname",
+      "title": "IDN Hostname",
+      "description": "Internationalized hostname format",
+      "default": "例え.jp"
+    },
+    "ipv4": {
+      "type": "string",
+      "format": "ipv4",
+      "title": "IPv4",
+      "description": "IPv4 address format",
+      "default": "192.168.1.1"
+    },
+    "ipv6": {
+      "type": "string",
+      "format": "ipv6",
+      "title": "IPv6",
+      "description": "IPv6 address format",
+      "default": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "title": "URI",
+      "description": "URI format",
+      "default": "https://example.com/path"
+    },
+    "uriReference": {
+      "type": "string",
+      "format": "uri-reference",
+      "title": "URI Reference",
+      "description": "URI reference format",
+      "default": "/path/to/resource"
+    },
+    "iri": {
+      "type": "string",
+      "format": "iri",
+      "title": "IRI",
+      "description": "IRI format",
+      "default": "https://例え.jp/パス"
+    },
+    "iriReference": {
+      "type": "string",
+      "format": "iri-reference",
+      "title": "IRI Reference",
+      "description": "IRI reference format",
+      "default": "/パス/リソース"
+    },
+    "uriTemplate": {
+      "type": "string",
+      "format": "uri-template",
+      "title": "URI Template",
+      "description": "URI template format",
+      "default": "https://example.com/{id}/profile"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "UUID",
+      "description": "UUID format",
+      "default": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "jsonPointer": {
+      "type": "string",
+      "format": "json-pointer",
+      "title": "JSON Pointer",
+      "description": "JSON pointer format",
+      "default": "/properties/name"
+    },
+    "relativeJsonPointer": {
+      "type": "string",
+      "format": "relative-json-pointer",
+      "title": "Relative JSON Pointer",
+      "description": "Relative JSON pointer format",
+      "default": "0/name"
+    },
+    "regex": {
+      "type": "string",
+      "format": "regex",
+      "title": "Regex",
+      "description": "Regular expression format",
+      "default": "^[a-zA-Z0-9]+$"
+    },
+    "text": {
+      "format": "text",
+      "title": "Text",
+      "description": "Multiline text format (custom)",
+      "default": "This is a multiline text.\nIt spans multiple lines.\nUseful for longer content."
+    },
+    "json": {
+      "format": "json",
+      "title": "JSON",
+      "description": "JSON format (custom)",
+      "default": "{\"key\": \"value\", \"number\": 42}"
+    },
+    "html": {
+      "format": "html",
+      "title": "HTML",
+      "description": "HTML format (custom)",
+      "default": "<div><h1>Hello World</h1><p>This is a paragraph.</p></div>"
+    },
+    "plainString": {
+      "type": "string",
+      "title": "Plain String",
+      "description": "Plain string without format",
+      "default": "Hello World"
+    },
+    "plainNumber": {
+      "type": "number",
+      "title": "Plain Number",
+      "description": "Plain number without format",
+      "default": 42.5
+    },
+    "plainInteger": {
+      "type": "integer",
+      "title": "Plain Integer",
+      "description": "Plain integer without format",
+      "default": 100
+    },
+    "booleanField": {
+      "type": "boolean",
+      "title": "Boolean",
+      "description": "Boolean true/false",
+      "default": true
+    },
+    "enumField": {
+      "type": "string",
+      "enum": ["option1", "option2", "option3"],
+      "title": "Enum",
+      "description": "Enumerated values",
+      "default": "option1"
+    }
+  }
+}
