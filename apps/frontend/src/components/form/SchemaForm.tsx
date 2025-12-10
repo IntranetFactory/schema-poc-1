@@ -101,25 +101,32 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
   const form = useForm({
     defaultValues: defaultValue,
     onSubmit: async ({ value }) => {
-      // Validate the entire form
+      // Validate the entire form first
       const result = validateData(value, schema)
       
-      if (result.valid) {
-        onSubmit?.(value)
-      } else {
-        // Set errors on fields
+      if (!result.valid) {
+        // Set errors on all fields with validation issues
         if (result.errors) {
           result.errors.forEach((error: any) => {
-            const fieldPath = error.instancePath.replace('/', '')
+            const fieldPath = error.instancePath.replace(/^\//, '') // Remove leading slash
             if (fieldPath) {
               form.setFieldMeta(fieldPath, (meta) => ({
                 ...meta,
                 errors: [error.message],
+                errorMap: {
+                  ...meta.errorMap,
+                  onSubmit: error.message,
+                }
               }))
             }
           })
         }
+        // Do not call onSubmit callback when validation fails
+        return
       }
+      
+      // Only call onSubmit when validation passes
+      onSubmit?.(value)
     },
   })
 
