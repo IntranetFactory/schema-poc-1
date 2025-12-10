@@ -174,4 +174,39 @@ describe('InputEnum', () => {
       expect(screen.queryByText(/must not be empty/i)).not.toBeInTheDocument()
     })
   })
+
+  it('should NOT show error for empty non-required enum field', async () => {
+    render(
+      <TestWrapper
+        required={false}
+        validatorFn={(value) => {
+          // Non-required enum should allow empty/undefined values
+          if (!value || value === '') return undefined
+          // But if a value is provided, it must be valid
+          const validOptions = ['Option 1', 'Option 2', 'Option 3']
+          return validOptions.includes(value) ? undefined : 'must be equal to one of the allowed values'
+        }}
+      >
+        <InputEnum 
+          name="option" 
+          label="Choose Option"
+          required={false}
+          validators={{
+            onBlur: ({ value }) => {
+              if (!value || value === '') return undefined
+              const validOptions = ['Option 1', 'Option 2', 'Option 3']
+              return validOptions.includes(value) ? undefined : 'must be equal to one of the allowed values'
+            },
+          }}
+        />
+      </TestWrapper>
+    )
+
+    const trigger = screen.getByRole('combobox')
+    expect(trigger).toBeInTheDocument()
+    
+    // Should not show any error for empty value when not required
+    expect(screen.queryByText(/must not be empty/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/must be equal to one of the allowed values/i)).not.toBeInTheDocument()
+  })
 })
