@@ -2,6 +2,19 @@
 
 This file documents the implementation decisions and rationale for the SemSchema custom JSON Schema vocabulary.
 
+## 🚨 CRITICAL: AGENT INSTRUCTIONS - READ THIS BEFORE ANYTHING ELSE 🚨
+
+**⚠️ THIS FILE CONTAINS MANDATORY WORKFLOW RULES FOR AGENTS ⚠️**
+
+**IF YOU ARE AN AI AGENT:**
+- **READ THIS FILE FIRST** - Lines 1-100 - BEFORE any other documentation
+- **THEN** read INSTRUCTIONS.md for technical implementation details
+- **NEVER** skip to code without reading both files in this order
+
+**FILE PURPOSES:**
+- **agents.md** (THIS FILE) = Agent workflow, visual verification, screenshot requirements
+- **INSTRUCTIONS.md** = Technical details, testing, validation, styling conventions
+
 ## 🚨 CRITICAL: Visual Verification Requirements - READ THIS FIRST 🚨
 
 **⚠️ WARNING: Ignoring these requirements wastes user time and demonstrates incompetence ⚠️**
@@ -10,8 +23,9 @@ This file documents the implementation decisions and rationale for the SemSchema
 
 ### Before You Start ANY Visual Work:
 
-**READ THIS FILE FIRST** - Line 1 to line 50 - EVERY SINGLE TIME you work on visual changes
+**READ THIS SECTION** - Lines 1 to 120 - EVERY SINGLE TIME you work on visual changes
 **DO NOT SKIP TO CODE** - You WILL make mistakes if you don't read this first
+**DO NOT START CODING UNTIL YOU UNDERSTAND THE SCREENSHOT WORKFLOW**
 
 ### The Iron Rules:
 
@@ -20,10 +34,15 @@ This file documents the implementation decisions and rationale for the SemSchema
    - ❌ NEVER assume Tailwind classes are working
    - ✅ ALWAYS test on actual running application
 
-2. **EVERY visual change MUST be verified with screenshots**
+2. **EVERY visual change MUST be verified with screenshots STORED IN THE REPOSITORY**
    - Use `playwright-browser_take_screenshot` for EVERY change
    - Take BEFORE and AFTER screenshots
-   - Include screenshots in commit messages and PR descriptions
+   - **CRITICAL: Copy screenshots from /tmp/playwright-logs/ to /screenshots/ directory in the repository**
+   - Use descriptive filenames: `01-feature-before.png`, `02-feature-after.png`
+   - Create a README.md in /screenshots/ documenting what each screenshot proves
+   - Provide GitHub links to the screenshots in PR descriptions and comment replies
+   - ❌ NEVER leave screenshots only in /tmp - they will be lost
+   - ✅ ALWAYS commit screenshots to the repository with `report_progress`
 
 3. **ACTUALLY EXAMINE THE SCREENSHOT**
    - Don't just take it and ignore it

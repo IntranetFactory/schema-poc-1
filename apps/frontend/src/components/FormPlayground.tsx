@@ -161,7 +161,7 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
             <div className="flex-1 overflow-auto p-4">
               {schema && data ? (
                 <SchemaForm
-                  key={schemaText} // Force re-render when schema changes
+                  key={`${schemaText}-${dataText}`} // Force re-render when schema OR data changes
                   schema={schema}
                   initialValue={data}
                   onSubmit={handleFormSubmit}

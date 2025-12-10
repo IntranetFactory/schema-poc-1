@@ -68,6 +68,12 @@ function validateField(value: any, fieldSchema: SchemaObject, fieldName: string,
     }
   }
 
+  // For non-required fields, if value is empty/undefined, skip validation
+  // This prevents enum validation errors when no selection is made on optional fields
+  if (!isRequired && (value === undefined || value === null || value === '')) {
+    return undefined
+  }
+
   // Create a temporary schema for this field within an object
   const tempSchema: SchemaObject = {
     type: 'object',
@@ -101,25 +107,59 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
   const form = useForm({
     defaultValues: defaultValue,
     onSubmit: async ({ value }) => {
-      // Validate the entire form
-      const result = validateData(value, schema)
+      // Filter out empty values for non-required fields before validation
+      // This prevents enum validation errors on optional fields with no selection
+      const requiredFields = schema.required && Array.isArray(schema.required) ? schema.required : []
+      const cleanedValue: Record<string, any> = {}
       
-      if (result.valid) {
-        onSubmit?.(value)
-      } else {
-        // Set errors on fields
+      // Get all possible fields from schema
+      const allFields = schema.properties ? Object.keys(schema.properties) : []
+      
+      for (const key of allFields) {
+        const val = value[key]
+        const propSchema = schema.properties?.[key]
+        
+        // Check if field is required at object level OR property level
+        const isObjectLevelRequired = requiredFields.includes(key)
+        const isPropertyLevelRequired = propSchema && typeof propSchema === 'object' && (propSchema as any).required === true
+        const isRequired = isObjectLevelRequired || isPropertyLevelRequired
+        
+        // Include the field if it's required OR if it has a non-empty value
+        if (isRequired || (val !== undefined && val !== null && val !== '')) {
+          cleanedValue[key] = val
+        }
+      }
+      
+      // Validate the entire form with cleaned data
+      const result = validateData(cleanedValue, schema)
+      
+      if (!result.valid) {
+        // Set errors on all fields with validation issues
         if (result.errors) {
           result.errors.forEach((error: any) => {
-            const fieldPath = error.instancePath.replace('/', '')
+            // Remove leading slash from instancePath to get field name
+            const fieldPath = error.instancePath.startsWith('/') 
+              ? error.instancePath.substring(1) 
+              : error.instancePath
+            
             if (fieldPath) {
               form.setFieldMeta(fieldPath, (meta) => ({
                 ...meta,
                 errors: [error.message],
+                errorMap: {
+                  ...meta.errorMap,
+                  onSubmit: error.message,
+                }
               }))
             }
           })
         }
+        // Do not call onSubmit callback when validation fails
+        return
       }
+      
+      // Only call onSubmit when validation passes (with cleaned data)
+      onSubmit?.(cleanedValue)
     },
   })
 
