@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useForm } from '@tanstack/react-form'
 import { InputDuration } from '../InputDuration'
@@ -28,7 +28,7 @@ describe('InputDuration', () => {
         },
         required: required ? ['duration'] : []
       },
-      validateField: (value: any, fieldName: string) => {
+      validateField: (value: any) => {
         if (required && !value) {
           return 'must not be empty'
         }

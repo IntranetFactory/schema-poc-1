@@ -12,5 +12,6 @@ export interface FormControlProps {
   validators?: {
     onChange?: ({ value }: { value: any }) => string | undefined
     onBlur?: ({ value }: { value: any }) => string | undefined
+    onSubmit?: ({ value }: { value: any }) => string | undefined
   }
 }

@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import { useForm } from '@tanstack/react-form'
 import { InputDate } from '../InputDate'
 import { FormProvider } from '../FormContext'
@@ -10,13 +9,11 @@ describe('InputDate', () => {
   function TestWrapper({ 
     children, 
     defaultValue,
-    required = false,
-    validators = {}
+    required = false
   }: { 
     children: React.ReactNode
     defaultValue?: string
     required?: boolean
-    validators?: any
   }) {
     const form = useForm({
       defaultValues: { date: defaultValue || '' },
@@ -32,7 +29,7 @@ describe('InputDate', () => {
         },
         required: required ? ['date'] : []
       },
-      validateField: (value: any, fieldName: string) => {
+      validateField: (value: any) => {
         if (required && !value) {
           return 'must not be empty'
         }

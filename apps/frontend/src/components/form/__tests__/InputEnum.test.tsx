@@ -107,7 +107,6 @@ describe('InputEnum', () => {
   })
 
   it('should validate required field on submit', async () => {
-    const user = userEvent.setup()
     render(
       <TestWrapper 
         required
