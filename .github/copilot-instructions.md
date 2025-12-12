@@ -73,7 +73,7 @@ Dynamic form generation from JSON Schema:
 **Test Coverage Requirements**:
 - ALL new input controls MUST have comprehensive tests
 - Tests must verify: rendering, validation, required fields, invalid/valid values, labels, user interaction
-- Follow test template in INSTRUCTIONS.md lines 256-427
+- Follow test template in INSTRUCTIONS.md under "MANDATORY TEST TEMPLATE" section
 
 ### 3. Styling Rules - Critical for UI Work
 
@@ -104,7 +104,7 @@ Dynamic form generation from JSON Schema:
 **⚠️ ALL UI/visual changes require Playwright verification - NO EXCEPTIONS**
 
 **Before starting visual work**:
-1. **READ** `agents.md` lines 1-120 first
+1. **READ** `agents.md` "Visual Verification Requirements" section first
 2. **READ** `INSTRUCTIONS.md` styling section
 
 **Required workflow for every UI change**:
