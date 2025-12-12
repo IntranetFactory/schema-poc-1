@@ -1,12 +1,16 @@
 import { Link } from '@tanstack/react-router'
 
 const schemaFiles = [
+  { name: 'Hello Schema', path: '/schemas/hello.schema.json', id: 'hello' },
   { name: 'Product Schema', path: '/schemas/product.schema.json', id: 'product' },
   { name: 'FAQ Item Schema', path: '/schemas/faqitem.schema.json', id: 'faqitem' },
   { name: 'Person Schema', path: '/schemas/person.schema.json', id: 'person' },
   { name: 'Blog Post Schema', path: '/schemas/blogpost.schema.json', id: 'blogpost' },
   { name: 'All Formats Schema', path: '/schemas/all-formats.schema.json', id: 'all-formats' },
-   { name: 'Test Schema', path: '/schemas/test.schema.json', id: 'test' },
+  { name: 'All Formats (Required)', path: '/schemas/all-formats-required.schema.json', id: 'all-formats-required' },
+  { name: 'All Formats (Default Values)', path: '/schemas/all-formats-default.schema.json', id: 'all-formats-default' },
+  { name: 'All Formats (Invalid Defaults)', path: '/schemas/all-formats-invalid.schema.json', id: 'all-formats-invalid' },
+  { name: 'Test Schema', path: '/schemas/test.schema.json', id: 'test' },
 ]
 
 export function Home() {

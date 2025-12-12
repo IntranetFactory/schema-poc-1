@@ -10,7 +10,6 @@ export function InputBoolean({
   name,
   label,
   description,
-  required,
   disabled,
   validators,
 }: FormControlProps) {

@@ -95,7 +95,6 @@ describe('InputNumber', () => {
   })
 
   it('should detect invalid number format', async () => {
-    const user = userEvent.setup()
     render(
       <TestWrapper
         validatorFn={(value) => {

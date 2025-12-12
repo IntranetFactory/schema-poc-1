@@ -1,10 +1,12 @@
-import CodeMirror from '@uiw/react-codemirror'
-import { json } from '@codemirror/lang-json'
+import { lazy, Suspense } from 'react'
 import type { FormControlProps } from './types'
 import { useFormContext } from './FormContext'
 import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
+
+// Lazy load CodeMirror
+const CodeMirrorEditor = lazy(() => import('./CodeMirrorJson'))
 
 export function InputJson({
 
@@ -31,20 +33,14 @@ export function InputJson({
           <div className="space-y-2">
             <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
             <div className={`border rounded-md overflow-hidden ${field.state.meta.errors?.[0] ? 'border-destructive' : 'border-input'}`}>
-              <CodeMirror
-                value={stringValue}
-                height="200px"
-                extensions={[json()]}
-                onChange={field.handleChange}
-                onBlur={field.handleBlur}
-                editable={!disabled}
-                theme="light"
-                basicSetup={{
-                  lineNumbers: true,
-                  foldGutter: true,
-                  highlightActiveLine: true,
-                }}
-              />
+              <Suspense fallback={<div className="p-4 text-muted-foreground">Loading editor...</div>}>
+                <CodeMirrorEditor
+                  value={stringValue}
+                  onChange={field.handleChange}
+                  onBlur={field.handleBlur}
+                  disabled={disabled}
+                />
+              </Suspense>
             </div>
             <FormDescription description={description} />
             <FormError name={name} error={field.state.meta.errors?.[0]} />

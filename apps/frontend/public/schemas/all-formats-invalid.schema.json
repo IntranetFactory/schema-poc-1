@@ -1,0 +1,190 @@
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$id": "https://example.com/schemas/all-formats-invalid.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "title": "All Formats (Invalid Defaults)",
+  "description": "A schema showcasing all supported format values with intentionally invalid default values for testing",
+  "type": "object",
+  "properties": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Date Time",
+      "description": "Date and time format",
+      "default": "not-a-date-time"
+    },
+    "time": {
+      "type": "string",
+      "format": "time",
+      "title": "Time",
+      "description": "Time format",
+      "default": "25:99:99"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date",
+      "description": "Date format",
+      "default": "2024-13-45"
+    },
+    "duration": {
+      "type": "string",
+      "format": "duration",
+      "title": "Duration",
+      "description": "Duration format",
+      "default": "not-a-duration"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email",
+      "description": "Email format",
+      "default": "not-an-email"
+    },
+    "idnEmail": {
+      "type": "string",
+      "format": "idn-email",
+      "title": "IDN Email",
+      "description": "Internationalized email format",
+      "default": "invalid@"
+    },
+    "hostname": {
+      "type": "string",
+      "format": "hostname",
+      "title": "Hostname",
+      "description": "Hostname format",
+      "default": "invalid_hostname!"
+    },
+    "idnHostname": {
+      "type": "string",
+      "format": "idn-hostname",
+      "title": "IDN Hostname",
+      "description": "Internationalized hostname format",
+      "default": "-invalid-.host"
+    },
+    "ipv4": {
+      "type": "string",
+      "format": "ipv4",
+      "title": "IPv4",
+      "description": "IPv4 address format",
+      "default": "999.999.999.999"
+    },
+    "ipv6": {
+      "type": "string",
+      "format": "ipv6",
+      "title": "IPv6",
+      "description": "IPv6 address format",
+      "default": "not:an:ipv6:address"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "title": "URI",
+      "description": "URI format",
+      "default": "not a uri"
+    },
+    "uriReference": {
+      "type": "string",
+      "format": "uri-reference",
+      "title": "URI Reference",
+      "description": "URI reference format",
+      "default": "\\invalid\\reference"
+    },
+    "iri": {
+      "type": "string",
+      "format": "iri",
+      "title": "IRI",
+      "description": "IRI format",
+      "default": "not an iri"
+    },
+    "iriReference": {
+      "type": "string",
+      "format": "iri-reference",
+      "title": "IRI Reference",
+      "description": "IRI reference format",
+      "default": "\\invalid\\iri"
+    },
+    "uriTemplate": {
+      "type": "string",
+      "format": "uri-template",
+      "title": "URI Template",
+      "description": "URI template format",
+      "default": "{unclosed"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "UUID",
+      "description": "UUID format",
+      "default": "not-a-uuid"
+    },
+    "jsonPointer": {
+      "type": "string",
+      "format": "json-pointer",
+      "title": "JSON Pointer",
+      "description": "JSON pointer format",
+      "default": "invalid-pointer"
+    },
+    "relativeJsonPointer": {
+      "type": "string",
+      "format": "relative-json-pointer",
+      "title": "Relative JSON Pointer",
+      "description": "Relative JSON pointer format",
+      "default": "invalid"
+    },
+    "regex": {
+      "type": "string",
+      "format": "regex",
+      "title": "Regex",
+      "description": "Regular expression format",
+      "default": "[unclosed"
+    },
+    "text": {
+      "format": "text",
+      "title": "Text",
+      "description": "Multiline text format (custom)"
+    },
+    "json": {
+      "format": "json",
+      "title": "JSON",
+      "description": "JSON format (custom)",
+      "default": "{invalid json"
+    },
+    "html": {
+      "format": "html",
+      "title": "HTML",
+      "description": "HTML format (custom)"
+    },
+    "plainString": {
+      "type": "string",
+      "title": "Plain String",
+      "description": "Plain string without format"
+    },
+    "plainNumber": {
+      "type": "number",
+      "title": "Plain Number",
+      "description": "Plain number without format"
+    },
+    "plainInteger": {
+      "type": "integer",
+      "title": "Plain Integer",
+      "description": "Plain integer without format"
+    },
+    "booleanField": {
+      "type": "boolean",
+      "title": "Boolean",
+      "description": "Boolean true/false"
+    },
+    "enumField": {
+      "type": "string",
+      "enum": ["option1", "option2", "option3"],
+      "title": "Enum",
+      "description": "Enumerated values"
+    }
+  }
+}
