@@ -6,11 +6,11 @@ import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputBoolean({
-
   name,
   label,
   description,
   disabled,
+  readonly,
   validators,
 }: FormControlProps) {
   const { form } = useFormContext()
@@ -26,7 +26,7 @@ export function InputBoolean({
               checked={field.state.value || false}
               onCheckedChange={field.handleChange}
               onBlur={field.handleBlur}
-              disabled={disabled}
+              disabled={disabled || readonly}
               aria-invalid={!!field.state.meta.errors?.[0]}
               aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : description ? `${name}-description` : undefined}
             />

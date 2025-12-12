@@ -198,6 +198,7 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
         const format = propSchema.format
         const hasEnum = 'enum' in propSchema && Array.isArray((propSchema as any).enum)
         const isRequired = (propSchema as any).required === true || requiredFields.includes(key)
+        const isReadonly = (propSchema as any).readonly === true
         const label = propSchema.title || key
         const description = propSchema.description
 
@@ -215,7 +216,8 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
             label={label}
             description={description}
             required={shouldShowRequired}
-            disabled={false}
+            disabled={isReadonly}
+            readonly={isReadonly}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),
               onSubmit: ({ value }) => validateField(value, propSchema, key, schema),

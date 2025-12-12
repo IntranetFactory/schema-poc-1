@@ -13,6 +13,7 @@ export function InputIpv4({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -29,6 +30,7 @@ export function InputIpv4({
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
         disabled={disabled}
+            readOnly={readonly}
         placeholder="192.168.1.1"
         aria-invalid={!!field.state.meta.errors?.[0]}
         aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}

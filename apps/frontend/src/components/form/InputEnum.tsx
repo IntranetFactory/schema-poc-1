@@ -17,6 +17,7 @@ export function InputEnum({
   description,
   required,
   disabled,
+  readonly,
   validators,
 }: FormControlProps) {
   const { form, schema } = useFormContext()
@@ -33,7 +34,7 @@ export function InputEnum({
           <Select
             value={field.state.value ?? ''}
             onValueChange={field.handleChange}
-            disabled={disabled}
+            disabled={disabled || readonly}
           >
             <SelectTrigger
               id={name}

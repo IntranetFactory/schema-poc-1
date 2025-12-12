@@ -16,6 +16,7 @@ export function InputHtml({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -31,6 +32,7 @@ export function InputHtml({
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
                 disabled={disabled}
+            readOnly={readonly}
               />
             </Suspense>
           </div>

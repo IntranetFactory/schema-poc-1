@@ -9,6 +9,7 @@ export interface FormControlProps {
   description?: string
   required?: boolean
   disabled?: boolean
+  readonly?: boolean
   validators?: {
     onChange?: ({ value }: { value: any }) => string | undefined
     onBlur?: ({ value }: { value: any }) => string | undefined
