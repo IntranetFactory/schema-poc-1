@@ -42,6 +42,8 @@ function EnumFieldInner({
     <div className="space-y-2">
       <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
       <Select
+        // Key prop forces re-render when value changes - required for Radix UI Select with tanstack-form
+        // See: https://stackoverflow.com/a/78746413
         key={`${name}-${currentValue}`}
         value={selectValue}
         onValueChange={(value) => {
@@ -95,6 +97,8 @@ export function InputEnum({
   return (
     <form.Field 
       name={name}
+      // Note: defaultValue is handled by the form's defaultValues from useForm
+      // Do not set defaultValue here as it can cause issues with Radix UI Select
       validators={validators}
     >
       {(field: any) => (
