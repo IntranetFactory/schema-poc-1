@@ -5,6 +5,41 @@ import { SchemaForm } from '@/components/form'
 import type { SchemaObject } from 'ajv'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
+/**
+ * Generate default values from schema
+ */
+function generateDefaultValue(schema: SchemaObject): Record<string, any> {
+  const defaults: Record<string, any> = {}
+
+  if (schema.properties && typeof schema.properties === 'object') {
+    for (const [key, propSchema] of Object.entries(schema.properties)) {
+      if (typeof propSchema !== 'object' || propSchema === null) continue
+
+      // Check if default value is provided
+      if ('default' in propSchema) {
+        defaults[key] = (propSchema as any).default
+      } else {
+        // Generate default based on type
+        const type = (propSchema as any).type || ((propSchema as any).format ? 'string' : undefined)
+        
+        if (type === 'boolean') {
+          defaults[key] = false
+        } else if (type === 'number' || type === 'integer') {
+          defaults[key] = undefined
+        } else if (type === 'string') {
+          defaults[key] = ''
+        } else if (type === 'array') {
+          defaults[key] = []
+        } else if (type === 'object') {
+          defaults[key] = {}
+        }
+      }
+    }
+  }
+
+  return defaults
+}
+
 const defaultSchema = `{
   "type": "object",
   "properties": {
@@ -45,12 +80,16 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
   const [schemaError, setSchemaError] = useState<string>('')
   const [dataError, setDataError] = useState<string>('')
 
-  // Parse schema when schemaText changes
+  // Parse schema when schemaText changes and generate default data
   useEffect(() => {
     try {
       const parsed = JSON.parse(schemaText)
       setSchema(parsed)
       setSchemaError('')
+      
+      // Generate default values from schema and update dataText
+      const defaultValues = generateDefaultValue(parsed)
+      setDataText(JSON.stringify(defaultValues, null, 2))
     } catch (error) {
       setSchemaError(error instanceof Error ? error.message : String(error))
       setSchema(null)
