@@ -73,7 +73,7 @@ Dynamic form generation from JSON Schema:
 **Test Coverage Requirements**:
 - ALL new input controls MUST have comprehensive tests
 - Tests must verify: rendering, validation, required fields, invalid/valid values, labels, user interaction
-- Follow test template in INSTRUCTIONS.md under "MANDATORY TEST TEMPLATE" section
+- Follow test template in INSTRUCTIONS.md section "Test Requirements for New Components" (search for "MANDATORY TEST TEMPLATE")
 
 ### 3. Styling Rules - Critical for UI Work
 
@@ -169,8 +169,8 @@ Dynamic form generation from JSON Schema:
 ## Key Files and Documentation
 
 **Read these files for detailed information**:
+- `agents.md`: **CRITICAL agent workflow rules** - Read FIRST before any other documentation, contains mandatory visual verification requirements
 - `INSTRUCTIONS.md`: Complete implementation guide, testing requirements, styling rules
-- `agents.md`: Visual verification requirements, SemSchema vocabulary details
 - `README.md`: Project overview, quick start, API documentation
 - `packages/sem-schema/README.md`: SemSchema API and vocabulary details
 
