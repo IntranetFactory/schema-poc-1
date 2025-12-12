@@ -6,7 +6,6 @@ This repository contains a proof-of-concept for a custom JSON Schema vocabulary 
 
 This is a **pnpm workspace** with:
 - `packages/sem-schema`: Custom JSON Schema vocabulary with AJV validation
-- `packages/examples`: Example schemas demonstrating SemSchema usage
 - `apps/frontend`: Interactive React/Vite web playground with dynamic form generation
 
 ## Quick Start Commands
@@ -73,7 +72,7 @@ Dynamic form generation from JSON Schema:
 **Test Coverage Requirements**:
 - ALL new input controls MUST have comprehensive tests
 - Tests must verify: rendering, validation, required fields, invalid/valid values, labels, user interaction
-- Follow test template in INSTRUCTIONS.md section "Test Requirements for New Components" (search for "MANDATORY TEST TEMPLATE" within that section)
+- Follow test template in INSTRUCTIONS.md section "Test Requirements for New Components" (look for "MANDATORY TEST TEMPLATE")
 
 ### 3. Styling Rules - Critical for UI Work
 
@@ -151,7 +150,7 @@ Dynamic form generation from JSON Schema:
 - `undefined` fails ❌
 - Applies to ALL string types (json, html, text, date, email, etc.)
 
-**Implementation**: See the property-level validation logic in `packages/sem-schema/src/keywords/required.ts` in the `validate` function
+**Implementation**: See the property-level validation logic in `packages/sem-schema/src/keywords/required.ts` in the inner `validate` function (checks for null/undefined and empty strings)
 
 ### 6. Code Organization
 
