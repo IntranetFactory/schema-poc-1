@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import {
   Select,
   SelectContent,
@@ -33,26 +32,17 @@ function EnumFieldInner({
   enumValues: string[]
   form: any
 }) {
-  // Get the actual current value from form state values (not field state which may be stale)
-  const formStateValue = form.state.values[name]
+  // Get the actual value - prefer field.state.value, fallback to empty string
+  const currentValue = field.state.value ?? ''
   
-  // Initialize field value from form state if not set
-  useEffect(() => {
-    if (!field.state.value && formStateValue && enumValues.includes(formStateValue)) {
-      field.handleChange(formStateValue)
-    }
-  }, [formStateValue, field.state.value])
-  
-  // Use the form state value if field value is not set properly
-  const currentValue = field.state.value || formStateValue || ''
-  
-  // For Radix Select: only pass non-empty strings that are valid enum values
+  // Only pass valid enum values to Select, otherwise undefined for placeholder
   const selectValue = currentValue && enumValues.includes(currentValue) ? currentValue : undefined
   
   return (
     <div className="space-y-2">
       <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
       <Select
+        key={`${name}-${currentValue}`}
         value={selectValue}
         onValueChange={(value) => {
           field.handleChange(value)
@@ -102,13 +92,9 @@ export function InputEnum({
   const fieldSchema = schema.properties?.[name] as any
   const enumValues = fieldSchema?.enum || []
   
-  // Get the default value from form state
-  const defaultValue = form.state.values[name]
-  
   return (
     <form.Field 
-      name={name} 
-      defaultValue={defaultValue}
+      name={name}
       validators={validators}
     >
       {(field: any) => (
