@@ -24,8 +24,6 @@ function generateDefaultValue(schema: SchemaObject): Record<string, any> {
         
         if (type === 'boolean') {
           defaults[key] = false
-        } else if (type === 'number' || type === 'integer') {
-          defaults[key] = undefined
         } else if (type === 'string') {
           defaults[key] = ''
         } else if (type === 'array') {
@@ -33,6 +31,7 @@ function generateDefaultValue(schema: SchemaObject): Record<string, any> {
         } else if (type === 'object') {
           defaults[key] = {}
         }
+        // For number/integer, omit from defaults (undefined values are not included in JSON output)
       }
     }
   }

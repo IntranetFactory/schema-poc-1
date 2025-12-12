@@ -216,7 +216,7 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
             label={label}
             description={description}
             required={shouldShowRequired}
-            disabled={isReadonly}
+            disabled={false}
             readonly={isReadonly}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),

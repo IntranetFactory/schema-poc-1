@@ -32,7 +32,7 @@ export function InputEnum({
         <div className="space-y-2">
           <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
           <Select
-            value={field.state.value ?? ''}
+            value={field.state.value || ''}
             onValueChange={field.handleChange}
             disabled={disabled || readonly}
           >
