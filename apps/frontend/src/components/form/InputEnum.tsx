@@ -11,6 +11,12 @@ import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
+interface EnumFieldInnerProps extends Omit<FormControlProps, 'validators'> {
+  field: any
+  enumValues: string[]
+  form: any
+}
+
 function EnumFieldInner({
   field,
   name,
@@ -21,17 +27,7 @@ function EnumFieldInner({
   readonly,
   enumValues,
   form,
-}: {
-  field: any
-  name: string
-  label?: string
-  description?: string
-  required?: boolean
-  disabled?: boolean
-  readonly?: boolean
-  enumValues: string[]
-  form: any
-}) {
+}: EnumFieldInnerProps) {
   // Get the actual value - prefer field.state.value, fallback to empty string
   const currentValue = field.state.value ?? ''
   
