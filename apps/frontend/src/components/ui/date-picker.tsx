@@ -1,5 +1,5 @@
 import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ interface DatePickerProps {
   onDateChange?: (date: Date | undefined) => void
   placeholder?: string
   disabled?: boolean
+  readOnly?: boolean
   className?: string
 }
 
@@ -23,6 +24,7 @@ export function DatePicker({
   onDateChange,
   placeholder = "Pick a date",
   disabled = false,
+  readOnly = false,
   className,
 }: DatePickerProps) {
   return (
@@ -35,13 +37,14 @@ export function DatePicker({
             !date && "text-muted-foreground",
             className
           )}
-          disabled={disabled}
+          disabled={disabled || readOnly}
+          type="button"
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? format(date, "PPP") : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
           selected={date}

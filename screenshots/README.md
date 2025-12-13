@@ -1,6 +1,45 @@
-# Form Validation Fix - Visual Proof
+# Screenshots Directory
 
-This directory contains screenshots proving that the form validation issues have been fixed.
+This directory contains all screenshots proving visual changes and functionality.
+
+## ⚠️ IMPORTANT: Screenshot Usage Rules
+
+**When referencing screenshots in PRs, issues, or comments:**
+- ✅ **CORRECT:** Use relative paths like `![Description](screenshots/filename.png)`
+- ❌ **WRONG:** Using GitHub asset URLs like `https://github.com/user-attachments/assets/xxx` - THESE DO NOT WORK
+- ✅ All screenshots MUST be stored in this repository directory
+- ✅ All screenshots MUST be committed with code changes using `report_progress`
+
+## Current Screenshots
+
+### Date/DateTime Picker Reimplementation (Latest)
+
+#### new-01-form.png
+**Shows:** Form playground with new date and datetime pickers matching shadcn/ui specification
+- Date picker: Button-styled with "June 1st, 2025" and calendar icon
+- DateTime picker: Two vertically stacked fields - "Date" button and "Time" input
+- Matches shadcn/ui reference exactly
+
+#### new-02-date-open.png  
+**Shows:** Date picker with calendar popover open
+- Large calendar dropdown below the date button
+- Month/year selectors at top
+- Full calendar grid with proper styling
+- Matches shadcn/ui "Picker with Input" pattern
+
+#### new-03-datetime-open.png
+**Shows:** DateTime picker with calendar popover open for date selection
+- Date button with calendar open
+- Time input field visible separately
+- Vertical stacking of date and time fields
+- Matches shadcn/ui datetime picker reference
+
+#### final-comparison.png
+**Shows:** Side-by-side view of both pickers in the form
+
+---
+
+### Previous Form Validation Screenshots
 
 ## Test URL
 http://localhost:5173/form-playground?schema=%2Fschemas%2Ftest.schema.json

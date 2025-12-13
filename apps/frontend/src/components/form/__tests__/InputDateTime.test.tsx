@@ -38,14 +38,16 @@ describe('InputDateTime', () => {
     return <FormProvider value={mockContext}>{children}</FormProvider>
   }
 
-  it('should render datetime-local input', () => {
+  it('should render date button and time input', () => {
     const { container } = render(
       <TestWrapper>
         <InputDateTime name="datetime" />
       </TestWrapper>
     )
-    const input = container.querySelector('input')
-    expect(input).toHaveAttribute('type', 'datetime-local')
+    const button = container.querySelector('button')
+    const timeInput = container.querySelector('input[type="time"]')
+    expect(button).toBeTruthy()
+    expect(timeInput).toBeTruthy()
   })
 
   it('should have proper styling with border', () => {
@@ -54,8 +56,10 @@ describe('InputDateTime', () => {
         <InputDateTime name="datetime" />
       </TestWrapper>
     )
-    const input = container.querySelector('input')
-    expect(input?.className).toContain('border')
+    const button = container.querySelector('button')
+    const timeInput = container.querySelector('input[type="time"]')
+    expect(button?.className).toContain('border')
+    expect(timeInput?.className).toContain('border')
   })
 
   it('should show required indicator when field is required', () => {
@@ -68,7 +72,7 @@ describe('InputDateTime', () => {
   })
 
   it('should support validation via validators prop', () => {
-    render(
+    const { container } = render(
       <TestWrapper required>
         <InputDateTime 
           name="datetime" 
@@ -82,7 +86,10 @@ describe('InputDateTime', () => {
       </TestWrapper>
     )
     // Test that the component accepts validators prop without error
-    expect(screen.getByLabelText(/datetime/i)).toBeInTheDocument()
+    const button = container.querySelector('button')
+    const timeInput = container.querySelector('input[type="time"]')
+    expect(button).toBeTruthy()
+    expect(timeInput).toBeTruthy()
   })
 
   it('should display label and description', () => {

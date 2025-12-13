@@ -46,7 +46,7 @@ function EnumFieldInner({
           field.handleChange(value)
           // Clear any errors when a valid selection is made
           if (value && enumValues.includes(value)) {
-            form.setFieldMeta(name, (meta) => ({
+            form.setFieldMeta(name, (meta: any) => ({
               ...meta,
               errors: [],
             }))
