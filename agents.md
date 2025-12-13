@@ -16,9 +16,9 @@ This file documents the implementation decisions and rationale for the SemSchema
 **SCREENSHOT CHECKLIST - COMPLETE THIS BEFORE CLAIMING YOU'RE DONE:**
 - [ ] Screenshots saved to `/screenshots/` directory (NOT /tmp, NOT external hosting)
 - [ ] Descriptive filenames used (01-feature-before.png, 02-feature-after.png)
-- [ ] README.md created in /screenshots/ explaining each screenshot
+- [ ] **DO NOT CREATE README.md IN /screenshots/** - User does NOT want documentation files there
 - [ ] Screenshots committed to repository using report_progress
-- [ ] Screenshot links added to PR description using `![Description](screenshots/filename.png)`
+- [ ] Screenshot filenames and descriptions listed in PR/commit message (NOT in a README file)
 - [ ] BEFORE and AFTER screenshots taken for every visual change
 - [ ] Screenshots actually examined to verify they match requirements
 
@@ -65,13 +65,14 @@ This file documents the implementation decisions and rationale for the SemSchema
    - Take BEFORE and AFTER screenshots
    - **CRITICAL: Save screenshots to /screenshots/ directory in the repository**
    - Use descriptive filenames: `01-feature-before.png`, `02-feature-after.png`
-   - Create a README.md in /screenshots/ documenting what each screenshot proves
+   - **❌ DO NOT CREATE README.md IN /screenshots/** - List screenshot names in PR/commit message instead
    - **⚠️ SCREENSHOT LINKS IN PR/COMMENTS:**
      - ❌ NEVER use GitHub asset URLs like `https://github.com/user-attachments/assets/xxx` - THESE DO NOT WORK
      - ❌ NEVER upload screenshots outside the repository
      - ✅ ALWAYS store screenshots in `/screenshots/` directory in the repository
      - ✅ ALWAYS reference screenshots using relative paths like `![Description](screenshots/filename.png)`
      - ✅ ALWAYS commit screenshots to the repository with `report_progress`
+     - ✅ ALWAYS list screenshot filenames and what they show in your PR/commit message
    - ❌ NEVER leave screenshots only in /tmp - they will be lost
    - ❌ NEVER rely on external screenshot hosting - it breaks and wastes user time
 
