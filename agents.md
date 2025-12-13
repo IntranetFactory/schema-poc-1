@@ -37,8 +37,14 @@ This file documents the implementation decisions and rationale for the SemSchema
 - **THEN** read INSTRUCTIONS.md for technical implementation details
 - **NEVER** skip to code without reading both files in this order
 
+**CRITICAL RULES:**
+- **❌ NEVER use store_memory tool** - All agent instructions and reminders MUST be stored in this file (agents.md)
+- **❌ DO NOT use proprietary memory tools** - They don't persist across sessions or agents
+- **✅ ALWAYS update agents.md** when you learn important workflow rules or user preferences
+- **✅ This file is the ONLY place** for storing agent instructions and patterns
+
 **FILE PURPOSES:**
-- **agents.md** (THIS FILE) = Agent workflow, visual verification, screenshot requirements
+- **agents.md** (THIS FILE) = Agent workflow, visual verification, screenshot requirements, ALL agent instructions
 - **INSTRUCTIONS.md** = Technical details, testing, validation, styling conventions
 
 ## 🚨 CRITICAL: Visual Verification Requirements - READ THIS FIRST 🚨

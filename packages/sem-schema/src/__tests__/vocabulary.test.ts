@@ -345,7 +345,6 @@ describe('Vocabulary Definition Tests', () => {
         type: 'object',
         title: 'Person',
         table: {
-          table_name: 'persons',
           singular: 'person',
           singular_label: 'Person',
           plural_label: 'Persons'

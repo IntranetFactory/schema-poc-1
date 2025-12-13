@@ -59,7 +59,7 @@
           "description": "Human-readable description of the entity"
         }
       },
-      "required": ["table_name", "singular", "singular_label", "plural_label"]
+      "required": ["singular", "singular_label", "plural_label"]
     }
   }
 }
