@@ -63,11 +63,13 @@ describe('InputEnum', () => {
     const trigger = screen.getByRole('combobox')
     await user.click(trigger)
     
+    // Wait for the select to open and render options in the portal
     await waitFor(() => {
-      expect(screen.getByText('Option 1')).toBeInTheDocument()
-      expect(screen.getByText('Option 2')).toBeInTheDocument()
-      expect(screen.getByText('Option 3')).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Option 1' })).toBeInTheDocument()
     })
+    
+    expect(screen.getByRole('option', { name: 'Option 2' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Option 3' })).toBeInTheDocument()
   })
 
   it('should show required indicator when field is required', () => {
@@ -81,7 +83,7 @@ describe('InputEnum', () => {
 
   it('should validate required field on blur', async () => {
     const user = userEvent.setup()
-    render(
+    const form = render(
       <TestWrapper 
         required
         validatorFn={(value) => !value || value === '' ? 'must not be empty' : undefined}
@@ -98,8 +100,14 @@ describe('InputEnum', () => {
     )
 
     const trigger = screen.getByRole('combobox')
+    // Focus the trigger
     await user.click(trigger)
-    await user.tab()
+    
+    // Escape to close
+    await user.keyboard('{Escape}')
+    
+    // Trigger blur by clicking outside
+    await user.click(document.body)
 
     await waitFor(() => {
       expect(screen.getByText(/must not be empty/i)).toBeInTheDocument()
@@ -163,10 +171,10 @@ describe('InputEnum', () => {
     await user.click(trigger)
     
     await waitFor(() => {
-      expect(screen.getByText('Option 1')).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Option 1' })).toBeInTheDocument()
     })
     
-    const option1 = screen.getByText('Option 1')
+    const option1 = screen.getByRole('option', { name: 'Option 1' })
     await user.click(option1)
 
     await waitFor(() => {

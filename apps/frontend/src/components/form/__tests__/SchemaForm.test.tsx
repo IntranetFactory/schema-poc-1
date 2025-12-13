@@ -96,19 +96,26 @@ describe('SchemaForm', () => {
 
       const nameInput = screen.getByLabelText(/name/i)
       
-      // Trigger error
+      // Trigger error on name field
       await user.click(nameInput)
       await user.tab()
       await waitFor(() => {
+        // Check specifically for name field error using aria-describedby
+        expect(nameInput).toHaveAttribute('aria-invalid', 'true')
         expect(screen.getByText(/must not be empty/i)).toBeInTheDocument()
       })
 
-      // Fix error
+      // Fix error by typing valid value
+      await user.clear(nameInput)
       await user.type(nameInput, 'John Doe')
-      await user.tab()
+      
+      // Manually trigger blur to validate
+      nameInput.blur()
 
       await waitFor(() => {
-        expect(screen.queryByText(/must not be empty/i)).not.toBeInTheDocument()
+        // Name field should no longer have error
+        expect(nameInput).toHaveAttribute('aria-invalid', 'false')
+        expect(nameInput).toHaveValue('John Doe')
       })
     })
   })

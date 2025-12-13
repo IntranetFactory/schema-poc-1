@@ -43,14 +43,14 @@ function EnumFieldInner({
         key={`${name}-${currentValue}`}
         value={selectValue}
         onValueChange={(value) => {
+          // Clear errors first, then change value
+          // This ensures that selecting a valid value always clears validation errors
+          field.setMeta((meta: any) => ({
+            ...meta,
+            errors: [],
+            errorMap: {},
+          }))
           field.handleChange(value)
-          // Clear any errors when a valid selection is made
-          if (value && enumValues.includes(value)) {
-            form.setFieldMeta(name, (meta: any) => ({
-              ...meta,
-              errors: [],
-            }))
-          }
         }}
         disabled={disabled || readonly}
       >
@@ -58,6 +58,7 @@ function EnumFieldInner({
           id={name}
           aria-invalid={!!field.state.meta.errors?.[0]}
           aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+          onBlur={() => field.handleBlur()}
         >
           <SelectValue placeholder={required ? "Select an option *" : "Select an option"} />
         </SelectTrigger>
