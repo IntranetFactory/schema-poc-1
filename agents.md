@@ -103,6 +103,47 @@ This file documents the implementation decisions and rationale for the SemSchema
 - Taking a screenshot without examining it is worthless
 - The user's time is valuable - don't waste it with unverified claims
 
+## 🚨 CRITICAL: Testing Requirements - MANDATORY FOR ALL CHANGES 🚨
+
+**⚠️ NEVER COMMIT CODE WITH FAILING TESTS ⚠️**
+
+### Testing Workflow - ZERO EXCEPTIONS:
+
+1. **ALWAYS run the full test suite BEFORE committing**
+   - Run tests: `cd apps/frontend && pnpm test`
+   - Review ALL test failures
+   - Determine if failures are caused by your changes or pre-existing
+
+2. **If tests fail:**
+   - ✅ If failures are NEW and caused by your changes: **FIX THEM**
+   - ✅ If failures are PRE-EXISTING (unrelated to your work): **DOCUMENT THEM** in PR/comments
+   - ❌ NEVER commit code that introduces new test failures
+   - ❌ NEVER ignore test failures without investigation
+
+3. **Test verification checklist:**
+   - [ ] Run `pnpm test` for the specific components you changed
+   - [ ] Run full test suite `pnpm test` to catch regressions
+   - [ ] Document any pre-existing failures clearly
+   - [ ] Fix any new failures before committing
+   - [ ] Build succeeds: `pnpm build` completes without errors
+
+4. **In PR descriptions:**
+   - State explicitly which tests pass related to your changes
+   - List any pre-existing test failures with clear explanation they existed before your work
+   - Provide test run output showing your changes don't break tests
+
+**WHY THIS IS CRITICAL:**
+- Broken tests indicate broken functionality
+- Committing failing tests wastes user time on investigation
+- Pre-existing failures must be documented to avoid confusion
+- Test failures are NOT optional to fix if you caused them
+
+**REMEMBER:** 
+- Tests exist to catch bugs
+- Your code changes MUST pass tests
+- If tests need updating due to intentional behavior changes, update them
+- Never skip testing to save time - it costs more time later
+
 ## 🚨 CRITICAL: Custom Vocabulary - READ THIS BEFORE VALIDATION WORK 🚨
 
 **⚠️ DO NOT WORK ON VALIDATION WITHOUT READING THIS ⚠️**
