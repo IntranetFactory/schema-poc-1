@@ -13,6 +13,7 @@ export function InputUuid({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -29,6 +30,7 @@ export function InputUuid({
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
         disabled={disabled}
+            readOnly={readonly}
         placeholder="123e4567-e89b-12d3-a456-426614174000"
         aria-invalid={!!field.state.meta.errors?.[0]}
         aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}

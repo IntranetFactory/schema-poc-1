@@ -1,0 +1,228 @@
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$id": "https://example.com/schemas/all-formats-readonly.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "title": "All Formats (Readonly)",
+  "description": "A schema showcasing all supported format values with readonly fields",
+  "type": "object",
+  "properties": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Date Time",
+      "description": "Date and time format",
+      "default": "2024-01-15T10:30:00Z",
+      "readonly": true
+    },
+    "time": {
+      "type": "string",
+      "format": "time",
+      "title": "Time",
+      "description": "Time format",
+      "default": "10:30:00",
+      "readonly": true
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date",
+      "description": "Date format",
+      "default": "2024-01-15",
+      "readonly": true
+    },
+    "duration": {
+      "type": "string",
+      "format": "duration",
+      "title": "Duration",
+      "description": "Duration format",
+      "default": "P1DT12H30M",
+      "readonly": true
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email",
+      "description": "Email format",
+      "default": "user@example.com",
+      "readonly": true
+    },
+    "idnEmail": {
+      "type": "string",
+      "format": "idn-email",
+      "title": "IDN Email",
+      "description": "Internationalized email format",
+      "default": "用户@例え.jp",
+      "readonly": true
+    },
+    "hostname": {
+      "type": "string",
+      "format": "hostname",
+      "title": "Hostname",
+      "description": "Hostname format",
+      "default": "example.com",
+      "readonly": true
+    },
+    "idnHostname": {
+      "type": "string",
+      "format": "idn-hostname",
+      "title": "IDN Hostname",
+      "description": "Internationalized hostname format",
+      "default": "例え.jp",
+      "readonly": true
+    },
+    "ipv4": {
+      "type": "string",
+      "format": "ipv4",
+      "title": "IPv4",
+      "description": "IPv4 address format",
+      "default": "192.168.1.1",
+      "readonly": true
+    },
+    "ipv6": {
+      "type": "string",
+      "format": "ipv6",
+      "title": "IPv6",
+      "description": "IPv6 address format",
+      "default": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+      "readonly": true
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "title": "URI",
+      "description": "URI format",
+      "default": "https://example.com/path",
+      "readonly": true
+    },
+    "uriReference": {
+      "type": "string",
+      "format": "uri-reference",
+      "title": "URI Reference",
+      "description": "URI reference format",
+      "default": "/path/to/resource",
+      "readonly": true
+    },
+    "iri": {
+      "type": "string",
+      "format": "iri",
+      "title": "IRI",
+      "description": "IRI format",
+      "default": "https://例え.jp/パス",
+      "readonly": true
+    },
+    "iriReference": {
+      "type": "string",
+      "format": "iri-reference",
+      "title": "IRI Reference",
+      "description": "IRI reference format",
+      "default": "/パス/リソース",
+      "readonly": true
+    },
+    "uriTemplate": {
+      "type": "string",
+      "format": "uri-template",
+      "title": "URI Template",
+      "description": "URI template format",
+      "default": "https://example.com/{id}/profile",
+      "readonly": true
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "title": "UUID",
+      "description": "UUID format",
+      "default": "550e8400-e29b-41d4-a716-446655440000",
+      "readonly": true
+    },
+    "jsonPointer": {
+      "type": "string",
+      "format": "json-pointer",
+      "title": "JSON Pointer",
+      "description": "JSON pointer format",
+      "default": "/properties/name",
+      "readonly": true
+    },
+    "relativeJsonPointer": {
+      "type": "string",
+      "format": "relative-json-pointer",
+      "title": "Relative JSON Pointer",
+      "description": "Relative JSON pointer format",
+      "default": "0/name",
+      "readonly": true
+    },
+    "regex": {
+      "type": "string",
+      "format": "regex",
+      "title": "Regex",
+      "description": "Regular expression format",
+      "default": "^[a-zA-Z0-9]+$",
+      "readonly": true
+    },
+    "text": {
+      "format": "text",
+      "title": "Text",
+      "description": "Multiline text format (custom)",
+      "default": "This is a multiline text.\nIt spans multiple lines.\nUseful for longer content.",
+      "readonly": true
+    },
+    "json": {
+      "format": "json",
+      "title": "JSON",
+      "description": "JSON format (custom)",
+      "default": "{\"key\": \"value\", \"number\": 42}",
+      "readonly": true
+    },
+    "html": {
+      "format": "html",
+      "title": "HTML",
+      "description": "HTML format (custom)",
+      "default": "<div><h1>Hello World</h1><p>This is a paragraph.</p></div>",
+      "readonly": true
+    },
+    "plainString": {
+      "type": "string",
+      "title": "Plain String",
+      "description": "Plain string without format",
+      "default": "Hello World",
+      "readonly": true
+    },
+    "plainNumber": {
+      "type": "number",
+      "title": "Plain Number",
+      "description": "Plain number without format",
+      "default": 42.5,
+      "readonly": true
+    },
+    "plainInteger": {
+      "type": "integer",
+      "title": "Plain Integer",
+      "description": "Plain integer without format",
+      "default": 100,
+      "readonly": true
+    },
+    "booleanField": {
+      "type": "boolean",
+      "title": "Boolean",
+      "description": "Boolean true/false",
+      "default": true,
+      "readonly": true
+    },
+    "enumField": {
+      "type": "string",
+      "enum": [
+        "option1",
+        "option2",
+        "option3"
+      ],
+      "title": "Enum",
+      "description": "Enumerated values",
+      "default": "option1",
+      "readonly": true
+    }
+  }
+}

@@ -13,6 +13,7 @@ export function InputNumber({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -32,6 +33,7 @@ export function InputNumber({
             }}
             onBlur={field.handleBlur}
             disabled={disabled}
+            readOnly={readonly}
             aria-invalid={!!field.state.meta.errors?.[0]}
             aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
           />

@@ -10,6 +10,7 @@ const schemaFiles = [
   { name: 'All Formats (Required)', path: '/schemas/all-formats-required.schema.json', id: 'all-formats-required' },
   { name: 'All Formats (Default Values)', path: '/schemas/all-formats-default.schema.json', id: 'all-formats-default' },
   { name: 'All Formats (Invalid Defaults)', path: '/schemas/all-formats-invalid.schema.json', id: 'all-formats-invalid' },
+  { name: 'All Formats (Readonly)', path: '/schemas/all-formats-readonly.schema.json', id: 'all-formats-readonly' },
   { name: 'Test Schema', path: '/schemas/test.schema.json', id: 'test' },
 ]
 

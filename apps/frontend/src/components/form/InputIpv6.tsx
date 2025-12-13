@@ -13,6 +13,7 @@ export function InputIpv6({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -29,6 +30,7 @@ export function InputIpv6({
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
         disabled={disabled}
+            readOnly={readonly}
         placeholder="2001:0db8:85a3::8a2e:0370:7334"
         aria-invalid={!!field.state.meta.errors?.[0]}
         aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}

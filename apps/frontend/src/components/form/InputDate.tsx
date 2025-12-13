@@ -13,6 +13,7 @@ export function InputDate({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -46,6 +47,7 @@ export function InputDate({
               date={dateValue}
               onDateChange={handleDateChange}
               disabled={disabled}
+            readOnly={readonly}
             />
             <FormDescription description={description} />
             <FormError name={name} error={field.state.meta.errors?.[0]} />

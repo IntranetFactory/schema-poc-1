@@ -6,9 +6,10 @@ interface CodeMirrorHtmlProps {
   onChange: (value: string) => void
   onBlur: () => void
   disabled?: boolean
+  readOnly?: boolean
 }
 
-export default function CodeMirrorHtml({ value, onChange, onBlur, disabled }: CodeMirrorHtmlProps) {
+export default function CodeMirrorHtml({ value, onChange, onBlur, disabled, readOnly }: CodeMirrorHtmlProps) {
   return (
     <CodeMirror
       value={value}
@@ -16,7 +17,7 @@ export default function CodeMirrorHtml({ value, onChange, onBlur, disabled }: Co
       extensions={[html()]}
       onChange={onChange}
       onBlur={onBlur}
-      editable={!disabled}
+      editable={!disabled && !readOnly}
       theme="light"
       basicSetup={{
         lineNumbers: true,

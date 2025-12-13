@@ -6,12 +6,12 @@ import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputText({
-
   name,
   label,
   description,
   required,
   disabled,
+  readonly,
   validators,
 }: FormControlProps) {
   const { form } = useFormContext()
@@ -29,6 +29,7 @@ export function InputText({
             onChange={(e) => field.handleChange(e.target.value)}
             onBlur={field.handleBlur}
             disabled={disabled}
+            readOnly={readonly}
             aria-invalid={!!field.state.meta.errors?.[0]}
             aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
           />

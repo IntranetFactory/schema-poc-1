@@ -13,6 +13,7 @@ export function InputJsonPointer({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -29,6 +30,7 @@ export function InputJsonPointer({
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
         disabled={disabled}
+            readOnly={readonly}
         placeholder="/path/to/property"
         aria-invalid={!!field.state.meta.errors?.[0]}
         aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}

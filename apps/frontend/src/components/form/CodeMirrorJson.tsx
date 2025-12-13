@@ -6,9 +6,10 @@ interface CodeMirrorJsonProps {
   onChange: (value: string) => void
   onBlur: () => void
   disabled?: boolean
+  readOnly?: boolean
 }
 
-export default function CodeMirrorJson({ value, onChange, onBlur, disabled }: CodeMirrorJsonProps) {
+export default function CodeMirrorJson({ value, onChange, onBlur, disabled, readOnly }: CodeMirrorJsonProps) {
   return (
     <CodeMirror
       value={value}
@@ -16,7 +17,7 @@ export default function CodeMirrorJson({ value, onChange, onBlur, disabled }: Co
       extensions={[json()]}
       onChange={onChange}
       onBlur={onBlur}
-      editable={!disabled}
+      editable={!disabled && !readOnly}
       theme="light"
       basicSetup={{
         lineNumbers: true,

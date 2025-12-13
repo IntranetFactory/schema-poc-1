@@ -13,6 +13,7 @@ export function InputTextarea({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -28,6 +29,7 @@ export function InputTextarea({
             onChange={(e) => field.handleChange(e.target.value)}
             onBlur={field.handleBlur}
             disabled={disabled}
+            readOnly={readonly}
             rows={5}
             aria-invalid={!!field.state.meta.errors?.[0]}
             aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}

@@ -16,6 +16,7 @@ export function InputJson({
   required,
   disabled,
   validators,
+  readonly,
 }: FormControlProps) {
   const { form } = useFormContext()
   
@@ -39,6 +40,7 @@ export function InputJson({
                   onChange={field.handleChange}
                   onBlur={field.handleBlur}
                   disabled={disabled}
+            readOnly={readonly}
                 />
               </Suspense>
             </div>
