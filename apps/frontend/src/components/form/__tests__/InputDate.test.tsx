@@ -40,17 +40,15 @@ describe('InputDate', () => {
     return <FormProvider value={mockContext}>{children}</FormProvider>
   }
 
-  it('should render date picker input with button', () => {
+  it('should render date picker button', () => {
     const { container } = render(
       <TestWrapper>
         <InputDate name="date" />
       </TestWrapper>
     )
-    const input = container.querySelector('input')
     const button = container.querySelector('button')
-    expect(input).toBeTruthy()
     expect(button).toBeTruthy()
-    expect(input?.getAttribute('placeholder')).toBe('Pick a date')
+    expect(button?.textContent).toContain('Pick a date')
   })
 
   it('should show required indicator when field is required', () => {
@@ -63,7 +61,7 @@ describe('InputDate', () => {
   })
 
   it('should support validation via validators prop', () => {
-    const { container } = render(
+    render(
       <TestWrapper required>
         <InputDate 
           name="date" 
@@ -76,9 +74,7 @@ describe('InputDate', () => {
       </TestWrapper>
     )
     // Test that the component accepts validators prop without error
-    const input = container.querySelector('input')
-    expect(input).toBeInTheDocument()
-    expect(input?.getAttribute('placeholder')).toBe('Pick a date')
+    expect(screen.getByRole('button', { name: /pick a date/i })).toBeInTheDocument()
   })
 
   it('should display label and description', () => {
@@ -101,9 +97,9 @@ describe('InputDate', () => {
         <InputDate name="date" />
       </TestWrapper>
     )
-    const input = container.querySelector('input')
+    const button = container.querySelector('button')
     // Date should be formatted and displayed
-    expect(input).toBeTruthy()
-    expect(input?.value).toContain('Jan')
+    expect(button).toBeTruthy()
+    expect(button?.textContent).toContain('Jan')
   })
 })
