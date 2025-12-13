@@ -49,6 +49,20 @@ const VALID_TYPES = new Set([
 ]);
 
 /**
+ * Table keyword properties that must be strings
+ * Corresponds to vocabulary.json table property definitions
+ */
+const TABLE_STRING_PROPERTIES = [
+  'table_name',
+  'singular',
+  'plural',
+  'singular_label',
+  'plural_label',
+  'icon_url',
+  'description'
+] as const;
+
+/**
  * Schema validation error
  */
 export interface SchemaValidationError {
@@ -158,9 +172,8 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     } else {
       // Validate table properties according to vocabulary definition
       const tableProps = schema.table as Record<string, any>;
-      const stringProps = ['table_name', 'singular', 'plural', 'singular_label', 'plural_label', 'icon_url', 'description'];
       
-      for (const prop of stringProps) {
+      for (const prop of TABLE_STRING_PROPERTIES) {
         if (tableProps[prop] !== undefined && typeof tableProps[prop] !== 'string') {
           errors.push({
             path,
