@@ -340,14 +340,12 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.errors).toBeNull();
     });
 
-    it('should accept schema with table object containing only required properties', () => {
+    it('should accept schema with table object containing minimal properties', () => {
       const schema = {
         type: 'object',
         title: 'Person',
         table: {
-          singular: 'person',
-          singular_label: 'Person',
-          plural_label: 'Persons'
+          table_name: 'persons'
         },
         properties: {
           name: { type: 'string' }
@@ -363,6 +361,21 @@ describe('Vocabulary Definition Tests', () => {
       const schema = {
         type: 'object',
         title: 'Person',
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with empty table object (all properties optional)', () => {
+      const schema = {
+        type: 'object',
+        title: 'Person',
+        table: {},
         properties: {
           name: { type: 'string' }
         }

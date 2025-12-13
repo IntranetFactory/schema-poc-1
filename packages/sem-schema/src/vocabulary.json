@@ -58,8 +58,7 @@
           "type": "string",
           "description": "Human-readable description of the entity"
         }
-      },
-      "required": ["singular", "singular_label", "plural_label"]
+      }
     }
   }
 }
