@@ -59,6 +59,22 @@
           "description": "Human-readable description of the entity"
         }
       }
+    },
+    "grid": {
+      "description": "Grid display configuration for data presentation",
+      "type": "object",
+      "properties": {
+        "sortField": {
+          "type": "string",
+          "description": "Default field to sort by"
+        },
+        "sortOrder": {
+          "type": "string",
+          "enum": ["asc", "desc"],
+          "default": "asc",
+          "description": "Default sort order - ascending or descending"
+        }
+      }
     }
   }
 }

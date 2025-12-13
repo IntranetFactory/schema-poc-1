@@ -63,6 +63,11 @@ const TABLE_STRING_PROPERTIES = [
 ] as const;
 
 /**
+ * Valid sort order values for grid keyword
+ */
+const VALID_SORT_ORDERS = ['asc', 'desc'] as const;
+
+/**
  * Schema validation error
  */
 export interface SchemaValidationError {
@@ -180,6 +185,49 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
             message: `Invalid table.${prop} value. Must be a string, got ${typeof tableProps[prop]}`,
             keyword: 'table',
             value: tableProps[prop]
+          });
+        }
+      }
+    }
+  }
+
+  // Validate grid keyword
+  if (schema.grid !== undefined) {
+    if (typeof schema.grid !== 'object' || schema.grid === null || Array.isArray(schema.grid)) {
+      errors.push({
+        path,
+        message: `Invalid grid value. Must be an object`,
+        keyword: 'grid',
+        value: schema.grid
+      });
+    } else {
+      const gridProps = schema.grid as Record<string, any>;
+      
+      // Validate sortField (must be string if present)
+      if (gridProps.sortField !== undefined && typeof gridProps.sortField !== 'string') {
+        errors.push({
+          path,
+          message: `Invalid grid.sortField value. Must be a string, got ${typeof gridProps.sortField}`,
+          keyword: 'grid',
+          value: gridProps.sortField
+        });
+      }
+      
+      // Validate sortOrder (must be 'asc' or 'desc' if present)
+      if (gridProps.sortOrder !== undefined) {
+        if (typeof gridProps.sortOrder !== 'string') {
+          errors.push({
+            path,
+            message: `Invalid grid.sortOrder value. Must be a string, got ${typeof gridProps.sortOrder}`,
+            keyword: 'grid',
+            value: gridProps.sortOrder
+          });
+        } else if (!VALID_SORT_ORDERS.includes(gridProps.sortOrder as any)) {
+          errors.push({
+            path,
+            message: `Invalid grid.sortOrder value "${gridProps.sortOrder}". Must be one of: ${VALID_SORT_ORDERS.join(', ')}`,
+            keyword: 'grid',
+            value: gridProps.sortOrder
           });
         }
       }
