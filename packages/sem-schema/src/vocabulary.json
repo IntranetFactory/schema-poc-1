@@ -25,6 +25,40 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 4
+    },
+    "table": {
+      "description": "Database table metadata for schema-driven applications",
+      "type": "object",
+      "properties": {
+        "table_name": {
+          "type": "string",
+          "description": "Primary key - unique table identifier"
+        },
+        "singular": {
+          "type": "string",
+          "description": "Singular form of entity name"
+        },
+        "plural": {
+          "type": "string",
+          "description": "Plural form of entity name"
+        },
+        "singular_label": {
+          "type": "string",
+          "description": "Singular display label"
+        },
+        "plural_label": {
+          "type": "string",
+          "description": "Plural display label"
+        },
+        "icon_url": {
+          "type": "string",
+          "description": "URL to icon representing this entity"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the entity"
+        }
+      }
     }
   }
 }

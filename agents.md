@@ -2,17 +2,49 @@
 
 This file documents the implementation decisions and rationale for the SemSchema custom JSON Schema vocabulary.
 
+## 🚨🚨🚨 CRITICAL: SCREENSHOTS ARE MANDATORY FOR ALL VISUAL CHANGES 🚨🚨🚨
+
+**❌❌❌ IF YOU MAKE ANY UI/VISUAL CHANGE WITHOUT SCREENSHOTS, YOUR WORK WILL BE REJECTED ❌❌❌**
+
+**BEFORE YOU DO ANYTHING ELSE:**
+1. **DID YOU MAKE ANY VISUAL/UI CHANGES?** → If YES, you MUST take screenshots
+2. **HAVE YOU TAKEN SCREENSHOTS?** → If NO, STOP and take them NOW
+3. **ARE SCREENSHOTS IN /screenshots/ DIRECTORY?** → If NO, you forgot them AGAIN
+4. **DID YOU COMMIT SCREENSHOTS WITH report_progress?** → If NO, they're useless
+5. **DID YOU INCLUDE SCREENSHOT LINKS IN YOUR PR/COMMENTS?** → If NO, do it NOW
+
+**SCREENSHOT CHECKLIST - COMPLETE THIS BEFORE CLAIMING YOU'RE DONE:**
+- [ ] Screenshots saved to `/screenshots/` directory (NOT /tmp, NOT external hosting)
+- [ ] Descriptive filenames used (01-feature-before.png, 02-feature-after.png)
+- [ ] **DO NOT CREATE README.md IN /screenshots/** - User does NOT want documentation files there
+- [ ] Screenshots committed to repository using report_progress
+- [ ] Screenshot filenames and descriptions listed in PR/commit message (NOT in a README file)
+- [ ] BEFORE and AFTER screenshots taken for every visual change
+- [ ] Screenshots actually examined to verify they match requirements
+
+**IF YOU SKIP SCREENSHOTS:**
+- Your work demonstrates incompetence and unreliability
+- You waste the user's time who has to ask you repeatedly
+- You force the user to do your job of visual verification
+- You will be criticized harshly and deservedly
+
 ## 🚨 CRITICAL: AGENT INSTRUCTIONS - READ THIS BEFORE ANYTHING ELSE 🚨
 
 **⚠️ THIS FILE CONTAINS MANDATORY WORKFLOW RULES FOR AGENTS ⚠️**
 
 **IF YOU ARE AN AI AGENT:**
-- **READ THIS FILE FIRST** - Lines 1-100 - BEFORE any other documentation
+- **READ THIS FILE FIRST** - Lines 1-150 - BEFORE any other documentation
 - **THEN** read INSTRUCTIONS.md for technical implementation details
 - **NEVER** skip to code without reading both files in this order
 
+**CRITICAL RULES:**
+- **❌ NEVER use store_memory tool** - All agent instructions and reminders MUST be stored in this file (agents.md)
+- **❌ DO NOT use proprietary memory tools** - They don't persist across sessions or agents
+- **✅ ALWAYS update agents.md** when you learn important workflow rules or user preferences
+- **✅ This file is the ONLY place** for storing agent instructions and patterns
+
 **FILE PURPOSES:**
-- **agents.md** (THIS FILE) = Agent workflow, visual verification, screenshot requirements
+- **agents.md** (THIS FILE) = Agent workflow, visual verification, screenshot requirements, ALL agent instructions
 - **INSTRUCTIONS.md** = Technical details, testing, validation, styling conventions
 
 ## 🚨 CRITICAL: Visual Verification Requirements - READ THIS FIRST 🚨
@@ -39,13 +71,14 @@ This file documents the implementation decisions and rationale for the SemSchema
    - Take BEFORE and AFTER screenshots
    - **CRITICAL: Save screenshots to /screenshots/ directory in the repository**
    - Use descriptive filenames: `01-feature-before.png`, `02-feature-after.png`
-   - Create a README.md in /screenshots/ documenting what each screenshot proves
+   - **❌ DO NOT CREATE README.md IN /screenshots/** - List screenshot names in PR/commit message instead
    - **⚠️ SCREENSHOT LINKS IN PR/COMMENTS:**
      - ❌ NEVER use GitHub asset URLs like `https://github.com/user-attachments/assets/xxx` - THESE DO NOT WORK
      - ❌ NEVER upload screenshots outside the repository
      - ✅ ALWAYS store screenshots in `/screenshots/` directory in the repository
      - ✅ ALWAYS reference screenshots using relative paths like `![Description](screenshots/filename.png)`
      - ✅ ALWAYS commit screenshots to the repository with `report_progress`
+     - ✅ ALWAYS list screenshot filenames and what they show in your PR/commit message
    - ❌ NEVER leave screenshots only in /tmp - they will be lost
    - ❌ NEVER rely on external screenshot hosting - it breaks and wastes user time
 

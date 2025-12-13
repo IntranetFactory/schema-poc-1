@@ -245,4 +245,67 @@ describe('SchemaForm', () => {
       })
     })
   })
+
+  describe('Readonly Functionality', () => {
+    it('should make all fields readonly when readonly prop is true', () => {
+      render(<SchemaForm schema={basicSchema} readonly={true} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      const emailInput = screen.getByLabelText(/email/i)
+      const ageInput = screen.getByLabelText(/age/i)
+
+      // Check that all inputs have readonly attribute
+      expect(nameInput).toHaveAttribute('readonly')
+      expect(emailInput).toHaveAttribute('readonly')
+      expect(ageInput).toHaveAttribute('readonly')
+    })
+
+    it('should allow editing when readonly prop is false', () => {
+      render(<SchemaForm schema={basicSchema} readonly={false} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      
+      // Should not have readonly attribute
+      expect(nameInput).not.toHaveAttribute('readonly')
+    })
+
+    it('should respect field-level readonly even when form readonly is false', () => {
+      const schemaWithReadonly: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name', readonly: true },
+          email: { type: 'string', format: 'email', title: 'Email' },
+        },
+      }
+
+      render(<SchemaForm schema={schemaWithReadonly} readonly={false} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      const emailInput = screen.getByLabelText(/email/i)
+
+      // Name should be readonly due to field-level setting
+      expect(nameInput).toHaveAttribute('readonly')
+      // Email should not be readonly
+      expect(emailInput).not.toHaveAttribute('readonly')
+    })
+
+    it('should make field readonly when either form or field readonly is true', () => {
+      const schemaWithReadonly: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name', readonly: true },
+          email: { type: 'string', format: 'email', title: 'Email' },
+        },
+      }
+
+      render(<SchemaForm schema={schemaWithReadonly} readonly={true} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      const emailInput = screen.getByLabelText(/email/i)
+
+      // Both should be readonly
+      expect(nameInput).toHaveAttribute('readonly')
+      expect(emailInput).toHaveAttribute('readonly')
+    })
+  })
 })
