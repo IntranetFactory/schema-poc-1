@@ -146,6 +146,33 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
+  // Validate table keyword
+  if (schema.table !== undefined) {
+    if (typeof schema.table !== 'object' || schema.table === null || Array.isArray(schema.table)) {
+      errors.push({
+        path,
+        message: `Invalid table value. Must be an object`,
+        keyword: 'table',
+        value: schema.table
+      });
+    } else {
+      // Validate table properties according to vocabulary definition
+      const tableProps = schema.table as Record<string, any>;
+      const stringProps = ['table_name', 'singular', 'plural', 'singular_label', 'plural_label', 'icon_url', 'description'];
+      
+      for (const prop of stringProps) {
+        if (tableProps[prop] !== undefined && typeof tableProps[prop] !== 'string') {
+          errors.push({
+            path,
+            message: `Invalid table.${prop} value. Must be a string, got ${typeof tableProps[prop]}`,
+            keyword: 'table',
+            value: tableProps[prop]
+          });
+        }
+      }
+    }
+  }
+
   // Validate properties keyword usage and recursively validate property schemas
   if (schema.properties && typeof schema.properties === 'object') {
     // If properties is present, type must be 'object' (or not specified, which is okay for partial schemas)

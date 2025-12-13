@@ -385,5 +385,69 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();
     });
+
+    it('should reject schema with table_name as number', () => {
+      const schema = {
+        type: 'object',
+        title: 'Person',
+        table: {
+          table_name: 123,
+          singular: true
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.length).toBeGreaterThanOrEqual(1);
+      expect(result.errors?.[0]?.message).toContain('table.table_name');
+      expect(result.errors?.[0]?.message).toContain('Must be a string');
+    });
+
+    it('should reject schema with table as non-object', () => {
+      const schema = {
+        type: 'object',
+        title: 'Person',
+        table: 'invalid',
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid table value');
+      expect(result.errors?.[0]?.message).toContain('Must be an object');
+    });
+
+    it('should reject schema with multiple invalid table properties', () => {
+      const schema = {
+        type: 'object',
+        title: 'Person',
+        table: {
+          table_name: 123,
+          singular: false,
+          plural: null,
+          icon_url: 456
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.length).toBeGreaterThanOrEqual(3); // At least 3 errors
+      
+      const errorMessages = result.errors?.map(e => e.message).join(' ');
+      expect(errorMessages).toContain('table.table_name');
+      expect(errorMessages).toContain('table.singular');
+      expect(errorMessages).toContain('Must be a string');
+    });
   });
 });
