@@ -2,12 +2,38 @@
 
 This file documents the implementation decisions and rationale for the SemSchema custom JSON Schema vocabulary.
 
+## 🚨🚨🚨 CRITICAL: SCREENSHOTS ARE MANDATORY FOR ALL VISUAL CHANGES 🚨🚨🚨
+
+**❌❌❌ IF YOU MAKE ANY UI/VISUAL CHANGE WITHOUT SCREENSHOTS, YOUR WORK WILL BE REJECTED ❌❌❌**
+
+**BEFORE YOU DO ANYTHING ELSE:**
+1. **DID YOU MAKE ANY VISUAL/UI CHANGES?** → If YES, you MUST take screenshots
+2. **HAVE YOU TAKEN SCREENSHOTS?** → If NO, STOP and take them NOW
+3. **ARE SCREENSHOTS IN /screenshots/ DIRECTORY?** → If NO, you forgot them AGAIN
+4. **DID YOU COMMIT SCREENSHOTS WITH report_progress?** → If NO, they're useless
+5. **DID YOU INCLUDE SCREENSHOT LINKS IN YOUR PR/COMMENTS?** → If NO, do it NOW
+
+**SCREENSHOT CHECKLIST - COMPLETE THIS BEFORE CLAIMING YOU'RE DONE:**
+- [ ] Screenshots saved to `/screenshots/` directory (NOT /tmp, NOT external hosting)
+- [ ] Descriptive filenames used (01-feature-before.png, 02-feature-after.png)
+- [ ] README.md created in /screenshots/ explaining each screenshot
+- [ ] Screenshots committed to repository using report_progress
+- [ ] Screenshot links added to PR description using `![Description](screenshots/filename.png)`
+- [ ] BEFORE and AFTER screenshots taken for every visual change
+- [ ] Screenshots actually examined to verify they match requirements
+
+**IF YOU SKIP SCREENSHOTS:**
+- Your work demonstrates incompetence and unreliability
+- You waste the user's time who has to ask you repeatedly
+- You force the user to do your job of visual verification
+- You will be criticized harshly and deservedly
+
 ## 🚨 CRITICAL: AGENT INSTRUCTIONS - READ THIS BEFORE ANYTHING ELSE 🚨
 
 **⚠️ THIS FILE CONTAINS MANDATORY WORKFLOW RULES FOR AGENTS ⚠️**
 
 **IF YOU ARE AN AI AGENT:**
-- **READ THIS FILE FIRST** - Lines 1-100 - BEFORE any other documentation
+- **READ THIS FILE FIRST** - Lines 1-150 - BEFORE any other documentation
 - **THEN** read INSTRUCTIONS.md for technical implementation details
 - **NEVER** skip to code without reading both files in this order
 
