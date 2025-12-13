@@ -382,6 +382,138 @@ When implementing custom `required` keyword, we remove AJV's built-in version. O
 - Object-level: `required: ["name", "email"]` (array)
 - Property-level: `required: true` (boolean)
 
+## 🚨 CRITICAL: Schema Vocabulary Extensions - MANDATORY THREE-STEP PROCESS 🚨
+
+**⚠️ READ THIS BEFORE ADDING ANY KEYWORD TO vocabulary.json ⚠️**
+
+### The Problem That Must NEVER Happen Again
+
+When adding a keyword to `vocabulary.json` (like the `table` keyword), if you don't implement validation logic AND comprehensive tests, **invalid schemas will pass validation** and break production systems.
+
+**EXAMPLE OF THE BUG:**
+- Added `table` keyword with `table_name` property defined as `type: "string"` in vocabulary.json
+- Did NOT add validation logic in `validateSchemaStructure()`
+- Result: Schema with `table_name: 123` (a number!) was marked as VALID ✅ when it should be INVALID ❌
+- This breaks applications that rely on schemas being correct
+
+### MANDATORY Three-Step Process for Schema Extensions
+
+**WHENEVER you add a keyword to vocabulary.json, you MUST complete ALL THREE steps:**
+
+#### Step 1: Add Keyword to vocabulary.json
+- Define the keyword structure and property types
+- Document what the keyword is for
+
+#### Step 2: Add Validation Logic to validateSchemaStructure() in utils.ts
+- **IMMEDIATELY after adding to vocabulary.json**, add validation in `validateSchemaStructure()`
+- Validate ALL properties match their expected types from vocabulary.json
+- Check if values are objects/arrays/strings/numbers/booleans as defined
+- Provide clear error messages: `Invalid {keyword}.{property} value. Must be a {type}, got {actualType}`
+- Use constants for property lists (e.g., `TABLE_STRING_PROPERTIES`) instead of hardcoded arrays
+
+#### Step 3: Add Comprehensive Tests to vocabulary.test.ts
+- **IMMEDIATELY after adding validation logic**, add tests for invalid types
+- Test EVERY property with wrong types:
+  - String property with number value
+  - String property with boolean value
+  - Object property with string value
+  - Array property with object value
+- Test multiple invalid properties simultaneously
+- Verify error messages are correct and specific
+- Test positive cases (valid keywords) AND negative cases (invalid types)
+
+### Example Implementation
+
+**vocabulary.json:**
+```json
+{
+  "properties": {
+    "table": {
+      "type": "object",
+      "properties": {
+        "table_name": { "type": "string" }
+      }
+    }
+  }
+}
+```
+
+**utils.ts - Add constant and validation:**
+```typescript
+const TABLE_STRING_PROPERTIES = ['table_name', 'singular', 'plural'] as const;
+
+// In validateSchemaStructure():
+if (schema.table !== undefined) {
+  if (typeof schema.table !== 'object' || schema.table === null || Array.isArray(schema.table)) {
+    errors.push({ message: 'Invalid table value. Must be an object', keyword: 'table' });
+  } else {
+    const tableProps = schema.table as Record<string, any>;
+    for (const prop of TABLE_STRING_PROPERTIES) {
+      if (tableProps[prop] !== undefined && typeof tableProps[prop] !== 'string') {
+        errors.push({ 
+          message: `Invalid table.${prop} value. Must be a string, got ${typeof tableProps[prop]}`,
+          keyword: 'table',
+          value: tableProps[prop]
+        });
+      }
+    }
+  }
+}
+```
+
+**vocabulary.test.ts - Add tests:**
+```typescript
+it('should reject schema with table_name as number', () => {
+  const schema = { type: 'object', table: { table_name: 123 } };
+  const result = validateSchema(schema);
+  expect(result.valid).toBe(false);
+  expect(result.errors?.[0]?.message).toContain('table.table_name');
+  expect(result.errors?.[0]?.message).toContain('Must be a string');
+});
+
+it('should reject schema with multiple invalid table properties', () => {
+  const schema = { 
+    type: 'object', 
+    table: { table_name: 123, singular: false, plural: null } 
+  };
+  const result = validateSchema(schema);
+  expect(result.valid).toBe(false);
+  expect(result.errors?.length).toBeGreaterThanOrEqual(2);
+});
+```
+
+### Why This Is CRITICAL
+
+1. **Incomplete keyword definitions cause silent failures** - Bad schemas pass validation
+2. **Production systems break** - Applications assume schemas are valid when they're not
+3. **Type safety is compromised** - Code expects strings but gets numbers
+4. **Debugging is nightmare** - Invalid schemas work in dev but break in production
+
+### Validation Pattern for Keywords
+
+**For object-type keywords (like `table`):**
+1. Check if keyword is object (not null, not array)
+2. For each property defined in vocabulary.json:
+   - Check if value type matches vocabulary definition
+   - Add specific error for each mismatch
+   - Include property name and actual type in error message
+
+**For simple keywords (like `precision`):**
+1. Check type (number, boolean, string, etc.)
+2. Check constraints (min/max, enum values, etc.)
+3. Add error with clear message about what's wrong
+
+### DO NOT FORGET
+
+- ❌ Adding keyword to vocabulary.json alone does NOTHING
+- ❌ Schema will accept invalid values without validation logic
+- ❌ Tests won't catch the bug without invalid-type tests
+- ✅ ALWAYS complete all three steps together
+- ✅ Think: "What invalid values should be rejected?"
+- ✅ Write tests that verify rejection of invalid types
+
+**IF YOU SKIP ANY STEP, YOU HAVE INTRODUCED A BUG THAT WILL BREAK PRODUCTION.**
+
 ## Future Extensions
 
 When adding new formats/keywords:
@@ -390,8 +522,10 @@ When adding new formats/keywords:
 2. Export from `formats/index.ts` or `keywords/index.ts`
 3. Register in `validator.ts`
 4. Add to `vocabulary.json`
-5. Add tests in `__tests__/vocabulary.test.ts` and `__tests__/data-validation.test.ts`
-6. Update documentation
+5. **IMMEDIATELY add validation logic in `validateSchemaStructure()` in utils.ts** (see CRITICAL section above)
+6. **IMMEDIATELY add comprehensive tests in `__tests__/vocabulary.test.ts`** (see CRITICAL section above)
+7. Add data validation tests in `__tests__/data-validation.test.ts`
+8. Update documentation
 
 ## Package Publishing
 
