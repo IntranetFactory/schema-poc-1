@@ -37,12 +37,17 @@ This file documents the implementation decisions and rationale for the SemSchema
 2. **EVERY visual change MUST be verified with screenshots STORED IN THE REPOSITORY**
    - Use `playwright-browser_take_screenshot` for EVERY change
    - Take BEFORE and AFTER screenshots
-   - **CRITICAL: Copy screenshots from /tmp/playwright-logs/ to /screenshots/ directory in the repository**
+   - **CRITICAL: Save screenshots to /screenshots/ directory in the repository**
    - Use descriptive filenames: `01-feature-before.png`, `02-feature-after.png`
    - Create a README.md in /screenshots/ documenting what each screenshot proves
-   - Provide GitHub links to the screenshots in PR descriptions and comment replies
+   - **⚠️ SCREENSHOT LINKS IN PR/COMMENTS:**
+     - ❌ NEVER use GitHub asset URLs like `https://github.com/user-attachments/assets/xxx` - THESE DO NOT WORK
+     - ❌ NEVER upload screenshots outside the repository
+     - ✅ ALWAYS store screenshots in `/screenshots/` directory in the repository
+     - ✅ ALWAYS reference screenshots using relative paths like `![Description](screenshots/filename.png)`
+     - ✅ ALWAYS commit screenshots to the repository with `report_progress`
    - ❌ NEVER leave screenshots only in /tmp - they will be lost
-   - ✅ ALWAYS commit screenshots to the repository with `report_progress`
+   - ❌ NEVER rely on external screenshot hosting - it breaks and wastes user time
 
 3. **ACTUALLY EXAMINE THE SCREENSHOT**
    - Don't just take it and ignore it
