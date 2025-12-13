@@ -11,19 +11,24 @@ interface CodeMirrorHtmlProps {
 
 export default function CodeMirrorHtml({ value, onChange, onBlur, disabled, readOnly }: CodeMirrorHtmlProps) {
   return (
-    <CodeMirror
-      value={value}
-      height="200px"
-      extensions={[html()]}
-      onChange={onChange}
-      onBlur={onBlur}
-      editable={!disabled && !readOnly}
-      theme="light"
-      basicSetup={{
-        lineNumbers: true,
-        foldGutter: true,
-        highlightActiveLine: true,
-      }}
-    />
+    <div 
+      className={readOnly ? 'opacity-60' : ''}
+      tabIndex={readOnly ? -1 : undefined}
+    >
+      <CodeMirror
+        value={value}
+        height="200px"
+        extensions={[html()]}
+        onChange={onChange}
+        onBlur={onBlur}
+        editable={!disabled && !readOnly}
+        theme="light"
+        basicSetup={{
+          lineNumbers: true,
+          foldGutter: true,
+          highlightActiveLine: true,
+        }}
+      />
+    </div>
   )
 }

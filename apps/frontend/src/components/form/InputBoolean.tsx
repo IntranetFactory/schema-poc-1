@@ -27,6 +27,8 @@ export function InputBoolean({
               onCheckedChange={field.handleChange}
               onBlur={field.handleBlur}
               disabled={disabled || readonly}
+              tabIndex={readonly ? -1 : undefined}
+              className={readonly ? 'opacity-60' : ''}
               aria-invalid={!!field.state.meta.errors?.[0]}
               aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : description ? `${name}-description` : undefined}
             />
