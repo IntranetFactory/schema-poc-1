@@ -9,6 +9,15 @@
   },
   "title": "BlogPost",
   "description": "A blog post or article",
+  "table": {
+    "table_name": "blog_posts",
+    "singular": "blog post",
+    "plural": "blog posts",
+    "singular_label": "Blog Post",
+    "plural_label": "Blog Posts",
+    "icon_url": "/icons/blog.svg",
+    "description": "Blog posts and articles"
+  },
   "type": "object",
   "properties": {
     "id": {

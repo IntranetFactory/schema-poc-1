@@ -10,6 +10,7 @@ interface SchemaFormProps {
   schema: SchemaObject
   initialValue?: Record<string, any>
   onSubmit?: (value: Record<string, any>) => void
+  readonly?: boolean
 }
 
 /**
@@ -98,7 +99,7 @@ function validateField(value: any, fieldSchema: SchemaObject, fieldName: string,
   return undefined
 }
 
-export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) {
+export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }: SchemaFormProps) {
   // Generate initial value if not provided
   const defaultValue = initialValue && Object.keys(initialValue).length > 0
     ? initialValue
@@ -217,7 +218,7 @@ export function SchemaForm({ schema, initialValue, onSubmit }: SchemaFormProps) 
             description={description}
             required={shouldShowRequired}
             disabled={false}
-            readonly={isReadonly}
+            readonly={readonly || isReadonly}
             validators={{
               onBlur: ({ value }) => validateField(value, propSchema, key, schema),
               onSubmit: ({ value }) => validateField(value, propSchema, key, schema),

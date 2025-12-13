@@ -315,4 +315,63 @@ describe('Vocabulary Definition Tests', () => {
       expect(errorPaths).toContain('#/properties/age');
     });
   });
+
+  describe('Schema Validity - Table property', () => {
+    it('should accept schema with table object containing all required properties', () => {
+      const schema = {
+        type: 'object',
+        title: 'Person',
+        table: {
+          table_name: 'persons',
+          singular: 'person',
+          plural: 'persons',
+          singular_label: 'Person',
+          plural_label: 'Persons',
+          icon_url: '/icons/person.svg',
+          description: 'A person or user profile'
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with table object containing only required properties', () => {
+      const schema = {
+        type: 'object',
+        title: 'Person',
+        table: {
+          table_name: 'persons',
+          singular: 'person',
+          singular_label: 'Person',
+          plural_label: 'Persons'
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema without table property', () => {
+      const schema = {
+        type: 'object',
+        title: 'Person',
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+  });
 });

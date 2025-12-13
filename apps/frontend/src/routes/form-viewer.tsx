@@ -4,6 +4,8 @@ import { SchemaForm } from '@/components/form'
 import type { SchemaObject } from 'ajv'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
 interface FormViewerSearch {
   schema?: string
@@ -24,6 +26,7 @@ function FormViewer() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitResult, setSubmitResult] = useState<Record<string, unknown> | null>(null)
+  const [readonly, setReadonly] = useState(false)
 
   useEffect(() => {
     if (!schemaUrl) {
@@ -84,7 +87,18 @@ function FormViewer() {
 
           {schema && (
             <>
-              <SchemaForm schema={schema} onSubmit={handleSubmit} />
+              <div className="flex items-center space-x-2 mb-6 p-4 border rounded-md bg-muted">
+                <Switch
+                  id="readonly-mode"
+                  checked={readonly}
+                  onCheckedChange={setReadonly}
+                />
+                <Label htmlFor="readonly-mode" className="cursor-pointer">
+                  Read-only mode
+                </Label>
+              </div>
+              
+              <SchemaForm schema={schema} onSubmit={handleSubmit} readonly={readonly} />
               
               {submitResult && (
                 <div className="mt-8 p-4 border rounded-md bg-muted">

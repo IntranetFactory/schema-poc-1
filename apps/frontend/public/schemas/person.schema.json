@@ -9,6 +9,15 @@
   },
   "title": "Person",
   "description": "A person or user profile",
+  "table": {
+    "table_name": "persons",
+    "singular": "person",
+    "plural": "persons",
+    "singular_label": "Person",
+    "plural_label": "Persons",
+    "icon_url": "/icons/person.svg",
+    "description": "A person or user profile in the system"
+  },
   "type": "object",
   "properties": {
     "id": {
