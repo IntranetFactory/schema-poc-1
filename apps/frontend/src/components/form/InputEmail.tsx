@@ -6,19 +6,24 @@ import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputEmail({
-
   name,
   label,
   description,
-  required,
-  disabled,
+  inputMode = 'default',
   validators,
-  readonly,
 }: FormControlProps) {
-  const { form } = useFormContext()
+    const {{ form }} = useFormContext()
   
+  // Derive props from inputMode
+  const required = inputMode === 'required'
+  const readonly = inputMode === 'readonly'
+  const disabled = inputMode === 'disabled'
+  const hidden = inputMode === 'hidden'
   
-  return (
+  if (hidden) {{
+    return null
+  }}
+    return (
     <form.Field name={name} validators={validators}>
       {(field: any) => (
     <div className="space-y-2">

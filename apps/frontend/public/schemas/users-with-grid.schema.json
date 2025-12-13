@@ -68,7 +68,7 @@
       "format": "date-time",
       "title": "Created At",
       "description": "Account creation date",
-      "readonly": true
+      "inputMode": "readonly"
     }
   },
   "required": ["id", "firstName", "lastName", "email"],

@@ -9,14 +9,21 @@ export function InputText({
   name,
   label,
   description,
-  required,
-  disabled,
-  readonly,
+  inputMode = 'default',
   validators,
 }: FormControlProps) {
-  const { form } = useFormContext()
+    const {{ form }} = useFormContext()
   
-  return (
+  // Derive props from inputMode
+  const required = inputMode === 'required'
+  const readonly = inputMode === 'readonly'
+  const disabled = inputMode === 'disabled'
+  const hidden = inputMode === 'hidden'
+  
+  if (hidden) {{
+    return null
+  }}
+    return (
     <form.Field name={name} validators={validators}>
       {(field: any) => (
         <div className="space-y-2">

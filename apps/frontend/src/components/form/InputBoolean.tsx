@@ -9,11 +9,19 @@ export function InputBoolean({
   name,
   label,
   description,
-  disabled,
-  readonly,
+  inputMode = 'default',
   validators,
 }: FormControlProps) {
   const { form } = useFormContext()
+  
+  // Derive props from inputMode
+  const readonly = inputMode === 'readonly'
+  const disabled = inputMode === 'disabled'
+  const hidden = inputMode === 'hidden'
+  
+  if (hidden) {
+    return null
+  }
   
   return (
     <form.Field name={name} validators={validators}>

@@ -6,18 +6,24 @@ import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
 export function InputDate({
-
   name,
   label,
   description,
-  required,
-  disabled,
+  inputMode = \'default\',
   validators,
-  readonly,
 }: FormControlProps) {
-  const { form } = useFormContext()
+    const {{ form }} = useFormContext()
   
-  return (
+  // Derive props from inputMode
+  const required = inputMode === 'required'
+  const readonly = inputMode === 'readonly'
+  const disabled = inputMode === 'disabled'
+  const hidden = inputMode === 'hidden'
+  
+  if (hidden) {{
+    return null
+  }}
+    return (
     <form.Field name={name} validators={validators}>
       {(field: any) => {
         // Convert string to Date if needed, validate the date is valid

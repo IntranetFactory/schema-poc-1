@@ -11,8 +11,15 @@ import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
-interface EnumFieldInnerProps extends Omit<FormControlProps, 'validators'> {
+interface EnumFieldInnerProps {
   field: any
+  name: string
+  label?: string
+  description?: string
+  required: boolean
+  disabled: boolean
+  readonly: boolean
+  hidden: boolean
   enumValues: string[]
   form: any
 }
@@ -25,9 +32,14 @@ function EnumFieldInner({
   required,
   disabled,
   readonly,
+  hidden,
   enumValues,
   form,
 }: EnumFieldInnerProps) {
+  if (hidden) {
+    return null
+  }
+  
   // Get the actual value - prefer field.state.value, fallback to empty string
   const currentValue = field.state.value ?? ''
   
@@ -82,12 +94,16 @@ export function InputEnum({
   name,
   label,
   description,
-  required,
-  disabled,
-  readonly,
+  inputMode = 'default',
   validators,
 }: FormControlProps) {
   const { form, schema } = useFormContext()
+  
+  // Derive props from inputMode
+  const required = inputMode === 'required'
+  const readonly = inputMode === 'readonly'
+  const disabled = inputMode === 'disabled'
+  const hidden = inputMode === 'hidden'
   
   // Get enum values from schema
   const fieldSchema = schema.properties?.[name] as any
@@ -109,6 +125,7 @@ export function InputEnum({
           required={required}
           disabled={disabled}
           readonly={readonly}
+          hidden={hidden}
           enumValues={enumValues}
           form={form}
         />
