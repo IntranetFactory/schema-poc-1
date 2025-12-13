@@ -1,133 +1,151 @@
+import * as React from "react"
 import { format } from "date-fns"
-import { Calendar as CalendarIcon, Clock } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import { Input } from "@/components/ui/input"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 interface DateTimePickerProps {
   date?: Date
   onDateTimeChange?: (date: Date | undefined) => void
-  placeholder?: string
   disabled?: boolean
+  readOnly?: boolean
   className?: string
 }
 
 export function DateTimePicker({
   date,
   onDateTimeChange,
-  placeholder = "Pick a date and time",
   disabled = false,
+  readOnly = false,
   className,
 }: DateTimePickerProps) {
-  const hours = date ? String(date.getHours()).padStart(2, '0') : "12"
-  const minutes = date ? String(date.getMinutes()).padStart(2, '0') : "00"
+  const [dateInputValue, setDateInputValue] = React.useState(
+    date ? format(date, "PPP") : ""
+  )
+  const [timeValue, setTimeValue] = React.useState(
+    date ? format(date, "HH:mm") : ""
+  )
 
-  const handleDateSelect = (selectedDate: Date | undefined) => {
-    if (selectedDate) {
-      // Keep the existing time if we have a date, otherwise use current time
-      const newDate = new Date(selectedDate)
+  React.useEffect(() => {
+    if (date) {
+      setDateInputValue(format(date, "PPP"))
+      setTimeValue(format(date, "HH:mm"))
+    } else {
+      setDateInputValue("")
+      setTimeValue("")
+    }
+  }, [date])
+
+  const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setDateInputValue(value)
+    
+    // Try to parse the input value as a date
+    const parsedDate = new Date(value)
+    if (!isNaN(parsedDate.getTime())) {
+      const newDate = new Date(parsedDate)
+      // Keep existing time if we have one
       if (date) {
         newDate.setHours(date.getHours())
         newDate.setMinutes(date.getMinutes())
         newDate.setSeconds(date.getSeconds())
+      } else if (timeValue) {
+        // Parse time from timeValue
+        const [hours, minutes] = timeValue.split(':').map(Number)
+        newDate.setHours(hours || 0)
+        newDate.setMinutes(minutes || 0)
       }
       onDateTimeChange?.(newDate)
-    } else {
-      onDateTimeChange?.(undefined)
     }
   }
 
-  const handleTimeChange = (type: 'hours' | 'minutes', value: string) => {
-    const numValue = parseInt(value) || 0
-    const baseDate = date || new Date()
-    const newDate = new Date(baseDate)
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setTimeValue(value)
     
-    if (type === 'hours') {
-      newDate.setHours(Math.max(0, Math.min(23, numValue)))
-    } else {
-      newDate.setMinutes(Math.max(0, Math.min(59, numValue)))
+    // Parse time in format HH:mm
+    const [hours, minutes] = value.split(':').map(Number)
+    if (!isNaN(hours) && !isNaN(minutes)) {
+      const newDate = date ? new Date(date) : new Date()
+      newDate.setHours(hours)
+      newDate.setMinutes(minutes)
+      newDate.setSeconds(0)
+      onDateTimeChange?.(newDate)
     }
-    
-    onDateTimeChange?.(newDate)
+  }
+
+  const handleCalendarSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      const newDate = new Date(selectedDate)
+      // Keep existing time if we have one
+      if (date) {
+        newDate.setHours(date.getHours())
+        newDate.setMinutes(date.getMinutes())
+        newDate.setSeconds(date.getSeconds())
+      } else if (timeValue) {
+        const [hours, minutes] = timeValue.split(':').map(Number)
+        newDate.setHours(hours || 0)
+        newDate.setMinutes(minutes || 0)
+      }
+      onDateTimeChange?.(newDate)
+    }
   }
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant={"outline"}
-          className={cn(
-            "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground",
-            className
-          )}
-          disabled={disabled}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? (
-            format(date, "PPP 'at' HH:mm")
-          ) : (
-            <span>{placeholder}</span>
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <div className="sm:flex">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={handleDateSelect}
-            initialFocus
-          />
-          <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
-            <div className="flex h-full flex-col items-center justify-center p-3 sm:w-[120px]">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <Label htmlFor="hours" className="text-sm font-medium">
-                  Time
-                </Label>
-              </div>
-              <div className="mt-3 grid gap-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="hours" className="text-sm">
-                    Hours
-                  </Label>
-                  <Input
-                    id="hours"
-                    type="number"
-                    min="0"
-                    max="23"
-                    value={hours}
-                    onChange={(e) => handleTimeChange('hours', e.target.value)}
-                    className="w-16 text-center"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="minutes" className="text-sm">
-                    Minutes
-                  </Label>
-                  <Input
-                    id="minutes"
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={minutes}
-                    onChange={(e) => handleTimeChange('minutes', e.target.value)}
-                    className="w-16 text-center"
-                  />
-                </div>
-              </div>
-            </div>
+    <div className={cn("flex gap-2", className)}>
+      <div className="flex-1">
+        <label className="text-sm font-medium">Date</label>
+        <Popover>
+          <div className="relative mt-1">
+            <Input
+              value={dateInputValue}
+              onChange={handleDateInputChange}
+              placeholder="Select date"
+              disabled={disabled}
+              readOnly={readOnly}
+              className="pr-10"
+            />
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3"
+                disabled={disabled || readOnly}
+                type="button"
+              >
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
           </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={handleCalendarSelect}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+      <div className="flex-1">
+        <label className="text-sm font-medium">Time</label>
+        <Input
+          type="time"
+          value={timeValue}
+          onChange={handleTimeChange}
+          disabled={disabled}
+          readOnly={readOnly}
+          className="mt-1"
+        />
+      </div>
+    </div>
   )
 }
