@@ -450,4 +450,187 @@ describe('Vocabulary Definition Tests', () => {
       expect(errorMessages).toContain('Must be a string');
     });
   });
+
+  describe('Schema Validity - Grid property', () => {
+    it('should accept schema with grid object containing all properties', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {
+          sortField: 'name',
+          sortOrder: 'asc'
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with grid object with sortOrder desc', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {
+          sortField: 'createdAt',
+          sortOrder: 'desc'
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with grid object containing only sortField', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {
+          sortField: 'name'
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with empty grid object (all properties optional)', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {},
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema without grid property', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should reject schema with grid as non-object', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: 'invalid',
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid grid value');
+      expect(result.errors?.[0]?.message).toContain('Must be an object');
+    });
+
+    it('should reject schema with sortField as number', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {
+          sortField: 123
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('grid.sortField');
+      expect(result.errors?.[0]?.message).toContain('Must be a string');
+    });
+
+    it('should reject schema with invalid sortOrder value', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {
+          sortField: 'name',
+          sortOrder: 'ascending'
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('grid.sortOrder');
+      expect(result.errors?.[0]?.message).toContain('Must be one of: asc, desc');
+    });
+
+    it('should reject schema with sortOrder as number', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {
+          sortField: 'name',
+          sortOrder: 1
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('grid.sortOrder');
+      expect(result.errors?.[0]?.message).toContain('Must be a string');
+    });
+
+    it('should reject schema with multiple invalid grid properties', () => {
+      const schema = {
+        type: 'object',
+        title: 'Users',
+        grid: {
+          sortField: 123,
+          sortOrder: 'invalid'
+        },
+        properties: {
+          name: { type: 'string' }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.length).toBeGreaterThanOrEqual(2); // At least 2 errors
+      
+      const errorMessages = result.errors?.map(e => e.message).join(' ');
+      expect(errorMessages).toContain('grid.sortField');
+      expect(errorMessages).toContain('grid.sortOrder');
+    });
+  });
 });

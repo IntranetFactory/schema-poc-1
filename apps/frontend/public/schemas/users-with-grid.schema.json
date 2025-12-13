@@ -1,0 +1,76 @@
+{
+  "$schema": "https://example.com/meta/custom-vocabulary",
+  "$id": "https://example.com/schemas/users-with-grid.schema.json",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://example.com/vocab/custom-formats": true,
+    "https://example.com/vocab/custom-validation": true
+  },
+  "title": "Users with Grid Configuration",
+  "description": "A user list with table and grid metadata for display configuration",
+  "table": {
+    "table_name": "users",
+    "singular": "user",
+    "plural": "users",
+    "singular_label": "User",
+    "plural_label": "Users",
+    "icon_url": "/icons/user.svg",
+    "description": "System users"
+  },
+  "grid": {
+    "sortField": "lastName",
+    "sortOrder": "asc"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "required": true,
+      "title": "ID",
+      "description": "Unique user identifier"
+    },
+    "firstName": {
+      "type": "string",
+      "required": true,
+      "title": "First Name",
+      "description": "User's first name"
+    },
+    "lastName": {
+      "type": "string",
+      "required": true,
+      "title": "Last Name",
+      "description": "User's last name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "required": true,
+      "title": "Email",
+      "description": "Email address"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["admin", "user", "guest"],
+      "title": "Role",
+      "description": "User role",
+      "default": "user"
+    },
+    "isActive": {
+      "type": "boolean",
+      "title": "Active",
+      "description": "Whether the account is active",
+      "default": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At",
+      "description": "Account creation date",
+      "readonly": true
+    }
+  },
+  "required": ["id", "firstName", "lastName", "email"],
+  "additionalProperties": false
+}

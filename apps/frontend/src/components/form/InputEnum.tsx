@@ -56,6 +56,8 @@ function EnumFieldInner({
       >
         <SelectTrigger
           id={name}
+          tabIndex={readonly ? -1 : undefined}
+          className={readonly ? 'opacity-60' : ''}
           aria-invalid={!!field.state.meta.errors?.[0]}
           aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
           onBlur={() => field.handleBlur()}

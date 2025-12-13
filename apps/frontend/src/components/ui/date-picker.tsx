@@ -43,7 +43,11 @@ export function DatePicker({
             variant="ghost"
             disabled={disabled || readOnly}
             type="button"
-            className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+            tabIndex={readOnly ? -1 : undefined}
+            className={cn(
+              "absolute top-1/2 right-2 size-6 -translate-y-1/2",
+              readOnly && "opacity-60"
+            )}
           >
             <CalendarIcon className="size-3.5" />
             <span className="sr-only">Select date</span>
