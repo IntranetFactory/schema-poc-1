@@ -54,8 +54,8 @@ describe('InputDate', () => {
 
   it('should show required indicator when field is required', () => {
     render(
-      <TestWrapper required>
-        <InputDate name="date" label="Date" required />
+      <TestWrapper inputMode="required">
+        <InputDate name="date" label="Date" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('InputDate', () => {
 
   it('should support validation via validators prop', () => {
     render(
-      <TestWrapper required>
+      <TestWrapper inputMode="required">
         <InputDate 
           name="date" 
           label="Date" 

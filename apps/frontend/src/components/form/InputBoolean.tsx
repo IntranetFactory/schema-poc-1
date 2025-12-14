@@ -9,11 +9,26 @@ export function InputBoolean({
   name,
   label,
   description,
-  disabled,
-  readonly,
+  inputMode = 'default',
   validators,
 }: FormControlProps) {
   const { form } = useFormContext()
+  
+  // Derive props from inputMode
+  const readonly = inputMode === 'readonly'
+  const disabled = inputMode === 'disabled'
+  const hidden = inputMode === 'hidden'
+  
+  if (hidden) {
+    // Hidden fields should render as <input type="hidden"> to be included in form submission
+    return (
+      <form.Field name={name} validators={validators}>
+        {(field: any) => (
+          <input type="hidden" name={name} value={field.state.value || ''} />
+        )}
+      </form.Field>
+    )
+  }
   
   return (
     <form.Field name={name} validators={validators}>

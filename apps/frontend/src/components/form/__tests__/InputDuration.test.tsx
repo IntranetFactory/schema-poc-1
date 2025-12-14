@@ -61,8 +61,8 @@ describe('InputDuration', () => {
 
   it('should show required indicator when field is required', () => {
     render(
-      <TestWrapper required>
-        <InputDuration name="duration" label="Duration" required />
+      <TestWrapper inputMode="required">
+        <InputDuration name="duration" label="Duration" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()
@@ -70,7 +70,7 @@ describe('InputDuration', () => {
 
   it('should support validation via validators prop', () => {
     render(
-      <TestWrapper required>
+      <TestWrapper inputMode="required">
         <InputDuration 
           name="duration" 
           label="Duration" 

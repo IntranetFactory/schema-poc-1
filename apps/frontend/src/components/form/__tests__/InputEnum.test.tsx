@@ -74,8 +74,8 @@ describe('InputEnum', () => {
 
   it('should show required indicator when field is required', () => {
     render(
-      <TestWrapper required>
-        <InputEnum name="option" label="Choose Option" required />
+      <TestWrapper inputMode="required">
+        <InputEnum name="option" label="Choose Option" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

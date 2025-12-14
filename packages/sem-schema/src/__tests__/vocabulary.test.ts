@@ -102,6 +102,60 @@ describe('Vocabulary Definition Tests', () => {
     });
   });
 
+  describe('Schema Validity - inputMode keyword', () => {
+    it('should accept schema with inputMode: default', () => {
+      const schema = { type: 'string', inputMode: 'default' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with inputMode: required', () => {
+      const schema = { type: 'string', inputMode: 'required' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with inputMode: readonly', () => {
+      const schema = { type: 'string', inputMode: 'readonly' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with inputMode: disabled', () => {
+      const schema = { type: 'string', inputMode: 'disabled' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with inputMode: hidden', () => {
+      const schema = { type: 'string', inputMode: 'hidden' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should reject schema with invalid inputMode value', () => {
+      const schema = { type: 'string', inputMode: 'invalid' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid inputMode value "invalid"');
+      expect(result.errors?.[0]?.message).toContain('default, required, readonly, disabled, hidden');
+    });
+
+    it('should reject schema with non-string inputMode', () => {
+      const schema = { type: 'string', inputMode: true };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid inputMode value. Must be a string');
+    });
+  });
+
   describe('Schema Validity - Unknown formats', () => {
     it('should reject schema with unknown format', () => {
       const schema = { type: 'string', format: 'emailx' };

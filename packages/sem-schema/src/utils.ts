@@ -68,6 +68,11 @@ const TABLE_STRING_PROPERTIES = [
 const VALID_SORT_ORDERS = ['asc', 'desc'] as const;
 
 /**
+ * Valid inputMode values
+ */
+const VALID_INPUT_MODES = ['default', 'required', 'readonly', 'disabled', 'hidden'] as const;
+
+/**
  * Schema validation error
  */
 export interface SchemaValidationError {
@@ -161,6 +166,26 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
         message: `Invalid required value. Must be boolean (property-level) or array (object-level)`,
         keyword: 'required',
         value: schema.required
+      });
+    }
+  }
+
+  // Validate inputMode
+  if ((schema as any).inputMode !== undefined) {
+    const inputMode = (schema as any).inputMode;
+    if (typeof inputMode !== 'string') {
+      errors.push({
+        path,
+        message: `Invalid inputMode value. Must be a string, got ${typeof inputMode}`,
+        keyword: 'inputMode',
+        value: inputMode
+      });
+    } else if (!VALID_INPUT_MODES.includes(inputMode as any)) {
+      errors.push({
+        path,
+        message: `Invalid inputMode value "${inputMode}". Must be one of: ${VALID_INPUT_MODES.join(', ')}`,
+        keyword: 'inputMode',
+        value: inputMode
       });
     }
   }

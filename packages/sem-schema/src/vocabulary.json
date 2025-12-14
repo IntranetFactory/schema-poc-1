@@ -20,6 +20,11 @@
       "description": "Property-level required validation - empty strings violate this constraint",
       "type": "boolean"
     },
+    "inputMode": {
+      "description": "Determines the interaction state of a form field",
+      "type": "string",
+      "enum": ["default", "required", "readonly", "disabled", "hidden"]
+    },
     "precision": {
       "description": "Number of decimal places allowed (0-4)",
       "type": "integer",

@@ -50,8 +50,8 @@ describe('InputJson', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputJson name="json" label="JSON" required />
+      <TestWrapper inputMode="required">
+        <InputJson name="json" label="JSON" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()
