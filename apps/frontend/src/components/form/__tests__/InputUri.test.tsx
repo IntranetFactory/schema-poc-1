@@ -48,8 +48,8 @@ describe('InputUri', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputUri name="uri" label="Website" required />
+      <TestWrapper inputMode="required">
+        <InputUri name="uri" label="Website" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

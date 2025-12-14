@@ -48,8 +48,8 @@ describe('InputUuid', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputUuid name="uuid" label="ID" required />
+      <TestWrapper inputMode="required">
+        <InputUuid name="uuid" label="ID" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

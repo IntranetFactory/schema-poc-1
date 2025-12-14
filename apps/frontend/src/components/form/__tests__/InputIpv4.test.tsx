@@ -49,8 +49,8 @@ describe('InputIpv4', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputIpv4 name="ipv4" label="IP Address" required />
+      <TestWrapper inputMode="required">
+        <InputIpv4 name="ipv4" label="IP Address" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

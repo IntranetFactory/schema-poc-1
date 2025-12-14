@@ -50,8 +50,8 @@ describe('InputEmail', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputEmail name="email" label="Email" required />
+      <TestWrapper inputMode="required">
+        <InputEmail name="email" label="Email" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

@@ -15,12 +15,14 @@ This file documents the implementation decisions and rationale for the SemSchema
 
 **SCREENSHOT CHECKLIST - COMPLETE THIS BEFORE CLAIMING YOU'RE DONE:**
 - [ ] Screenshots saved to `/screenshots/` directory (NOT /tmp, NOT external hosting)
-- [ ] Descriptive filenames used (01-feature-before.png, 02-feature-after.png)
+- [ ] Descriptive filenames MUST include task/issue ID (e.g., `inputmode-01-before.png`, `inputmode-02-after.png`)
 - [ ] **DO NOT CREATE README.md IN /screenshots/** - User does NOT want documentation files there
 - [ ] Screenshots committed to repository using report_progress
 - [ ] Screenshot filenames and descriptions listed in PR/commit message (NOT in a README file)
 - [ ] BEFORE and AFTER screenshots taken for every visual change
-- [ ] Screenshots actually examined to verify they match requirements
+- [ ] **Screenshots MUST be opened and visually inspected** - Verify no errors, proper rendering, correct layout
+- [ ] **Check for compilation/runtime errors in screenshots** - If you see error messages, FIX THEM before continuing
+- [ ] All AFTER screenshots match BEFORE screenshots (no visual regressions unless intentional)
 
 **IF YOU SKIP SCREENSHOTS:**
 - Your work demonstrates incompetence and unreliability
@@ -82,10 +84,13 @@ This file documents the implementation decisions and rationale for the SemSchema
    - ❌ NEVER leave screenshots only in /tmp - they will be lost
    - ❌ NEVER rely on external screenshot hosting - it breaks and wastes user time
 
-3. **ACTUALLY EXAMINE THE SCREENSHOT**
-   - Don't just take it and ignore it
+3. **ACTUALLY EXAMINE THE SCREENSHOT - THIS IS MANDATORY**
+   - **OPEN AND VIEW EVERY SCREENSHOT** you take - don't just assume it's correct
+   - **CHECK FOR ERRORS**: Look for compilation errors, runtime errors, blank pages, error messages
+   - **IF YOU SEE AN ERROR IN A SCREENSHOT**: Stop immediately, fix the error, retake the screenshot
    - Compare it pixel-by-pixel with the specification
-   - Look for: borders, shadows, spacing, colors, alignment, scrollbars
+   - Look for: borders, shadows, spacing, colors, alignment, scrollbars, **error messages**
+   - **NEVER submit screenshots showing errors** - this proves you didn't inspect them
 
 4. **Test actual behavior, not assumptions**
    - Click buttons, open dropdowns, scroll content

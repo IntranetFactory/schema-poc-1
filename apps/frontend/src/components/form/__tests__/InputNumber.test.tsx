@@ -60,8 +60,8 @@ describe('InputNumber', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputNumber name="age" label="Age" required />
+      <TestWrapper inputMode="required">
+        <InputNumber name="age" label="Age" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

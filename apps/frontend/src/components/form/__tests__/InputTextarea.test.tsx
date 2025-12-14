@@ -48,8 +48,8 @@ describe('InputTextarea', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputTextarea name="text" label="Description" required />
+      <TestWrapper inputMode="required">
+        <InputTextarea name="text" label="Description" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

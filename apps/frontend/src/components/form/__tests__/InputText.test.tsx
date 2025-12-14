@@ -37,7 +37,7 @@ describe('InputText', () => {
   it('should show required indicator', () => {
     render(
       <TestWrapper>
-        <InputText name="testField" label="Username" required />
+        <InputText name="testField" label="Username" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

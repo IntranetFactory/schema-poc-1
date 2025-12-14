@@ -49,8 +49,8 @@ describe('InputHostname', () => {
 
   it('should show required indicator when required', () => {
     render(
-      <TestWrapper required>
-        <InputHostname name="hostname" label="Hostname" required />
+      <TestWrapper inputMode="required">
+        <InputHostname name="hostname" label="Hostname" inputMode="required" />
       </TestWrapper>
     )
     expect(screen.getByText('*')).toBeInTheDocument()

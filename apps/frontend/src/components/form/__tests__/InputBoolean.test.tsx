@@ -44,7 +44,7 @@ describe('InputBoolean', () => {
   it('should not show required indicator even when required prop is passed', () => {
     render(
       <TestWrapper>
-        <InputBoolean name="agree" label="I agree" required={true} />
+        <InputBoolean name="agree" label="I agree" inputMode="required" />
       </TestWrapper>
     )
     // Should not show required asterisk for boolean/checkbox

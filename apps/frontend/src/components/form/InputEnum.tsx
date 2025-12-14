@@ -37,7 +37,14 @@ function EnumFieldInner({
   form,
 }: EnumFieldInnerProps) {
   if (hidden) {
-    return null
+    // Hidden fields should render as <input type="hidden"> to be included in form submission
+    return (
+      <form.Field name={name} validators={validators}>
+        {(field: any) => (
+          <input type="hidden" name={name} value={field.state.value || ''} />
+        )}
+      </form.Field>
+    )
   }
   
   // Get the actual value - prefer field.state.value, fallback to empty string

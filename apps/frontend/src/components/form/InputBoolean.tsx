@@ -20,7 +20,14 @@ export function InputBoolean({
   const hidden = inputMode === 'hidden'
   
   if (hidden) {
-    return null
+    // Hidden fields should render as <input type="hidden"> to be included in form submission
+    return (
+      <form.Field name={name} validators={validators}>
+        {(field: any) => (
+          <input type="hidden" name={name} value={field.state.value || ''} />
+        )}
+      </form.Field>
+    )
   }
   
   return (

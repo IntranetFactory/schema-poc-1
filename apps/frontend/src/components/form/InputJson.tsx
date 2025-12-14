@@ -15,7 +15,7 @@ export function InputJson({
   inputMode = 'default',
   validators,
 }: FormControlProps) {
-    const {{ form }} = useFormContext()
+  const { form } = useFormContext()
   
   // Derive props from inputMode
   const required = inputMode === 'required'
@@ -23,10 +23,23 @@ export function InputJson({
   const disabled = inputMode === 'disabled'
   const hidden = inputMode === 'hidden'
   
-  if (hidden) {{
-    return null
-  }}
+  if (hidden) {
+    // Hidden fields should render as <input type="hidden"> to be included in form submission
     return (
+      <form.Field name={name} validators={validators}>
+        {(field: any) => {
+          const stringValue = typeof field.state.value === 'string' 
+            ? field.state.value 
+            : field.state.value 
+              ? JSON.stringify(field.state.value) 
+              : ''
+          return <input type="hidden" name={name} value={stringValue} />
+        }}
+      </form.Field>
+    )
+  }
+  
+  return (
     <form.Field name={name} validators={validators}>
       {(field: any) => {
         // Ensure value is a string (prettify if it's an object)
