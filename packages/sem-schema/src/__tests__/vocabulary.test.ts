@@ -140,6 +140,81 @@ describe('Vocabulary Definition Tests', () => {
     });
   });
 
+  describe('Schema Validity - required keyword', () => {
+    it('should accept schema with valid object-level required array', () => {
+      const schema = { 
+        type: 'object', 
+        properties: { name: { type: 'string' }, email: { type: 'string' } },
+        required: ['name', 'email']
+      };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with empty required array', () => {
+      const schema = { 
+        type: 'object', 
+        properties: { name: { type: 'string' } },
+        required: []
+      };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should reject property schema with required: true', () => {
+      const schema = { type: 'string', required: true };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid use of property-level "required: true"');
+      expect(result.errors?.[0]?.message).toContain('Use "inputMode: \'required\'" instead');
+    });
+
+    it('should reject property schema with required: false', () => {
+      const schema = { type: 'string', required: false };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid use of property-level "required: false"');
+    });
+
+    it('should reject schema with required as non-array at object level', () => {
+      const schema = { 
+        type: 'object', 
+        properties: { name: { type: 'string' } },
+        required: 'name'  // Should be ['name']
+      };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid required value. Must be an array');
+    });
+
+    it('should reject schema with required array containing non-string items', () => {
+      const schema = { 
+        type: 'object', 
+        properties: { name: { type: 'string' } },
+        required: ['name', 123, true]
+      };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.length).toBeGreaterThanOrEqual(2);
+      expect(result.errors?.[0]?.message).toContain('Invalid required array item');
+      expect(result.errors?.[0]?.message).toContain('Must be a string');
+    });
+
+    it('should reject property schema with format and required: true', () => {
+      const schema = { format: 'email', required: true };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Invalid use of property-level "required: true"');
+    });
+  });
+
   describe('Schema Validity - Unknown formats', () => {
     it('should reject schema with unknown format', () => {
       const schema = { type: 'string', format: 'emailx' };
@@ -337,13 +412,15 @@ describe('Vocabulary Definition Tests', () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.length).toBe(4);
+      expect(result.errors?.length).toBe(5);
       
       // Check that all errors are present
       const errorMessages = result.errors?.map(e => e.message).join(' ');
       const errorPaths = result.errors?.map(e => e.schemaPath).join(' ');
       
       expect(errorMessages).toContain('Invalid type "stringy"');
+      expect(errorPaths).toContain('#/properties/name');
+      expect(errorMessages).toContain('Invalid use of property-level "required: true"');
       expect(errorPaths).toContain('#/properties/name');
       expect(errorMessages).toContain('Invalid type "stringx"');
       expect(errorPaths).toContain('#/properties/email');

@@ -54,10 +54,9 @@ function generateDefaultValue(schema: SchemaObject): Record<string, any> {
  * @param value - The value to validate
  * @param fieldSchema - The JSON Schema for this specific field
  * @param fieldName - The name of the field being validated
- * @param fullSchema - The complete object schema (used to check required fields)
  * @returns Error message if validation fails, undefined if valid
  */
-function validateField(value: any, fieldSchema: SchemaObject, fieldName: string, fullSchema: SchemaObject): string | undefined {
+function validateField(value: any, fieldSchema: SchemaObject, fieldName: string): string | undefined {
   // Check if field has inputMode: 'required'
   const inputMode = (fieldSchema as any).inputMode
   const isRequired = inputMode === 'required'
@@ -108,31 +107,45 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
   const form = useForm({
     defaultValues: defaultValue,
     onSubmit: async ({ value }) => {
-      // Filter out empty values for non-required fields before validation
-      // This prevents enum validation errors on optional fields with no selection
+      // Build object with all schema properties for validation
       const cleanedValue: Record<string, any> = {}
       
       // Get all possible fields from schema
       const allFields = schema.properties ? Object.keys(schema.properties) : []
       
+      // Include ALL fields from schema, regardless of whether they have values
+      // This ensures optional fields are included in submission and validation
       for (const key of allFields) {
-        const val = value[key]
-        const propSchema = schema.properties?.[key]
-        
-        // Check if field has inputMode: 'required'
-        const inputMode = propSchema && typeof propSchema === 'object' ? (propSchema as any).inputMode : undefined
-        const isRequired = inputMode === 'required'
-        
-        // Include the field if it's required OR if it has a non-empty value
-        if (isRequired || (val !== undefined && val !== null && val !== '')) {
-          cleanedValue[key] = val
-        }
+        cleanedValue[key] = value[key]
       }
       
-      // Validate the entire form with cleaned data
-      const result = validateData(cleanedValue, schema)
+      // Validate the entire form
+      let result
+      try {
+        result = validateData(cleanedValue, schema)
+      } catch (error) {
+        // Schema validation error (invalid schema structure)
+        const errorMessage = error instanceof Error ? error.message : 'Invalid schema'
+        console.error('Schema validation error:', errorMessage)
+        
+        // Set a form-level error to display the schema error
+        form.setFieldMeta('_schemaError', () => ({
+          errors: [errorMessage],
+          errorMap: {
+            onSubmit: errorMessage,
+          }
+        }))
+        
+        return
+      }
       
       if (!result.valid) {
+        // Log validation failure for debugging
+        console.warn('Form validation failed:', result.errors)
+        
+        // Track errors that couldn't be assigned to fields
+        const unhandledErrors: string[] = []
+        
         // Set errors on all fields with validation issues
         if (result.errors) {
           result.errors.forEach((error: any) => {
@@ -141,7 +154,10 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
               ? error.instancePath.substring(1) 
               : error.instancePath
             
-            if (fieldPath) {
+            // Check if this field exists in the form
+            const fieldExists = fieldPath && schema.properties?.[fieldPath]
+            
+            if (fieldPath && fieldExists) {
               form.setFieldMeta(fieldPath, (meta) => ({
                 ...meta,
                 errors: [error.message],
@@ -150,12 +166,35 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
                   onSubmit: error.message,
                 }
               }))
+            } else {
+              // Error can't be attached to a field - collect for general error display
+              const errorMsg = fieldPath 
+                ? `${fieldPath}: ${error.message}` 
+                : error.message
+              unhandledErrors.push(errorMsg)
             }
           })
         }
+        
+        // If there are unhandled errors, show them in a general validation error banner
+        if (unhandledErrors.length > 0) {
+          form.setFieldMeta('_validationError', () => ({
+            errors: unhandledErrors,
+            errorMap: {
+              onSubmit: unhandledErrors.join('; '),
+            }
+          }))
+        }
+        
         // Do not call onSubmit callback when validation fails
         return
       }
+      
+      // Clear any previous general validation errors on successful validation
+      form.setFieldMeta('_validationError', () => ({
+        errors: [],
+        errorMap: {}
+      }))
       
       // Only call onSubmit when validation passes (with cleaned data)
       onSubmit?.(cleanedValue)
@@ -175,7 +214,7 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
     validateField: (value: any, fieldName: string) => {
       const fieldSchema = properties[fieldName]
       if (!fieldSchema) return undefined
-      return validateField(value, fieldSchema, fieldName, schema)
+      return validateField(value, fieldSchema, fieldName)
     },
   }
 
@@ -189,6 +228,58 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         }}
         className="space-y-6"
       >
+      {/* Display schema validation errors */}
+      <form.Subscribe selector={(state) => [state.fieldMeta._schemaError?.errors]}>
+        {([schemaErrors]) => {
+          if (!schemaErrors || schemaErrors.length === 0) return null
+          return (
+            <div className="rounded-md bg-red-50 p-4 border border-red-200">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Schema Validation Error</h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    {schemaErrors[0]}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        }}
+      </form.Subscribe>
+      
+      {/* Display general validation errors */}
+      <form.Subscribe selector={(state) => [state.fieldMeta._validationError?.errors]}>
+        {([validationErrors]) => {
+          if (!validationErrors || validationErrors.length === 0) return null
+          return (
+            <div className="rounded-md bg-red-50 p-4 border border-red-200">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Validation Error</h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    <ul className="list-disc list-inside space-y-1">
+                      {validationErrors.map((error, idx) => (
+                        <li key={idx}>{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        }}
+      </form.Subscribe>
+      
       {Object.entries(properties).map(([key, propSchema]) => {
         if (typeof propSchema !== 'object') return null
 

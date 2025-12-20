@@ -87,6 +87,32 @@ export function validateData(data: any, schemaJson: SchemaObject): {
   const valid = validate(data);
   let errors = validate.errors ? [...validate.errors] : null;
   
+  // Filter out format errors for empty strings
+  // Empty strings are allowed even with formats - only inputMode:'required' enforces non-empty
+  if (errors && schemaJson.properties && typeof data === 'object' && data !== null) {
+    errors = errors.filter(error => {
+      // Skip filtering if not a format error
+      if (error.keyword !== 'format') return true;
+      
+      // Get the field name from the error path (e.g., '/email' -> 'email')
+      const fieldName = error.instancePath.startsWith('/') 
+        ? error.instancePath.substring(1) 
+        : error.instancePath;
+      
+      if (!fieldName) return true;
+      
+      const fieldValue = data[fieldName];
+      
+      // If the value is empty string, don't validate format
+      // (inputMode:'required' will catch empty strings separately)
+      if (typeof fieldValue === 'string' && fieldValue === '') {
+        return false; // Filter out (don't keep) format errors for empty strings
+      }
+      
+      return true;
+    });
+  }
+  
   // Custom validation for inputMode: "required"
   if (schemaJson.properties && typeof data === 'object' && data !== null) {
     const inputModeErrors: any[] = [];

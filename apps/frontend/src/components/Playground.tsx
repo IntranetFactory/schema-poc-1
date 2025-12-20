@@ -8,7 +8,7 @@ const defaultSchema = `{
   "properties": {
     "name": {
       "type": "string",
-      "required": true
+      "inputMode": "required"
     },
     "email": {
       "type": "string",

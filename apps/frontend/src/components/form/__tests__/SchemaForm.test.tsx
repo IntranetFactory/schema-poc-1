@@ -307,4 +307,196 @@ describe('SchemaForm', () => {
       expect(emailInput).toHaveAttribute('readonly')
     })
   })
+
+  describe('Schema-level Required Array', () => {
+    it('should include fields from schema.required array even with empty values', async () => {
+      const schemaWithRequired: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name' },
+          email: { type: 'string', format: 'email', title: 'Email' },
+        },
+        required: ['name'], // Object-level required (no inputMode on property)
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      render(<SchemaForm schema={schemaWithRequired} onSubmit={onSubmit} />)
+
+      // Leave name empty but enter email
+      await user.type(screen.getByLabelText(/email/i), 'test@example.com')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      // Should call onSubmit with empty name (because it's in required array)
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: '',
+            email: 'test@example.com',
+          })
+        )
+      })
+    })
+
+    it('should validate object-level required fields exist even if empty', async () => {
+      const schemaWithRequired: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name' },
+          email: { type: 'string', format: 'email', title: 'Email' },
+        },
+        required: ['name'], // name must exist in data
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      
+      // Initialize with data that has name (empty string is valid)
+      render(
+        <SchemaForm 
+          schema={schemaWithRequired} 
+          initialValue={{ name: '', email: '' }}
+          onSubmit={onSubmit} 
+        />
+      )
+
+      // Enter only email
+      await user.clear(screen.getByLabelText(/email/i))
+      await user.type(screen.getByLabelText(/email/i), 'test@example.com')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      // Form should submit successfully because name exists (even though empty)
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalled()
+      })
+    })
+
+    it('should differentiate between inputMode required and schema required', async () => {
+      const schema: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name', inputMode: 'required' }, // UI required (non-empty)
+          email: { type: 'string', format: 'email', title: 'Email' }, // No UI marker
+        },
+        required: ['email'], // email must exist in data (but can be empty)
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      render(<SchemaForm schema={schema} onSubmit={onSubmit} />)
+
+      // Enter name but leave email empty
+      await user.type(screen.getByLabelText(/name/i), 'John Doe')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      // Should include empty email (schema required) but not fail on it being empty
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'John Doe',
+            email: '',
+          })
+        )
+      })
+    })
+
+    it('should include optional fields with empty values in submission', async () => {
+      // Optional fields (not in required array, no inputMode required) should still be included
+      const schema: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name', inputMode: 'required' },
+          email: { type: 'string', format: 'email', title: 'Email' }, // Optional
+          age: { type: 'integer', title: 'Age' }, // Optional
+        },
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      render(<SchemaForm schema={schema} onSubmit={onSubmit} />)
+
+      // Fill only required field, leave optional fields empty
+      await user.type(screen.getByLabelText(/name/i), 'John Doe')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      // Should include ALL schema properties, even empty optional ones
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'John Doe',
+            email: '',
+            age: undefined, // or '' depending on field type
+          })
+        )
+      })
+    })
+
+    it('should display schema validation errors in UI', async () => {
+      // Create an invalid schema that will fail schema validation
+      const invalidSchema: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name' },
+        },
+        required: 'invalid_format' as any, // Should be array, not string
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      render(<SchemaForm schema={invalidSchema} onSubmit={onSubmit} />)
+
+      await user.type(screen.getByLabelText(/name/i), 'John Doe')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      // Should display schema validation error in UI
+      await waitFor(() => {
+        expect(screen.getByText(/invalid schema/i)).toBeInTheDocument()
+      })
+
+      // Should not call onSubmit
+      expect(onSubmit).not.toHaveBeenCalled()
+    })
+
+    it('should display validation errors for non-existent required fields in UI', async () => {
+      // Schema with required field that doesn't exist in properties
+      const schema: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name', inputMode: 'required' },
+        },
+        required: ['name', 'nonExistent'], // 'nonExistent' is not in properties
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      render(<SchemaForm schema={schema} onSubmit={onSubmit} />)
+
+      // Fill in name
+      await user.type(screen.getByLabelText(/name/i), 'John Doe')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      // Should display validation error for the missing required field
+      await waitFor(() => {
+        expect(screen.getByText(/validation error/i)).toBeInTheDocument()
+        expect(screen.getByText(/nonExistent/i)).toBeInTheDocument()
+        expect(screen.getByText(/must have required property/i)).toBeInTheDocument()
+      })
+
+      // Should not call onSubmit
+      expect(onSubmit).not.toHaveBeenCalled()
+    })
+  })
 })
+
