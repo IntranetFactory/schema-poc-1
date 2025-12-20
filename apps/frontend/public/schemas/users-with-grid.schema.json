@@ -1,11 +1,11 @@
 {
-  "$schema": "https://example.com/meta/custom-vocabulary",
-  "$id": "https://example.com/schemas/users-with-grid.schema.json",
+  "$schema": "https://semantius.com/meta/sem-schema",
+  "$id": "https://semantius.com/schemas/users-with-grid.schema.json",
   "$vocabulary": {
     "https://json-schema.org/draft/2020-12/vocab/core": true,
     "https://json-schema.org/draft/2020-12/vocab/validation": true,
-    "https://example.com/vocab/custom-formats": true,
-    "https://example.com/vocab/custom-validation": true
+    "https://semantius.com/vocab/sem-schema/formats": true,
+    "https://semantius.com/vocab/sem-schema/validation": true
   },
   "title": "Users with Grid Configuration",
   "description": "A user list with table and grid metadata for display configuration",
