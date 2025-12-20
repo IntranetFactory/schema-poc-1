@@ -13,13 +13,13 @@
   "properties": {
     "id": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "ID",
       "description": "Unique product identifier"
     },
     "name": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "Name",
       "description": "Product name"
     },

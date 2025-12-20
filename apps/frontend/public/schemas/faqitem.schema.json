@@ -13,19 +13,19 @@
   "properties": {
     "id": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "ID",
       "description": "Unique FAQ identifier"
     },
     "question": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "Question",
       "description": "The question text"
     },
     "answer": {
       "format": "html",
-      "required": true,
+      "inputMode": "required",
       "title": "Answer",
       "description": "HTML formatted answer"
     },

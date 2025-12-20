@@ -15,7 +15,7 @@
       "type": "string",
       "title": "Name",
       "description": "Your name",
-      "required": true
+      "inputMode": "required"
     }
   },
   "required": ["name"]

@@ -45,7 +45,7 @@ const defaultSchema = `{
     "name": {
       "type": "string",
       "title": "Name",
-      "required": true
+      "inputMode": "required"
     },
     "email": {
       "type": "string",

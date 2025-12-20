@@ -27,26 +27,26 @@
     "id": {
       "type": "string",
       "format": "uuid",
-      "required": true,
+      "inputMode": "required",
       "title": "ID",
       "description": "Unique user identifier"
     },
     "firstName": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "First Name",
       "description": "User's first name"
     },
     "lastName": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "Last Name",
       "description": "User's last name"
     },
     "email": {
       "type": "string",
       "format": "email",
-      "required": true,
+      "inputMode": "required",
       "title": "Email",
       "description": "Email address"
     },

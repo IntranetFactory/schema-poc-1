@@ -16,28 +16,28 @@
       "format": "date-time",
       "title": "Date Time",
       "description": "Date and time format",
-      "required": true
+      "inputMode": "required"
     },
     "time": {
       "type": "string",
       "format": "time",
       "title": "Time",
       "description": "Time format",
-        "required": true
+        "inputMode": "required"
     },
     "date": {
       "type": "string",
       "format": "date",
       "title": "Date",
       "description": "Date format",
-        "required": true
+        "inputMode": "required"
     },
     "uuid": {
       "type": "string",
       "format": "uuid",
       "title": "UUID",
       "description": "UUID format",
-        "required": true
+        "inputMode": "required"
     },
     "text": {
       "format": "text",
