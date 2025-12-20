@@ -27,20 +27,28 @@ export function Home() {
             <p className="text-gray-700 mb-4">
               Welcome to the SemSchema Validator. This tool allows you to validate JSON Schemas
               with custom vocabulary extensions including custom formats (json, html, text),
-              property-level required validation, and number precision control.
+              inputMode for UI state and validation, and number precision control.
             </p>
           </div>
 
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Interactive Playground
+              Interactive Playgrounds
             </h2>
-            <Link
-              to="/schema-playground"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
-            >
-              Open Playground →
-            </Link>
+            <div className="flex gap-4">
+              <Link
+                to="/schema-playground"
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
+              >
+                Schema Playground →
+              </Link>
+              <Link
+                to="/form-playground"
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
+              >
+                Form Playground →
+              </Link>
+            </div>
           </div>
 
           <div>
@@ -90,7 +98,7 @@ export function Home() {
             </h3>
             <ul className="list-disc list-inside space-y-1 text-gray-700">
               <li><strong>Custom Formats:</strong> json, html, text</li>
-              <li><strong>Property-level Required:</strong> Validate non-empty strings at property level</li>
+              <li><strong>Input Mode:</strong> Controls UI state (required/readonly/disabled/hidden) and validation</li>
               <li><strong>Number Precision:</strong> Control decimal places (0-4)</li>
               <li><strong>Type Inference:</strong> Automatic type detection for formats</li>
             </ul>

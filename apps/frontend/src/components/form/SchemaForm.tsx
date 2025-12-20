@@ -58,11 +58,11 @@ function generateDefaultValue(schema: SchemaObject): Record<string, any> {
  * @returns Error message if validation fails, undefined if valid
  */
 function validateField(value: any, fieldSchema: SchemaObject, fieldName: string, fullSchema: SchemaObject): string | undefined {
-  // Check if field is required
-  const isRequired = fullSchema.required && Array.isArray(fullSchema.required) && fullSchema.required.includes(fieldName)
+  // Check if field has inputMode: 'required'
+  const inputMode = (fieldSchema as any).inputMode
+  const isRequired = inputMode === 'required'
   
   // For required fields, check for empty values
-  // JSON Schema's 'required' only checks property existence, not meaningful values
   if (isRequired) {
     if (value === undefined || value === null || value === '') {
       return 'must not be empty'
@@ -110,7 +110,6 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
     onSubmit: async ({ value }) => {
       // Filter out empty values for non-required fields before validation
       // This prevents enum validation errors on optional fields with no selection
-      const requiredFields = schema.required && Array.isArray(schema.required) ? schema.required : []
       const cleanedValue: Record<string, any> = {}
       
       // Get all possible fields from schema
@@ -120,10 +119,9 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         const val = value[key]
         const propSchema = schema.properties?.[key]
         
-        // Check if field is required at object level OR property level
-        const isObjectLevelRequired = requiredFields.includes(key)
-        const isPropertyLevelRequired = propSchema && typeof propSchema === 'object' && (propSchema as any).required === true
-        const isRequired = isObjectLevelRequired || isPropertyLevelRequired
+        // Check if field has inputMode: 'required'
+        const inputMode = propSchema && typeof propSchema === 'object' ? (propSchema as any).inputMode : undefined
+        const isRequired = inputMode === 'required'
         
         // Include the field if it's required OR if it has a non-empty value
         if (isRequired || (val !== undefined && val !== null && val !== '')) {
@@ -169,7 +167,6 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
   }
 
   const properties = schema.properties as Record<string, SchemaObject>
-  const requiredFields = Array.isArray(schema.required) ? schema.required : []
 
   // Create context value for form controls - includes form instance
   const formContextValue = {
@@ -205,35 +202,9 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         const controlKey = format || (hasEnum ? 'enum' : type) as string
         const ControlComponent = controls[controlKey] || InputText
 
-        // Determine inputMode from schema properties
-        let inputMode: 'default' | 'required' | 'readonly' | 'disabled' | 'hidden' = 'default'
-        
-        // Check for explicit inputMode in schema
-        if ((propSchema as any).inputMode) {
-          inputMode = (propSchema as any).inputMode
-        } else {
-          // Fallback to old properties for backward compatibility during transition
-          const isRequired = (propSchema as any).required === true || requiredFields.includes(key)
-          const isReadonly = (propSchema as any).readonly === true
-          const isDisabled = (propSchema as any).disabled === true
-          const isHidden = (propSchema as any).hidden === true
-          
-          // Boolean types should not support required
-          const shouldShowRequired = type !== 'boolean' && isRequired
-          
-          // Determine inputMode from individual properties
-          if (isHidden) {
-            inputMode = 'hidden'
-          } else if (isDisabled) {
-            inputMode = 'disabled'
-          } else if (isReadonly) {
-            inputMode = 'readonly'
-          } else if (shouldShowRequired) {
-            inputMode = 'required'
-          } else {
-            inputMode = 'default'
-          }
-        }
+        // Get inputMode from schema (defaults to 'default' if not specified)
+        let inputMode: 'default' | 'required' | 'readonly' | 'disabled' | 'hidden' = 
+          (propSchema as any).inputMode || 'default'
         
         // Form-level readonly prop overrides schema-level inputMode (except for hidden)
         if (readonly && inputMode !== 'hidden') {

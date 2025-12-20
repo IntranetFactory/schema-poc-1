@@ -191,57 +191,54 @@ This file documents the implementation decisions and rationale for the SemSchema
 
 **⚠️ DO NOT WORK ON VALIDATION WITHOUT READING THIS ⚠️**
 
-### SemSchema Property-Level `required` - MANDATORY KNOWLEDGE
+### SemSchema Required Field Validation
 
-**This is NOT standard JSON Schema** - Read carefully:
+**Two types of required validation:**
 
-**Standard JSON Schema:**
-```json
-{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" }
-  },
-  "required": ["name"]  // ← Only checks if property EXISTS
-}
-```
-- An empty string `""` **PASSES** validation ✅
-- Only checks if the property key exists in the object
+1. **Standard JSON Schema `required: []` array** (object-level)
+   - Validates that property EXISTS in object
+   - Empty string `""` is valid
+   - Only checks for missing keys
 
-**SemSchema Custom Vocabulary:**
+2. **SemSchema `inputMode: "required"`** (property-level)
+   - Shows red asterisk (*) in UI
+   - Validates non-empty values
+   - Rejects null, undefined, and empty strings
+
+**Example:**
 ```json
 {
   "type": "object", 
   "properties": {
     "name": { 
       "type": "string",
-      "required": true  // ← Property-level: checks VALUE
+      "inputMode": "required"
     }
-  },
-  "required": ["name"]  // ← Can use both!
+  }
 }
 ```
-- Empty string `""` **FAILS** validation ❌
-- `null` **FAILS** validation ❌  
-- `undefined` **FAILS** validation ❌
-- **Applies to ALL string types** regardless of format (json, html, text, date, email, enum, etc.)
+
+**inputMode handles BOTH UI and validation:**
+- UI: Shows asterisk when `inputMode === 'required'`
+- Validation: Validates non-empty when `inputMode === 'required'`
 
 ### Implementation Location
 
-- **Keyword implementation**: `/packages/sem-schema/src/keywords/required.ts` lines 46-73
-- **Tests**: `/packages/sem-schema/src/__tests__/data-validation.test.ts` lines 53-116
-- **Schema tests**: `/packages/sem-schema/src/__tests__/vocabulary.test.ts` lines 31-45
+- **Validation logic**: `/packages/sem-schema/src/api.ts` validateData function (lines 85-115)
+- **Tests**: `/packages/sem-schema/src/__tests__/data-validation.test.ts` lines 53-158
+- **UI handling**: `/apps/frontend/src/components/form/SchemaForm.tsx`
+- **Vocabulary definition**: `/packages/sem-schema/src/vocabulary.json`
 
 ### When Working on Form Validation
 
-**YOU MUST** understand that SchemaForm's `validateField` function needs to:
-1. Check for empty values (undefined, null, '') BEFORE calling validateData
-2. This is because the custom vocabulary expects this behavior
-3. The validateField function at `/apps/frontend/src/components/form/SchemaForm.tsx` handles this
+**YOU MUST** understand that:
+1. SchemaForm's `validateField` function checks `inputMode === 'required'` (not `required: true`)
+2. The custom validation in `validateData` checks inputMode on each property
+3. Form controls receive inputMode prop which determines both asterisk AND validation
 
 **If you modify validation logic, you MUST:**
-- Read the custom vocabulary implementation first
-- Understand both property-level and object-level required
+- Check inputMode === 'required' (not required: true)
+- Handle both UI (asterisk) AND validation together
 - Test with empty strings, null, and undefined
 - Verify enum, text, and all string formats
 

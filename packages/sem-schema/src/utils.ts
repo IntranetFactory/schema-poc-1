@@ -143,33 +143,6 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
-  // Validate required (property-level boolean or object-level array)
-  if (schema.required !== undefined) {
-    if (typeof schema.required === 'boolean') {
-      // Property-level: valid
-    } else if (Array.isArray(schema.required)) {
-      // Object-level: validate array contents
-      for (const item of schema.required) {
-        if (typeof item !== 'string') {
-          errors.push({
-            path,
-            message: `Invalid required array. All elements must be strings, got ${typeof item}`,
-            keyword: 'required',
-            value: schema.required
-          });
-          break; // Only report once per array
-        }
-      }
-    } else {
-      errors.push({
-        path,
-        message: `Invalid required value. Must be boolean (property-level) or array (object-level)`,
-        keyword: 'required',
-        value: schema.required
-      });
-    }
-  }
-
   // Validate inputMode
   if ((schema as any).inputMode !== undefined) {
     const inputMode = (schema as any).inputMode;

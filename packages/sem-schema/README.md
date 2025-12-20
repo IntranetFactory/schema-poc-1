@@ -21,17 +21,23 @@ SemSchema also supports all standard JSON Schema formats via `ajv-formats`:
 
 ### Custom Keywords
 
-#### ⚠️ CRITICAL: Property-Level `required` Keyword
+#### ⚠️ CRITICAL: `inputMode` Keyword for Required Fields
 
-SemSchema extends JSON Schema with a **property-level `required: true`** keyword that is fundamentally different from standard JSON Schema:
+SemSchema uses the **`inputMode: "required"`** keyword that serves BOTH UI and validation purposes:
 
-- **Standard JSON Schema**: `required: ["fieldName"]` at object level only checks if property EXISTS
-  - An empty string `""` satisfies the requirement
-- **SemSchema Property-Level**: `required: true` on individual properties validates MEANINGFUL values
+- **UI Purpose**: Displays red asterisk (*) next to field label in forms
+- **Validation Purpose**: Validates MEANINGFUL values (not just existence)
   - `null` → FAILS validation
   - `undefined` → FAILS validation  
   - `""` (empty string) → FAILS validation
   - **Applies to ALL string types** (json, html, text, date, email, enum, or any format)
+
+**Valid `inputMode` values**:
+- `"default"` - Normal field (no special UI or validation)
+- `"required"` - Shows asterisk AND validates non-empty values
+- `"readonly"` - Field is read-only
+- `"disabled"` - Field is disabled
+- `"hidden"` - Field is hidden from UI
 
 **Example**:
 ```json
@@ -40,19 +46,22 @@ SemSchema extends JSON Schema with a **property-level `required: true`** keyword
   "properties": {
     "name": {
       "type": "string",
-      "required": true    // ← Property-level: empty string FAILS
+      "inputMode": "required"    // ← Shows asterisk + validates non-empty
     },
     "email": {
       "type": "string",
       "format": "email",
-      "required": true    // ← Also validates empty string
+      "inputMode": "required"    // ← Also validates empty string
+    },
+    "notes": {
+      "type": "string",
+      "inputMode": "readonly"    // ← Read-only field
     }
-  },
-  "required": ["name"]   // ← Object-level: only checks property exists
+  }
 }
 ```
 
-**Important for Form Validation**: When implementing form validation with SchemaForm, the `validateField` function must check for empty values (undefined, null, '') BEFORE calling `validateData` for required fields, since this is the intended behavior of the custom vocabulary.
+**Important for Form Validation**: The `inputMode: "required"` keyword is checked during data validation in the `validateData` function, and form components use it to display asterisks and determine field behavior.
 
 #### `precision` Keyword
 - **`precision`**: Integer (0-4) limiting decimal places in numbers
@@ -80,8 +89,9 @@ const schema = {
   type: 'object',
   properties: {
     email: { 
-      type: 'string', 
-      required: true  // Property-level: empty strings fail
+      type: 'string',
+      format: 'email',
+      inputMode: 'required'  // Shows asterisk + validates non-empty
     },
     config: { 
       format: 'json'  // Type: string inferred
@@ -90,8 +100,7 @@ const schema = {
       type: 'number', 
       precision: 2  // Up to 2 decimal places
     }
-  },
-  required: ['email']  // Object-level: property must exist
+  }
 };
 
 // Validate the schema itself

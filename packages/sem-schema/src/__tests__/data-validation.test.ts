@@ -50,68 +50,129 @@ describe('Data Validation Tests', () => {
     });
   });
 
-  describe('Property-level required', () => {
-    it('should reject empty string when required is true', () => {
-      const schema = { type: 'string', required: true };
-      
-      const result = validateData('', schema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.keyword).toBe('required');
-    });
-
-    it('should reject null when required is true', () => {
-      const schema = { type: ['string', 'null'], required: true };
-      
-      const result = validateData(null, schema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.keyword).toBe('required');
-    });
-
-    it('should accept non-empty string when required is true', () => {
-      const schema = { type: 'string', required: true };
-      
-      expect(validateData('not empty', schema).valid).toBe(true);
-      expect(validateData(' ', schema).valid).toBe(true);
-    });
-
-    it('should reject empty string with any format when required is true', () => {
-      // Empty strings are invalid for json/html formats (fail format validation)
-      // Empty strings with text format fail required validation
-      const jsonSchema = { type: 'string', format: 'json', required: true };
-      const htmlSchema = { type: 'string', format: 'html', required: true };
-      const textSchema = { type: 'string', format: 'text', required: true };
-      
-      expect(validateData('', jsonSchema).valid).toBe(false);
-      expect(validateData('', htmlSchema).valid).toBe(false);
-      
-      const textResult = validateData('', textSchema);
-      expect(textResult.valid).toBe(false);
-      expect(textResult.errors?.[0]?.keyword).toBe('required');
-    });
-
-    it('should accept empty string when required is false', () => {
-      const schema = { type: 'string', required: false };
-      
-      expect(validateData('', schema).valid).toBe(true);
-    });
-
-    it('should validate object with required array (object-level required)', () => {
+  describe('inputMode: required validation', () => {
+    it('should reject empty string when inputMode is required', () => {
       const schema = {
         type: 'object',
         properties: {
-          name: { type: 'string' },
-          email: { type: 'string' }
-        },
-        required: ['name']
+          name: { type: 'string', inputMode: 'required' }
+        }
       };
       
-      expect(validateData({ name: 'John' }, schema).valid).toBe(true);
-      
-      const result = validateData({ email: 'john@example.com' }, schema);
+      const result = validateData({ name: '' }, schema);
       expect(result.valid).toBe(false);
-      expect(result.errors?.[0]?.keyword).toBe('required');
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.keyword).toBe('inputMode');
+      expect(result.errors?.[0]?.message).toContain('must not be empty');
+    });
+
+    it('should reject null when inputMode is required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: ['string', 'null'], inputMode: 'required' }
+        }
+      };
+      
+      const result = validateData({ name: null }, schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.keyword).toBe('inputMode');
+      expect(result.errors?.[0]?.message).toContain('must not be null or undefined');
+    });
+
+    it('should reject undefined when inputMode is required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', inputMode: 'required' }
+        }
+      };
+      
+      const result = validateData({}, schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.keyword).toBe('inputMode');
+    });
+
+    it('should accept non-empty string when inputMode is required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', inputMode: 'required' }
+        }
+      };
+      
+      expect(validateData({ name: 'not empty' }, schema).valid).toBe(true);
+      expect(validateData({ name: ' ' }, schema).valid).toBe(true);
+    });
+
+    it('should reject empty string with any format when inputMode is required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          jsonField: { type: 'string', format: 'json', inputMode: 'required' },
+          htmlField: { type: 'string', format: 'html', inputMode: 'required' },
+          textField: { type: 'string', format: 'text', inputMode: 'required' }
+        }
+      };
+      
+      expect(validateData({ jsonField: '', htmlField: '', textField: '' }, schema).valid).toBe(false);
+      
+      const jsonResult = validateData({ jsonField: '', htmlField: '<p>ok</p>', textField: 'ok' }, schema);
+      expect(jsonResult.valid).toBe(false);
+      
+      const htmlResult = validateData({ jsonField: '{}', htmlField: '', textField: 'ok' }, schema);
+      expect(htmlResult.valid).toBe(false);
+      
+      const textResult = validateData({ jsonField: '{}', htmlField: '<p>ok</p>', textField: '' }, schema);
+      expect(textResult.valid).toBe(false);
+    });
+
+    it('should accept empty string when inputMode is not required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', inputMode: 'default' }
+        }
+      };
+      
+      expect(validateData({ name: '' }, schema).valid).toBe(true);
+    });
+
+    it('should validate multiple fields with inputMode required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', inputMode: 'required' },
+          email: { type: 'string', format: 'email', inputMode: 'required' },
+          notes: { type: 'string' }
+        }
+      };
+      
+      // All required fields filled - valid
+      expect(validateData({ 
+        name: 'John', 
+        email: 'john@example.com',
+        notes: 'Some notes'
+      }, schema).valid).toBe(true);
+      
+      // Missing required name - invalid
+      const result1 = validateData({ 
+        email: 'john@example.com',
+        notes: 'Some notes'
+      }, schema);
+      expect(result1.valid).toBe(false);
+      expect(result1.errors?.some((e: any) => e.keyword === 'inputMode')).toBe(true);
+      
+      // Empty required email - invalid
+      const result2 = validateData({ 
+        name: 'John',
+        email: '',
+        notes: 'Some notes'
+      }, schema);
+      expect(result2.valid).toBe(false);
+      expect(result2.errors?.some((e: any) => e.keyword === 'inputMode')).toBe(true);
     });
   });
 
@@ -234,6 +295,76 @@ describe('Data Validation Tests', () => {
       const schema = { type: 'string', format: 'uri' };
       
       expect(validateData('not a uri', schema).valid).toBe(false);
+    });
+  });
+
+  describe('Standard JSON Schema required array (object-level)', () => {
+    it('should reject missing property when in required array', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          email: { type: 'string' }
+        },
+        required: ['name']
+      };
+      
+      // Missing required 'name' property - should fail
+      const result = validateData({ email: 'john@example.com' }, schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors?.[0]?.keyword).toBe('required');
+    });
+
+    it('should accept empty string for property in required array (standard behavior)', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' }
+        },
+        required: ['name']
+      };
+      
+      // Property exists but is empty string - should pass (standard JSON Schema)
+      const result = validateData({ name: '' }, schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should accept property with value when in required array', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          email: { type: 'string' }
+        },
+        required: ['name']
+      };
+      
+      expect(validateData({ name: 'John' }, schema).valid).toBe(true);
+      expect(validateData({ name: 'John', email: 'john@example.com' }, schema).valid).toBe(true);
+    });
+
+    it('should differentiate between required array and inputMode required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          // Standard required: property must exist, but empty string is OK
+          field1: { type: 'string' },
+          // inputMode required: property must have non-empty value
+          field2: { type: 'string', inputMode: 'required' }
+        },
+        required: ['field1']
+      };
+      
+      // field1 with empty string - valid (required array allows empty)
+      expect(validateData({ field1: '', field2: 'value' }, schema).valid).toBe(true);
+      
+      // field1 missing - invalid (required array)
+      expect(validateData({ field2: 'value' }, schema).valid).toBe(false);
+      
+      // field2 with empty string - invalid (inputMode: required)
+      const result = validateData({ field1: 'value', field2: '' }, schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors?.some((e: any) => e.keyword === 'inputMode')).toBe(true);
     });
   });
 

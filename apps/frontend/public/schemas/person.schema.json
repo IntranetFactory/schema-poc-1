@@ -22,20 +22,20 @@
   "properties": {
     "id": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "ID",
       "description": "Unique identifier"
     },
     "name": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "Name",
       "description": "Person's full name"
     },
     "email": {
       "type": "string",
       "format": "email",
-      "required": true,
+      "inputMode": "required",
       "title": "Email",
       "description": "Email address"
     },

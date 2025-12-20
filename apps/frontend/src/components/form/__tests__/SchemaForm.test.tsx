@@ -11,21 +11,20 @@ describe('SchemaForm', () => {
       name: {
         type: 'string',
         title: 'Name',
-        required: true,
+        inputMode: 'required',
         description: 'Your full name',
       },
       email: {
         type: 'string',
         format: 'email',
         title: 'Email',
-        required: true,
+        inputMode: 'required',
       },
       age: {
         type: 'integer',
         title: 'Age',
       },
     },
-    required: ['name', 'email'],
   }
 
   describe('Rendering', () => {
@@ -273,7 +272,7 @@ describe('SchemaForm', () => {
       const schemaWithReadonly: SchemaObject = {
         type: 'object',
         properties: {
-          name: { type: 'string', title: 'Name', readonly: true },
+          name: { type: 'string', title: 'Name', inputMode: 'readonly' },
           email: { type: 'string', format: 'email', title: 'Email' },
         },
       }
@@ -293,7 +292,7 @@ describe('SchemaForm', () => {
       const schemaWithReadonly: SchemaObject = {
         type: 'object',
         properties: {
-          name: { type: 'string', title: 'Name', readonly: true },
+          name: { type: 'string', title: 'Name', inputMode: 'readonly' },
           email: { type: 'string', format: 'email', title: 'Email' },
         },
       }

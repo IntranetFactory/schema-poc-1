@@ -9,7 +9,7 @@ import { addAllKeywords } from './keywords';
  * This instance supports:
  * - Custom formats: json, html, text
  * - Standard formats: date, time, email, uri, etc. (from ajv-formats)
- * - Property-level required keyword (validates non-empty strings)
+ * - inputMode: Controls UI state and validation (required/readonly/disabled/hidden)
  * - Number precision keyword (0-4 decimal places)
  * - Type inference (format without type defaults to string)
  */

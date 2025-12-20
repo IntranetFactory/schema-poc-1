@@ -16,12 +16,8 @@
       "type": "string",
       "enum": ["json", "html", "text"]
     },
-    "required": {
-      "description": "Property-level required validation - empty strings violate this constraint",
-      "type": "boolean"
-    },
     "inputMode": {
-      "description": "Determines the interaction state of a form field",
+      "description": "Determines the interaction state of a form field. When set to 'required', validates that values are not null/undefined/empty and shows asterisk in UI.",
       "type": "string",
       "enum": ["default", "required", "readonly", "disabled", "hidden"]
     },

@@ -85,8 +85,49 @@ export function validateData(data: any, schemaJson: SchemaObject): {
   }
   
   const valid = validate(data);
+  let errors = validate.errors ? [...validate.errors] : null;
+  
+  // Custom validation for inputMode: "required"
+  if (schemaJson.properties && typeof data === 'object' && data !== null) {
+    const inputModeErrors: any[] = [];
+    
+    for (const [key, propSchema] of Object.entries(schemaJson.properties)) {
+      if (typeof propSchema === 'object' && propSchema !== null) {
+        const inputMode = (propSchema as any).inputMode;
+        
+        if (inputMode === 'required') {
+          const value = data[key];
+          
+          // Check if value is null, undefined, or empty string
+          if (value === null || value === undefined) {
+            inputModeErrors.push({
+              keyword: 'inputMode',
+              message: `must not be null or undefined`,
+              params: { inputMode: 'required' },
+              instancePath: `/${key}`,
+              schemaPath: `#/properties/${key}/inputMode`
+            });
+          } else if (typeof value === 'string' && value === '') {
+            inputModeErrors.push({
+              keyword: 'inputMode',
+              message: `must not be empty`,
+              params: { inputMode: 'required' },
+              instancePath: `/${key}`,
+              schemaPath: `#/properties/${key}/inputMode`
+            });
+          }
+        }
+      }
+    }
+    
+    // Merge inputMode errors with AJV errors
+    if (inputModeErrors.length > 0) {
+      errors = errors ? [...errors, ...inputModeErrors] : inputModeErrors;
+    }
+  }
+  
   return {
-    valid,
-    errors: validate.errors ? [...validate.errors] : null
+    valid: errors === null || errors.length === 0,
+    errors: errors && errors.length > 0 ? errors : null
   };
 }

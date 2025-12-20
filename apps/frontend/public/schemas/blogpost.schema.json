@@ -22,20 +22,20 @@
   "properties": {
     "id": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "title": "ID",
       "description": "Unique post identifier"
     },
     "title": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "minLength": 1,
       "title": "Title",
       "description": "Post title"
     },
     "slug": {
       "type": "string",
-      "required": true,
+      "inputMode": "required",
       "pattern": "^[a-z0-9-]+$",
       "title": "Slug",
       "description": "URL-friendly slug"
@@ -47,7 +47,7 @@
     },
     "content": {
       "format": "html",
-      "required": true,
+      "inputMode": "required",
       "title": "Content",
       "description": "HTML formatted post content"
     },
@@ -56,7 +56,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "required": true,
+          "inputMode": "required",
           "title": "Name"
         },
         "email": {

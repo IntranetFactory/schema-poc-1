@@ -28,22 +28,6 @@ describe('Vocabulary Definition Tests', () => {
     });
   });
 
-  describe('Schema Validity - Property-level required', () => {
-    it('should accept schema with property-level required: true', () => {
-      const schema = { type: 'string', required: true };
-      const result = validateSchema(schema);
-      expect(result.valid).toBe(true);
-      expect(result.errors).toBeNull();
-    });
-
-    it('should accept schema with property-level required: false', () => {
-      const schema = { type: 'string', required: false };
-      const result = validateSchema(schema);
-      expect(result.valid).toBe(true);
-      expect(result.errors).toBeNull();
-    });
-  });
-
   describe('Schema Validity - Precision keyword', () => {
     it('should accept schema with precision: 0', () => {
       const schema = { type: 'number', precision: 0 };
