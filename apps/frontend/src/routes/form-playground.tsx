@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { FormPlayground } from '../components/FormPlayground'
+import { FormPlayground } from '../components/form/Playground'
 
 interface FormPlaygroundSearch {
   schema?: string
