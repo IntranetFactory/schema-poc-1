@@ -18,7 +18,7 @@ export function createSemSchemaValidator(): Ajv {
     allErrors: true,
     strict: false,
     validateFormats: true,
-    validateSchema: false  // Allow custom keywords in schemas
+    validateSchema: true  // Enable AJV meta-schema validation
   });
   
   // Add standard formats (date, time, email, uri, etc.)

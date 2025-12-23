@@ -163,45 +163,6 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
-  // Validate required keyword
-  // In SemSchema, required must be an array at object level (standard JSON Schema)
-  // For property-level required validation, use inputMode: "required" instead
-  if ((schema as any).required !== undefined) {
-    const required = (schema as any).required;
-    
-    // Check if this is a property schema (has type/format but no properties)
-    // Object schemas with properties can have required arrays
-    const isPropertySchema = !schema.properties && (schema.type || schema.format);
-    
-    if (isPropertySchema && typeof required === 'boolean') {
-      errors.push({
-        path,
-        message: `Invalid use of property-level "required: ${required}". Use "inputMode: 'required'" instead for required field validation`,
-        keyword: 'required',
-        value: required
-      });
-    } else if (!Array.isArray(required)) {
-      errors.push({
-        path,
-        message: `Invalid required value. Must be an array of property names, got ${typeof required}`,
-        keyword: 'required',
-        value: required
-      });
-    } else {
-      // Validate that all items in required array are strings
-      for (let i = 0; i < required.length; i++) {
-        if (typeof required[i] !== 'string') {
-          errors.push({
-            path,
-            message: `Invalid required array item at index ${i}. Must be a string, got ${typeof required[i]}`,
-            keyword: 'required',
-            value: required[i]
-          });
-        }
-      }
-    }
-  }
-
   // Validate table keyword
   if (schema.table !== undefined) {
     if (typeof schema.table !== 'object' || schema.table === null || Array.isArray(schema.table)) {

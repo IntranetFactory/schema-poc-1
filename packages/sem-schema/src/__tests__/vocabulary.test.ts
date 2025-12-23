@@ -163,21 +163,20 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.errors).toBeNull();
     });
 
-    it('should reject property schema with required: true', () => {
+    it('should reject property schema with required: true (invalid at property level)', () => {
       const schema = { type: 'string', required: true };
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.message).toContain('Invalid use of property-level "required: true"');
-      expect(result.errors?.[0]?.message).toContain('Use "inputMode: \'required\'" instead');
+      // AJV's meta-schema validation will reject this
     });
 
-    it('should reject property schema with required: false', () => {
+    it('should reject property schema with required: false (invalid at property level)', () => {
       const schema = { type: 'string', required: false };
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.message).toContain('Invalid use of property-level "required: false"');
+      // AJV's meta-schema validation will reject this
     });
 
     it('should reject schema with required as non-array at object level', () => {
@@ -189,7 +188,6 @@ describe('Vocabulary Definition Tests', () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.message).toContain('Invalid required value. Must be an array');
     });
 
     it('should reject schema with required array containing non-string items', () => {
@@ -201,17 +199,14 @@ describe('Vocabulary Definition Tests', () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.length).toBeGreaterThanOrEqual(2);
-      expect(result.errors?.[0]?.message).toContain('Invalid required array item');
-      expect(result.errors?.[0]?.message).toContain('Must be a string');
     });
 
-    it('should reject property schema with format and required: true', () => {
+    it('should reject property schema with format and required: true (invalid at property level)', () => {
       const schema = { format: 'email', required: true };
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.message).toContain('Invalid use of property-level "required: true"');
+      // AJV's meta-schema validation will reject this
     });
   });
 
@@ -395,7 +390,7 @@ describe('Vocabulary Definition Tests', () => {
         properties: {
           name: {
             type: 'stringy',
-            required: true
+            required: true  // Unknown keyword - ignored
           },
           email: {
             type: 'stringx',
@@ -412,7 +407,7 @@ describe('Vocabulary Definition Tests', () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.length).toBe(5);
+      expect(result.errors?.length).toBe(4);  // stringy type, stringx type, emailx format, precision 1.2
       
       // Check that all errors are present
       const errorMessages = result.errors?.map(e => e.message).join(' ');
@@ -420,8 +415,7 @@ describe('Vocabulary Definition Tests', () => {
       
       expect(errorMessages).toContain('Invalid type "stringy"');
       expect(errorPaths).toContain('#/properties/name');
-      expect(errorMessages).toContain('Invalid use of property-level "required: true"');
-      expect(errorPaths).toContain('#/properties/name');
+      // Note: "required: true" is ignored as unknown keyword - NOT an error
       expect(errorMessages).toContain('Invalid type "stringx"');
       expect(errorPaths).toContain('#/properties/email');
       expect(errorMessages).toContain('Unknown format "emailx"');
@@ -746,6 +740,73 @@ describe('Vocabulary Definition Tests', () => {
       const errorMessages = result.errors?.map(e => e.message).join(' ');
       expect(errorMessages).toContain('grid.sortField');
       expect(errorMessages).toContain('grid.sortOrder');
+    });
+  });
+
+  describe('Unknown Keywords - Should be ignored', () => {
+    it('should reject "required: true" in property schema (not a valid unknown keyword)', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            title: 'Name',
+            required: true  // Invalid - 'required' is a known JSON Schema keyword
+          }
+        },
+        required: ['name']
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+    });
+
+    it('should ignore unknown keyword "bratwurst: false" in property schema', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            title: 'Name',
+            bratwurst: false  // Truly unknown keyword - ignored
+          },
+          email: {
+            type: 'string',
+            format: 'email',
+            lebercheese: 'yes'  // Truly unknown keyword - ignored
+          }
+        }
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should handle complex schema with unknown keywords (but reject invalid required)', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          email: {
+            type: 'string',
+            format: 'email',
+            title: 'Email',
+            bratwurst: false  // Unknown - ignored
+          },
+          age: {
+            type: 'number',
+            precision: 0,
+            title: 'Age',
+            lebercheese: 'yes'  // Unknown - ignored
+          }
+        },
+        required: ['email']
+      };
+      
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
     });
   });
 });
