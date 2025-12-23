@@ -551,4 +551,209 @@ describe('Data Validation Tests', () => {
     });
   });
 
+  describe('inputMode: readonly/disabled/hidden validation', () => {
+    it('should NOT validate constraints for empty readonly fields', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { 
+            type: 'string', 
+            minLength: 5,
+            inputMode: 'readonly' 
+          }
+        }
+      };
+      
+      // Empty readonly field should pass even with minLength constraint
+      const result = validateData({ name: '' }, schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should NOT validate constraints for empty disabled fields', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          email: { 
+            type: 'string', 
+            format: 'email',
+            minLength: 5,
+            inputMode: 'disabled' 
+          }
+        }
+      };
+      
+      // Empty disabled field should pass even with minLength and format constraints
+      const result = validateData({ email: '' }, schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should NOT validate constraints for empty hidden fields', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          id: { 
+            type: 'string', 
+            pattern: '^[0-9]+$',
+            minLength: 3,
+            inputMode: 'hidden' 
+          }
+        }
+      };
+      
+      // Empty hidden field should pass even with pattern and minLength constraints
+      const result = validateData({ id: '' }, schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should validate format when readonly field has non-empty value', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          email: { 
+            type: 'string', 
+            format: 'email',
+            inputMode: 'readonly' 
+          }
+        }
+      };
+      
+      // Invalid email should fail validation
+      const invalidResult = validateData({ email: 'not-an-email' }, schema);
+      expect(invalidResult.valid).toBe(false);
+      expect(invalidResult.errors?.[0]?.keyword).toBe('format');
+      
+      // Valid email should pass
+      const validResult = validateData({ email: 'user@example.com' }, schema);
+      expect(validResult.valid).toBe(true);
+    });
+
+    it('should validate format when disabled field has non-empty value', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          url: { 
+            type: 'string', 
+            format: 'uri',
+            inputMode: 'disabled' 
+          }
+        }
+      };
+      
+      // Invalid URL should fail validation
+      const invalidResult = validateData({ url: 'not a url' }, schema);
+      expect(invalidResult.valid).toBe(false);
+      expect(invalidResult.errors?.[0]?.keyword).toBe('format');
+      
+      // Valid URL should pass
+      const validResult = validateData({ url: 'https://example.com' }, schema);
+      expect(validResult.valid).toBe(true);
+    });
+
+    it('should NOT validate pattern for hidden fields regardless of value', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          code: { 
+            type: 'string', 
+            pattern: '^[A-Z]{3}$',
+            inputMode: 'hidden' 
+          }
+        }
+      };
+      
+      // Invalid pattern should still pass (pattern not enforced on hidden)
+      const invalidResult = validateData({ code: 'ABC123' }, schema);
+      expect(invalidResult.valid).toBe(true);
+      
+      // Valid pattern should pass
+      const validResult = validateData({ code: 'ABC' }, schema);
+      expect(validResult.valid).toBe(true);
+    });
+
+    it('should NOT validate minLength/maxLength for empty readonly fields with required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { 
+            type: 'string', 
+            minLength: 5,
+            maxLength: 50,
+            inputMode: 'readonly' 
+          }
+        },
+        required: ['name']
+      };
+      
+      // Empty readonly field should pass even with schema-level required and minLength/maxLength
+      const result = validateData({ name: '' }, schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should NOT validate minLength/maxLength/pattern for readonly fields regardless of value', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          name: { 
+            type: 'string', 
+            minLength: 5,
+            inputMode: 'readonly' 
+          }
+        }
+      };
+      
+      // Too short value should still pass (minLength not enforced on readonly)
+      const invalidResult = validateData({ name: 'abc' }, schema);
+      expect(invalidResult.valid).toBe(true);
+      
+      // Any length should pass
+      const validResult = validateData({ name: 'abcde' }, schema);
+      expect(validResult.valid).toBe(true);
+    });
+
+    it('should handle multiple readonly fields with different validation rules', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          email: { 
+            type: 'string', 
+            format: 'email',
+            minLength: 5,
+            inputMode: 'readonly' 
+          },
+          age: {
+            type: 'number',
+            minimum: 0,
+            inputMode: 'readonly'
+          },
+          status: {
+            type: 'string',
+            enum: ['active', 'inactive'],
+            inputMode: 'disabled'
+          }
+        }
+      };
+      
+      // All empty should pass
+      const emptyResult = validateData({ email: '', age: null, status: '' }, schema);
+      expect(emptyResult.valid).toBe(true);
+      
+      // Valid values should pass
+      const validResult = validateData({ 
+        email: 'user@example.com', 
+        age: 25,
+        status: 'active'
+      }, schema);
+      expect(validResult.valid).toBe(true);
+      
+      // Invalid email format should fail (has value, so format is checked)
+      const invalidEmailResult = validateData({ 
+        email: 'invalid', 
+        age: 25,
+        status: 'active'
+      }, schema);
+      expect(invalidEmailResult.valid).toBe(false);
+      expect(invalidEmailResult.errors?.[0]?.keyword).toBe('format');
+    });
+  });
+
 });

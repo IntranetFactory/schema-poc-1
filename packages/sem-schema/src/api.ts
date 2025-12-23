@@ -87,8 +87,7 @@ export function validateData(data: any, schemaJson: SchemaObject): {
   validate(data);
   let errors = validate.errors ? [...validate.errors] : null;
   
-  // Filter out format and enum errors for empty strings when inputMode handles validation
-  // Empty strings are allowed even with formats/enums - only inputMode:'required' enforces non-empty
+  // Filter out validation errors based on inputMode
   if (errors && schemaJson.properties && typeof data === 'object' && data !== null) {
     errors = errors.filter(error => {
       // Get the field name from the error path (e.g., '/email' -> 'email')
@@ -101,6 +100,28 @@ export function validateData(data: any, schemaJson: SchemaObject): {
       const fieldValue = data[fieldName];
       const propSchema = schemaJson.properties?.[fieldName];
       const inputMode = typeof propSchema === 'object' && propSchema !== null ? (propSchema as any).inputMode : undefined;
+      
+      // For readonly, disabled, and hidden fields: 
+      // - Skip required, minLength, maxLength, pattern validation (constraints)
+      // - BUT still validate format if value is present (data quality check)
+      if (inputMode === 'readonly' || inputMode === 'disabled' || inputMode === 'hidden') {
+        // Skip constraint validations
+        if (error.keyword === 'required' || error.keyword === 'minLength' || 
+            error.keyword === 'maxLength' || error.keyword === 'pattern' ||
+            error.keyword === 'type') {
+          return false;
+        }
+        
+        // For format and enum: only skip if value is empty
+        if (error.keyword === 'format' || error.keyword === 'enum') {
+          const isEmpty = fieldValue === null || fieldValue === undefined || 
+                         (typeof fieldValue === 'string' && fieldValue === '');
+          if (isEmpty) {
+            return false; // Skip format/enum validation for empty values
+          }
+          // If value is present, keep the error (validate format/enum)
+        }
+      }
       
       // If the value is empty string and inputMode is 'required', filter out format/enum errors
       // because inputMode validation will provide a better error message
@@ -123,6 +144,7 @@ export function validateData(data: any, schemaJson: SchemaObject): {
   }
   
   // Custom validation for inputMode: "required"
+  // Skip required validation for readonly, disabled, and hidden fields
   if (schemaJson.properties && typeof data === 'object' && data !== null) {
     const inputModeErrors: any[] = [];
     
@@ -130,6 +152,8 @@ export function validateData(data: any, schemaJson: SchemaObject): {
       if (typeof propSchema === 'object' && propSchema !== null) {
         const inputMode = (propSchema as any).inputMode;
         
+        // Only validate required for default and required inputModes
+        // Skip validation for readonly, disabled, and hidden fields
         if (inputMode === 'required') {
           const value = data[key];
           

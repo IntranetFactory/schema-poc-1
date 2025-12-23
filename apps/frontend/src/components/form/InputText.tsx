@@ -30,23 +30,38 @@ export function InputText({
       </form.Field>
     )
   }
-    return (
+  
+  return (
     <form.Field name={name} validators={validators}>
       {(field: any) => (
         <div className="space-y-2">
           <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
-          <Input
-            id={name}
-            name={name}
-            type="text"
-            value={field.state.value || ''}
-            onChange={(e) => field.handleChange(e.target.value)}
-            onBlur={field.handleBlur}
-            disabled={disabled}
-            readOnly={readonly}
-            aria-invalid={!!field.state.meta.errors?.[0]}
-            aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
-          />
+          {readonly ? (
+            <>
+              {/* Readonly: render disabled input for visual + hidden input for form submission */}
+              <Input
+                id={name}
+                type="text"
+                value={field.state.value || ''}
+                disabled={true}
+                aria-invalid={!!field.state.meta.errors?.[0]}
+                aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+              />
+              <input type="hidden" name={name} value={field.state.value || ''} />
+            </>
+          ) : (
+            <Input
+              id={name}
+              name={name}
+              type="text"
+              value={field.state.value || ''}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+              disabled={disabled}
+              aria-invalid={!!field.state.meta.errors?.[0]}
+              aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+            />
+          )}
           <FormDescription description={description} />
           <FormError name={name} error={field.state.meta.errors?.[0]} />
         </div>

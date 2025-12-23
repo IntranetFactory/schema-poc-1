@@ -36,21 +36,39 @@ export function InputNumber({
       {(field: any) => (
         <div className="space-y-2">
           <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
-          <Input
-            id={name}
-            name={name}
-            type="number"
-            value={field.state.value === undefined || field.state.value === null ? '' : field.state.value}
-            onChange={(e) => {
-              const val = e.target.value
-              field.handleChange(val === '' ? undefined : Number(val))
-            }}
-            onBlur={field.handleBlur}
-            disabled={disabled}
-            readOnly={readonly}
-            aria-invalid={!!field.state.meta.errors?.[0]}
-            aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
-          />
+          {readonly ? (
+            <>
+              {/* Readonly: render disabled input for visual + hidden input for form submission */}
+              <Input
+                id={name}
+                type="number"
+                value={field.state.value === undefined || field.state.value === null ? '' : field.state.value}
+                disabled={true}
+                aria-invalid={!!field.state.meta.errors?.[0]}
+                aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+              />
+              <input 
+                type="hidden" 
+                name={name} 
+                value={field.state.value !== undefined && field.state.value !== null ? field.state.value : ''} 
+              />
+            </>
+          ) : (
+            <Input
+              id={name}
+              name={name}
+              type="number"
+              value={field.state.value === undefined || field.state.value === null ? '' : field.state.value}
+              onChange={(e) => {
+                const val = e.target.value
+                field.handleChange(val === '' ? undefined : Number(val))
+              }}
+              onBlur={field.handleBlur}
+              disabled={disabled}
+              aria-invalid={!!field.state.meta.errors?.[0]}
+              aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+            />
+          )}
           <FormDescription description={description} />
           <FormError name={name} error={field.state.meta.errors?.[0]} />
         </div>

@@ -45,8 +45,7 @@ export function InputHtml({
                 value={field.state.value || ''}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
-                disabled={disabled}
-            readOnly={readonly}
+                disabled={disabled || readonly}
               />
             </Suspense>
           </div>

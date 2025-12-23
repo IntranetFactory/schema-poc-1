@@ -43,8 +43,7 @@ export function InputUriReference({
         value={field.state.value || ''}
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
-        disabled={disabled}
-            readOnly={readonly}
+        disabled={disabled || readonly}
         placeholder="/path or https://example.com"
         aria-invalid={!!field.state.meta.errors?.[0]}
         aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}

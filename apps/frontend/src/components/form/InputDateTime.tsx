@@ -60,8 +60,7 @@ export function InputDateTime({
             <DateTimePicker
               date={dateValue}
               onDateTimeChange={handleDateTimeChange}
-              disabled={disabled}
-            readOnly={readonly}
+              disabled={disabled || readonly}
             />
             <FormDescription description={description} />
             <FormError name={name} error={field.state.meta.errors?.[0]} />

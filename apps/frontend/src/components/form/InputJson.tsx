@@ -58,8 +58,7 @@ export function InputJson({
                   value={stringValue}
                   onChange={field.handleChange}
                   onBlur={field.handleBlur}
-                  disabled={disabled}
-            readOnly={readonly}
+                  disabled={disabled || readonly}
                 />
               </Suspense>
             </div>

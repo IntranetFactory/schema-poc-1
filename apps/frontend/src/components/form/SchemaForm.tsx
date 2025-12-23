@@ -152,6 +152,7 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         
         // Track errors that couldn't be assigned to fields
         const unhandledErrors: string[] = []
+        let firstErrorField: string | null = null
         
         // Set errors on all fields with validation issues
         if (result.errors) {
@@ -165,6 +166,11 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
             const fieldExists = fieldPath && schema.properties?.[fieldPath]
             
             if (fieldPath && fieldExists) {
+              // Track first field with error for scrolling
+              if (!firstErrorField) {
+                firstErrorField = fieldPath
+              }
+              
               form.setFieldMeta(fieldPath, (meta) => ({
                 ...meta,
                 errors: [error.message],
@@ -192,6 +198,18 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
               onSubmit: unhandledErrors.join('; '),
             }
           }))
+        }
+        
+        // Scroll to first error field
+        if (firstErrorField) {
+          // Use setTimeout to allow DOM to update with error messages first
+          setTimeout(() => {
+            const errorElement = document.getElementById(firstErrorField)
+            if (errorElement) {
+              errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              errorElement.focus({ preventScroll: true })
+            }
+          }, 100)
         }
         
         // Do not call onSubmit callback when validation fails
