@@ -10,12 +10,12 @@ describe('InputEnum', () => {
   function TestWrapper({ 
     children, 
     defaultValue,
-    required = false,
+    inputMode = 'default',
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
     defaultValue?: string
-    required?: boolean
+    inputMode?: string
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
@@ -31,10 +31,10 @@ describe('InputEnum', () => {
           option: { 
             type: 'string',
             enum: ['Option 1', 'Option 2', 'Option 3'],
-            required 
+            inputMode 
           }
         },
-        required: required ? ['option'] : []
+        required: inputMode === 'required' ? ['option'] : []
       },
       validateField: validatorFn,
     }
@@ -84,15 +84,10 @@ describe('InputEnum', () => {
   it('should validate required field on blur', async () => {
     const user = userEvent.setup()
     const form = render(
-      <TestWrapper 
-        required
-        validatorFn={(value) => !value || value === '' ? 'must not be empty' : undefined}
+      <TestWrapper inputMode="required" validatorFn={(value) => !value || value === '' ? 'must not be empty' : undefined}
       >
-        <InputEnum 
-          name="option" 
-          label="Choose Option" 
-          required
-          validators={{
+        <InputEnum name="option" 
+          label="Choose Option"inputMode="required" validators={{
             onBlur: ({ value }) => !value || value === '' ? 'must not be empty' : undefined,
           }}
         />
@@ -116,15 +111,10 @@ describe('InputEnum', () => {
 
   it('should validate required field on submit', async () => {
     render(
-      <TestWrapper 
-        required
-        validatorFn={(value) => !value || value === '' ? 'must not be empty' : undefined}
+      <TestWrapper inputMode="required" validatorFn={(value) => !value || value === '' ? 'must not be empty' : undefined}
       >
-        <InputEnum 
-          name="option" 
-          label="Choose Option" 
-          required
-          validators={{
+        <InputEnum name="option" 
+          label="Choose Option"inputMode="required" validators={{
             onSubmit: ({ value }) => !value || value === '' ? 'must not be empty' : undefined,
           }}
         />
@@ -152,15 +142,10 @@ describe('InputEnum', () => {
   it('should accept valid selection', async () => {
     const user = userEvent.setup()
     render(
-      <TestWrapper
-        required
-        validatorFn={(value) => !value || value === '' ? 'must not be empty' : undefined}
+      <TestWrapper inputMode="required" validatorFn={(value) => !value || value === '' ? 'must not be empty' : undefined}
       >
-        <InputEnum 
-          name="option" 
-          label="Choose Option"
-          required
-          validators={{
+        <InputEnum name="option" 
+          label="Choose Option"inputMode="required" validators={{
             onBlur: ({ value }) => !value || value === '' ? 'must not be empty' : undefined,
           }}
         />
@@ -185,7 +170,7 @@ describe('InputEnum', () => {
   it('should NOT show error for empty non-required enum field', async () => {
     render(
       <TestWrapper
-        required={false}
+        inputMode="default"
         validatorFn={(value) => {
           // Non-required enum should allow empty/undefined values
           if (!value || value === '') return undefined
@@ -197,7 +182,7 @@ describe('InputEnum', () => {
         <InputEnum 
           name="option" 
           label="Choose Option"
-          required={false}
+          inputMode="default"
           validators={{
             onBlur: ({ value }) => {
               if (!value || value === '') return undefined

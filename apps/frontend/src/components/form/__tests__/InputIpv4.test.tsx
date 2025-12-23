@@ -9,11 +9,11 @@ import type { FormContextValue } from '../FormContext'
 describe('InputIpv4', () => {
   function TestWrapper({ 
     children, 
-    required = false,
+    inputMode = 'default',
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
-    required?: boolean
+    inputMode?: string
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
@@ -26,9 +26,9 @@ describe('InputIpv4', () => {
       schema: { 
         type: 'object', 
         properties: {
-          ipv4: { type: 'string', format: 'ipv4', required }
+          ipv4: { type: 'string', format: 'ipv4', inputMode }
         },
-        required: required ? ['ipv4'] : []
+        required: inputMode === 'required' ? ['ipv4'] : []
       },
       validateField: validatorFn,
     }
@@ -59,15 +59,10 @@ describe('InputIpv4', () => {
   it('should validate required field', async () => {
     const user = userEvent.setup()
     render(
-      <TestWrapper 
-        required
-        validatorFn={(value) => !value || value.trim() === '' ? 'must not be empty' : undefined}
+      <TestWrapper inputMode="required" validatorFn={(value) => !value || value.trim() === '' ? 'must not be empty' : undefined}
       >
-        <InputIpv4 
-          name="ipv4" 
-          label="IP Address" 
-          required
-          validators={{
+        <InputIpv4 name="ipv4" 
+          label="IP Address"inputMode="required" validators={{
             onBlur: ({ value }) => !value || value.trim() === '' ? 'must not be empty' : undefined,
           }}
         />

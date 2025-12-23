@@ -84,16 +84,13 @@ export function validateData(data: any, schemaJson: SchemaObject): {
     throw new Error(`Invalid schema: ${error instanceof Error ? error.message : String(error)}`);
   }
   
-  const valid = validate(data);
+  validate(data);
   let errors = validate.errors ? [...validate.errors] : null;
   
-  // Filter out format errors for empty strings
-  // Empty strings are allowed even with formats - only inputMode:'required' enforces non-empty
+  // Filter out format and enum errors for empty strings when inputMode handles validation
+  // Empty strings are allowed even with formats/enums - only inputMode:'required' enforces non-empty
   if (errors && schemaJson.properties && typeof data === 'object' && data !== null) {
     errors = errors.filter(error => {
-      // Skip filtering if not a format error
-      if (error.keyword !== 'format') return true;
-      
       // Get the field name from the error path (e.g., '/email' -> 'email')
       const fieldName = error.instancePath.startsWith('/') 
         ? error.instancePath.substring(1) 
@@ -102,11 +99,23 @@ export function validateData(data: any, schemaJson: SchemaObject): {
       if (!fieldName) return true;
       
       const fieldValue = data[fieldName];
+      const propSchema = schemaJson.properties?.[fieldName];
+      const inputMode = typeof propSchema === 'object' && propSchema !== null ? (propSchema as any).inputMode : undefined;
       
-      // If the value is empty string, don't validate format
-      // (inputMode:'required' will catch empty strings separately)
-      if (typeof fieldValue === 'string' && fieldValue === '') {
-        return false; // Filter out (don't keep) format errors for empty strings
+      // If the value is empty string and inputMode is 'required', filter out format/enum errors
+      // because inputMode validation will provide a better error message
+      if (typeof fieldValue === 'string' && fieldValue === '' && inputMode === 'required') {
+        if (error.keyword === 'format' || error.keyword === 'enum') {
+          return false; // Filter out - inputMode will handle this
+        }
+      }
+      
+      // If the value is empty string and inputMode is NOT 'required', filter out format errors
+      // (enum errors should not occur because preprocessSchema adds "" to enum arrays)
+      if (typeof fieldValue === 'string' && fieldValue === '' && inputMode !== 'required') {
+        if (error.keyword === 'format') {
+          return false; // Filter out format errors for optional empty strings
+        }
       }
       
       return true;

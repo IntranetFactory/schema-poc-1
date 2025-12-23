@@ -10,12 +10,12 @@ describe('InputEmail', () => {
   function TestWrapper({ 
     children, 
     defaultValue,
-    required = false,
+    inputMode = 'default',
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
     defaultValue?: string
-    required?: boolean
+    inputMode?: string
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
@@ -28,9 +28,9 @@ describe('InputEmail', () => {
       schema: { 
         type: 'object', 
         properties: {
-          email: { type: 'string', format: 'email', required }
+          email: { type: 'string', format: 'email', inputMode }
         },
-        required: required ? ['email'] : []
+        required: inputMode === 'required' ? ['email'] : []
       },
       validateField: validatorFn,
     }
@@ -61,13 +61,13 @@ describe('InputEmail', () => {
     const user = userEvent.setup()
     render(
       <TestWrapper 
-        required
+        inputMode="required"
         validatorFn={(value) => !value ? 'must not be empty' : undefined}
       >
         <InputEmail 
           name="email" 
           label="Email" 
-          required
+          inputMode="required"
           validators={{
             onBlur: ({ value }) => !value ? 'must not be empty' : undefined,
           }}

@@ -9,10 +9,10 @@ import type { FormContextValue } from '../FormContext'
 describe('InputDuration', () => {
   function TestWrapper({ 
     children, 
-    required = false 
+    inputMode = 'default' 
   }: { 
     children: React.ReactNode
-    required?: boolean
+    inputMode?: string
   }) {
     const form = useForm({
       defaultValues: { duration: '' },
@@ -24,12 +24,12 @@ describe('InputDuration', () => {
       schema: { 
         type: 'object', 
         properties: {
-          duration: { type: 'string', format: 'duration', required }
+          duration: { type: 'string', format: 'duration', inputMode }
         },
-        required: required ? ['duration'] : []
+        required: inputMode === 'required' ? ['duration'] : []
       },
       validateField: (value: any) => {
-        if (required && !value) {
+        if (inputMode === 'required' && !value) {
           return 'must not be empty'
         }
         return undefined
@@ -71,11 +71,8 @@ describe('InputDuration', () => {
   it('should support validation via validators prop', () => {
     render(
       <TestWrapper inputMode="required">
-        <InputDuration 
-          name="duration" 
-          label="Duration" 
-          required 
-          validators={{
+        <InputDuration name="duration" 
+          label="Duration"inputMode="required" validators={{
             onBlur: () => 'must not be empty',
             onSubmit: () => 'must not be empty'
           }}

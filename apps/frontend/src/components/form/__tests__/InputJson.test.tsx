@@ -8,11 +8,11 @@ import type { FormContextValue } from '../FormContext'
 describe('InputJson', () => {
   function TestWrapper({ 
     children, 
-    required = false,
+    inputMode = 'default',
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
-    required?: boolean
+    inputMode?: string
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
@@ -25,9 +25,9 @@ describe('InputJson', () => {
       schema: { 
         type: 'object', 
         properties: {
-          json: { format: 'json', required }
+          json: { format: 'json', inputMode }
         },
-        required: required ? ['json'] : []
+        required: inputMode === 'required' ? ['json'] : []
       },
       validateField: validatorFn,
     }

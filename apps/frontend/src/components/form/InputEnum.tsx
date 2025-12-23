@@ -22,6 +22,7 @@ interface EnumFieldInnerProps {
   hidden: boolean
   enumValues: string[]
   form: any
+  validators?: any
 }
 
 function EnumFieldInner({
@@ -35,6 +36,7 @@ function EnumFieldInner({
   hidden,
   enumValues,
   form,
+  validators,
 }: EnumFieldInnerProps) {
   if (hidden) {
     // Hidden fields should render as <input type="hidden"> to be included in form submission
@@ -135,6 +137,7 @@ export function InputEnum({
           hidden={hidden}
           enumValues={enumValues}
           form={form}
+          validators={validators}
         />
       )}
     </form.Field>

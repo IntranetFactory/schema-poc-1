@@ -437,4 +437,118 @@ describe('Data Validation Tests', () => {
     });
   });
 
+  describe('Enum with inputMode validation', () => {
+    it('should allow empty string in enum without inputMode: required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          status: { 
+            type: 'string',
+            enum: ['active', 'inactive', 'pending']
+            // No inputMode: required, so empty should be allowed
+          }
+        }
+      };
+      
+      // Empty string should be valid when inputMode is not "required"
+      const result = validateData({ status: '' }, schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject empty string in enum with inputMode: required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          status: { 
+            type: 'string',
+            enum: ['active', 'inactive', 'pending'],
+            inputMode: 'required'
+          }
+        }
+      };
+      
+      // Empty string should be invalid when inputMode is "required"
+      const result = validateData({ status: '' }, schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors?.[0]?.keyword).toBe('inputMode');
+      expect(result.errors?.[0]?.message).toContain('must not be empty');
+    });
+
+    it('should accept valid enum value without inputMode: required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          status: { 
+            type: 'string',
+            enum: ['active', 'inactive', 'pending']
+          }
+        }
+      };
+      
+      expect(validateData({ status: 'active' }, schema).valid).toBe(true);
+      expect(validateData({ status: 'inactive' }, schema).valid).toBe(true);
+      expect(validateData({ status: 'pending' }, schema).valid).toBe(true);
+    });
+
+    it('should accept valid enum value with inputMode: required', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          status: { 
+            type: 'string',
+            enum: ['active', 'inactive', 'pending'],
+            inputMode: 'required'
+          }
+        }
+      };
+      
+      expect(validateData({ status: 'active' }, schema).valid).toBe(true);
+      expect(validateData({ status: 'inactive' }, schema).valid).toBe(true);
+      expect(validateData({ status: 'pending' }, schema).valid).toBe(true);
+    });
+
+    it('should reject invalid enum value regardless of inputMode', () => {
+      const schemaWithoutRequired = {
+        type: 'object',
+        properties: {
+          status: { 
+            type: 'string',
+            enum: ['active', 'inactive', 'pending']
+          }
+        }
+      };
+      
+      const schemaWithRequired = {
+        type: 'object',
+        properties: {
+          status: { 
+            type: 'string',
+            enum: ['active', 'inactive', 'pending'],
+            inputMode: 'required'
+          }
+        }
+      };
+      
+      expect(validateData({ status: 'invalid' }, schemaWithoutRequired).valid).toBe(false);
+      expect(validateData({ status: 'invalid' }, schemaWithRequired).valid).toBe(false);
+    });
+
+    it('should not add empty string to enum if already present', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          status: { 
+            type: 'string',
+            enum: ['', 'active', 'inactive']
+            // Empty string already in enum
+          }
+        }
+      };
+      
+      // Empty string should be valid
+      expect(validateData({ status: '' }, schema).valid).toBe(true);
+      expect(validateData({ status: 'active' }, schema).valid).toBe(true);
+    });
+  });
+
 });

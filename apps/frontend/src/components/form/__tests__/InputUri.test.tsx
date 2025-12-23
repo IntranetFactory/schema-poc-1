@@ -9,11 +9,11 @@ import type { FormContextValue } from '../FormContext'
 describe('InputUri', () => {
   function TestWrapper({ 
     children, 
-    required = false,
+    inputMode = 'default',
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
-    required?: boolean
+    inputMode?: string
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
@@ -26,9 +26,9 @@ describe('InputUri', () => {
       schema: { 
         type: 'object', 
         properties: {
-          uri: { type: 'string', format: 'uri', required }
+          uri: { type: 'string', format: 'uri', inputMode }
         },
-        required: required ? ['uri'] : []
+        required: inputMode === 'required' ? ['uri'] : []
       },
       validateField: validatorFn,
     }
@@ -58,15 +58,10 @@ describe('InputUri', () => {
   it('should validate required field', async () => {
     const user = userEvent.setup()
     render(
-      <TestWrapper 
-        required
-        validatorFn={(value) => !value || value.trim() === '' ? 'must not be empty' : undefined}
+      <TestWrapper inputMode="required" validatorFn={(value) => !value || value.trim() === '' ? 'must not be empty' : undefined}
       >
-        <InputUri 
-          name="uri" 
-          label="Website" 
-          required
-          validators={{
+        <InputUri name="uri" 
+          label="Website"inputMode="required" validators={{
             onBlur: ({ value }) => !value || value.trim() === '' ? 'must not be empty' : undefined,
           }}
         />

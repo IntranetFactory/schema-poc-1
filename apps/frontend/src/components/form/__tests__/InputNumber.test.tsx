@@ -10,12 +10,12 @@ describe('InputNumber', () => {
   function TestWrapper({ 
     children, 
     defaultValue,
-    required = false,
+    inputMode = 'default',
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
     defaultValue?: number
-    required?: boolean
+    inputMode?: string
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
@@ -28,9 +28,9 @@ describe('InputNumber', () => {
       schema: { 
         type: 'object', 
         properties: {
-          age: { type: 'number', required }
+          age: { type: 'number', inputMode }
         },
-        required: required ? ['age'] : []
+        required: inputMode === 'required' ? ['age'] : []
       },
       validateField: validatorFn,
     }
@@ -70,15 +70,10 @@ describe('InputNumber', () => {
   it('should validate required field', async () => {
     const user = userEvent.setup()
     render(
-      <TestWrapper 
-        required
-        validatorFn={(value) => value === undefined || value === null || value === '' ? 'must not be empty' : undefined}
+      <TestWrapper inputMode="required" validatorFn={(value) => value === undefined || value === null || value === '' ? 'must not be empty' : undefined}
       >
-        <InputNumber 
-          name="age" 
-          label="Age" 
-          required
-          validators={{
+        <InputNumber name="age" 
+          label="Age"inputMode="required" validators={{
             onBlur: ({ value }) => value === undefined || value === null || value === '' ? 'must not be empty' : undefined,
           }}
         />

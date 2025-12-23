@@ -9,11 +9,11 @@ describe('InputDate', () => {
   function TestWrapper({ 
     children, 
     defaultValue,
-    required = false
+    inputMode = 'default'
   }: { 
     children: React.ReactNode
     defaultValue?: string
-    required?: boolean
+    inputMode?: string
   }) {
     const form = useForm({
       defaultValues: { date: defaultValue || '' },
@@ -25,12 +25,12 @@ describe('InputDate', () => {
       schema: { 
         type: 'object', 
         properties: {
-          date: { type: 'string', format: 'date', required }
+          date: { type: 'string', format: 'date', inputMode }
         },
-        required: required ? ['date'] : []
+        required: inputMode === 'required' ? ['date'] : []
       },
       validateField: (value: any) => {
-        if (required && !value) {
+        if (inputMode === 'required' && !value) {
           return 'must not be empty'
         }
         return undefined
@@ -64,11 +64,8 @@ describe('InputDate', () => {
   it('should support validation via validators prop', () => {
     render(
       <TestWrapper inputMode="required">
-        <InputDate 
-          name="date" 
-          label="Date" 
-          required 
-          validators={{
+        <InputDate name="date" 
+          label="Date"inputMode="required" validators={{
             onBlur: () => 'must not be empty'
           }}
         />

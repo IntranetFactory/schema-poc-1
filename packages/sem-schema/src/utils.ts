@@ -141,10 +141,13 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
 }
 
 /**
- * Preprocess schema to handle default type as string
+ * Preprocess schema to handle default type as string and enum empty string handling
  * 
  * When a schema has a format but no type, this function adds type: "string"
  * This allows schemas like { format: "json" } to work correctly
+ * 
+ * When a schema has an enum but inputMode is not "required", this function adds "" to the enum
+ * This allows empty strings to be valid for optional enum fields
  */
 export function preprocessSchema(schema: SchemaObject): SchemaObject {
   if (typeof schema !== 'object' || schema === null) {
@@ -156,6 +159,14 @@ export function preprocessSchema(schema: SchemaObject): SchemaObject {
   // If format is provided but type is not, default to string
   if (processed.format && !processed.type) {
     processed.type = 'string';
+  }
+
+  // If enum is present and inputMode is not "required", add "" to enum if not already present
+  // This allows empty strings for optional enum fields
+  if (processed.enum && Array.isArray(processed.enum) && (processed as any).inputMode !== 'required') {
+    if (!processed.enum.includes('')) {
+      processed.enum = ['', ...processed.enum];
+    }
   }
 
   // Process properties recursively

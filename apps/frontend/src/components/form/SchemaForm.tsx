@@ -135,7 +135,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         console.error('Schema validation error:', errorMessage)
         
         // Set a form-level error to display the schema error
-        form.setFieldMeta('_schemaError', () => ({
+        form.setFieldMeta('_schemaError', (prev: any) => ({
+          ...prev,
           errors: [errorMessage],
           errorMap: {
             onSubmit: errorMessage,
@@ -184,7 +185,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         
         // If there are unhandled errors, show them in a general validation error banner
         if (unhandledErrors.length > 0) {
-          form.setFieldMeta('_validationError', () => ({
+          form.setFieldMeta('_validationError', (prev: any) => ({
+            ...prev,
             errors: unhandledErrors,
             errorMap: {
               onSubmit: unhandledErrors.join('; '),
@@ -197,7 +199,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
       }
       
       // Clear any previous general validation errors on successful validation
-      form.setFieldMeta('_validationError', () => ({
+      form.setFieldMeta('_validationError', (prev: any) => ({
+        ...prev,
         errors: [],
         errorMap: {}
       }))
@@ -319,8 +322,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
             description={description}
             inputMode={inputMode}
             validators={shouldValidate ? {
-              onBlur: ({ value }) => validateField(value, propSchema, key, schema),
-              onSubmit: ({ value }) => validateField(value, propSchema, key, schema),
+              onBlur: ({ value }) => validateField(value, propSchema, key),
+              onSubmit: ({ value }) => validateField(value, propSchema, key),
             } : undefined}
           />
         )

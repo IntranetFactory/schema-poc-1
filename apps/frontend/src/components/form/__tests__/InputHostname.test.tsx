@@ -9,11 +9,11 @@ import type { FormContextValue } from '../FormContext'
 describe('InputHostname', () => {
   function TestWrapper({ 
     children, 
-    required = false,
+    inputMode = 'default',
     validatorFn = () => undefined
   }: { 
     children: React.ReactNode
-    required?: boolean
+    inputMode?: string
     validatorFn?: (value: any) => string | undefined
   }) {
     const form = useForm({
@@ -26,9 +26,9 @@ describe('InputHostname', () => {
       schema: { 
         type: 'object', 
         properties: {
-          hostname: { type: 'string', format: 'hostname', required }
+          hostname: { type: 'string', format: 'hostname', inputMode }
         },
-        required: required ? ['hostname'] : []
+        required: inputMode === 'required' ? ['hostname'] : []
       },
       validateField: validatorFn,
     }
@@ -59,15 +59,10 @@ describe('InputHostname', () => {
   it('should validate required field', async () => {
     const user = userEvent.setup()
     render(
-      <TestWrapper 
-        required
-        validatorFn={(value) => !value || value.trim() === '' ? 'must not be empty' : undefined}
+      <TestWrapper inputMode="required" validatorFn={(value) => !value || value.trim() === '' ? 'must not be empty' : undefined}
       >
-        <InputHostname 
-          name="hostname" 
-          label="Hostname" 
-          required
-          validators={{
+        <InputHostname name="hostname" 
+          label="Hostname"inputMode="required" validators={{
             onBlur: ({ value }) => !value || value.trim() === '' ? 'must not be empty' : undefined,
           }}
         />

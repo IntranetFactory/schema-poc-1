@@ -8,10 +8,10 @@ import type { FormContextValue } from '../FormContext'
 describe('InputDateTime', () => {
   function TestWrapper({ 
     children, 
-    required = false 
+    inputMode = 'default' 
   }: { 
     children: React.ReactNode
-    required?: boolean
+    inputMode?: string
   }) {
     const form = useForm({
       defaultValues: { datetime: '' },
@@ -23,12 +23,12 @@ describe('InputDateTime', () => {
       schema: { 
         type: 'object', 
         properties: {
-          datetime: { type: 'string', format: 'date-time', required }
+          datetime: { type: 'string', format: 'date-time', inputMode }
         },
-        required: required ? ['datetime'] : []
+        required: inputMode === 'required' ? ['datetime'] : []
       },
       validateField: (value: any) => {
-        if (required && !value) {
+        if (inputMode === 'required' && !value) {
           return 'must not be empty'
         }
         return undefined
@@ -74,11 +74,8 @@ describe('InputDateTime', () => {
   it('should support validation via validators prop', () => {
     const { container } = render(
       <TestWrapper inputMode="required">
-        <InputDateTime 
-          name="datetime" 
-          label="DateTime" 
-          required 
-          validators={{
+        <InputDateTime name="datetime" 
+          label="DateTime"inputMode="required" validators={{
             onBlur: () => 'must not be empty',
             onSubmit: () => 'must not be empty'
           }}
