@@ -127,8 +127,8 @@ describe('Vocabulary Definition Tests', () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.message).toContain('Invalid inputMode value "invalid"');
-      expect(result.errors?.[0]?.message).toContain('default, required, readonly, disabled, hidden');
+      expect(result.errors?.[0]?.message).toContain('#/inputMode');
+      expect(result.errors?.[0]?.message).toContain('must be equal to one of the allowed values');
     });
 
     it('should reject schema with non-string inputMode', () => {
@@ -136,7 +136,8 @@ describe('Vocabulary Definition Tests', () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors).toBeDefined();
-      expect(result.errors?.[0]?.message).toContain('Invalid inputMode value. Must be a string');
+      expect(result.errors?.[0]?.message).toContain('#/inputMode');
+      expect(result.errors?.[0]?.message).toContain('must be string');
     });
   });
 

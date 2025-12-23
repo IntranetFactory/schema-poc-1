@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { addAllFormats } from './formats';
 import { addAllKeywords } from './keywords';
+import vocabularySchema from './vocabulary.json';
 
 /**
  * Create and configure AJV instance with SemSchema vocabulary
@@ -18,8 +19,12 @@ export function createSemSchemaValidator(): Ajv {
     allErrors: true,
     strict: false,
     validateFormats: true,
-    validateSchema: true  // Enable AJV meta-schema validation
+    validateSchema: true,  // Enable AJV meta-schema validation
+    defaultMeta: vocabularySchema.$id  // Use our vocabulary as default meta-schema
   });
+  
+  // Register our custom vocabulary meta-schema
+  ajv.addMetaSchema(vocabularySchema);
   
   // Add standard formats (date, time, email, uri, etc.)
   addFormats(ajv);

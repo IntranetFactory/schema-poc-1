@@ -76,7 +76,7 @@ const VALID_INPUT_MODES = ['default', 'required', 'readonly', 'disabled', 'hidde
  * Schema validation error
  */
 export interface SchemaValidationError {
-  path: string;
+  schemaPath: string;
   message: string;
   keyword?: string;
   value?: any;
@@ -100,7 +100,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
   if (schema.format && typeof schema.format === 'string') {
     if (!KNOWN_FORMATS.has(schema.format)) {
       errors.push({
-        path,
+        schemaPath: path,
         message: `Unknown format "${schema.format}"`,
         keyword: 'format',
         value: schema.format
@@ -114,14 +114,14 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     for (const type of types) {
       if (typeof type !== 'string') {
         errors.push({
-          path,
+        schemaPath: path,
           message: `Invalid type value. Type must be a string, got ${typeof type}`,
           keyword: 'type',
           value: type
         });
       } else if (!VALID_TYPES.has(type)) {
         errors.push({
-          path,
+        schemaPath: path,
           message: `Invalid type "${type}". Must be one of: ${Array.from(VALID_TYPES).join(', ')}`,
           keyword: 'type',
           value: type
@@ -135,7 +135,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     const precision = schema.precision;
     if (typeof precision !== 'number' || !Number.isInteger(precision) || precision < 0 || precision > 4) {
       errors.push({
-        path,
+        schemaPath: path,
         message: `Invalid precision value "${precision}". Must be an integer between 0 and 4`,
         keyword: 'precision',
         value: precision
@@ -143,31 +143,32 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
-  // Validate inputMode
+  // Validate inputMode (vocabulary.json only validates top-level, not nested properties)
   if ((schema as any).inputMode !== undefined) {
     const inputMode = (schema as any).inputMode;
     if (typeof inputMode !== 'string') {
       errors.push({
-        path,
-        message: `Invalid inputMode value. Must be a string, got ${typeof inputMode}`,
+        schemaPath: path,
+        message: `${path}/inputMode must be string, got ${typeof inputMode}`,
         keyword: 'inputMode',
         value: inputMode
       });
     } else if (!VALID_INPUT_MODES.includes(inputMode as any)) {
       errors.push({
-        path,
-        message: `Invalid inputMode value "${inputMode}". Must be one of: ${VALID_INPUT_MODES.join(', ')}`,
+        schemaPath: path,
+        message: `${path}/inputMode must be equal to one of the allowed values: ${VALID_INPUT_MODES.join(', ')}`,
         keyword: 'inputMode',
         value: inputMode
       });
     }
   }
 
+
   // Validate table keyword
   if (schema.table !== undefined) {
     if (typeof schema.table !== 'object' || schema.table === null || Array.isArray(schema.table)) {
       errors.push({
-        path,
+        schemaPath: path,
         message: `Invalid table value. Must be an object`,
         keyword: 'table',
         value: schema.table
@@ -179,7 +180,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
       for (const prop of TABLE_STRING_PROPERTIES) {
         if (tableProps[prop] !== undefined && typeof tableProps[prop] !== 'string') {
           errors.push({
-            path,
+        schemaPath: path,
             message: `Invalid table.${prop} value. Must be a string, got ${typeof tableProps[prop]}`,
             keyword: 'table',
             value: tableProps[prop]
@@ -193,7 +194,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
   if (schema.grid !== undefined) {
     if (typeof schema.grid !== 'object' || schema.grid === null || Array.isArray(schema.grid)) {
       errors.push({
-        path,
+        schemaPath: path,
         message: `Invalid grid value. Must be an object`,
         keyword: 'grid',
         value: schema.grid
@@ -204,7 +205,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
       // Validate sortField (must be string if present)
       if (gridProps.sortField !== undefined && typeof gridProps.sortField !== 'string') {
         errors.push({
-          path,
+        schemaPath: path,
           message: `Invalid grid.sortField value. Must be a string, got ${typeof gridProps.sortField}`,
           keyword: 'grid',
           value: gridProps.sortField
@@ -215,14 +216,14 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
       if (gridProps.sortOrder !== undefined) {
         if (typeof gridProps.sortOrder !== 'string') {
           errors.push({
-            path,
+        schemaPath: path,
             message: `Invalid grid.sortOrder value. Must be a string, got ${typeof gridProps.sortOrder}`,
             keyword: 'grid',
             value: gridProps.sortOrder
           });
         } else if (!VALID_SORT_ORDERS.includes(gridProps.sortOrder as any)) {
           errors.push({
-            path,
+        schemaPath: path,
             message: `Invalid grid.sortOrder value "${gridProps.sortOrder}". Must be one of: ${VALID_SORT_ORDERS.join(', ')}`,
             keyword: 'grid',
             value: gridProps.sortOrder
@@ -240,7 +241,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
       // Check if 'object' is one of the types
       if (!types.includes('object')) {
         errors.push({
-          path,
+        schemaPath: path,
           message: `Schema has "properties" keyword but type is "${Array.isArray(schema.type) ? schema.type.join('|') : schema.type}". When "properties" is present, type must be "object" or not specified`,
           keyword: 'properties',
           value: schema.properties

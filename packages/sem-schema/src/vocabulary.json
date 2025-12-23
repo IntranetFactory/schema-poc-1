@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://semantius.com/meta/sem-schema",
   "$vocabulary": {
     "https://json-schema.org/draft/2020-12/vocab/core": true,
@@ -10,11 +9,13 @@
   },
   "$dynamicAnchor": "meta",
   "title": "Custom Schema Vocabulary",
+  "allOf": [
+    { "$ref": "http://json-schema.org/draft-07/schema#" }
+  ],
   "type": ["object", "boolean"],
   "properties": {
     "format": {
-      "type": "string",
-      "enum": ["json", "html", "text"]
+      "type": "string"
     },
     "inputMode": {
       "description": "Determines the interaction state of a form field. When set to 'required', validates that values are not null/undefined/empty and shows asterisk in UI.",

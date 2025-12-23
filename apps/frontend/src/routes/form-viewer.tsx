@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { validateSchema } from 'sem-schema'
 
 interface FormViewerSearch {
   schema?: string
@@ -45,6 +46,12 @@ function FormViewer() {
         return response.json()
       })
       .then((data) => {
+        // Validate schema before using it
+        const validation = validateSchema(data)
+        if (!validation.valid) {
+          const errorMessages = validation.errors?.map(e => e.message).join(', ') || 'Unknown validation error'
+          throw new Error(`Invalid schema: ${errorMessages}`)
+        }
         setSchema(data)
         setLoading(false)
       })

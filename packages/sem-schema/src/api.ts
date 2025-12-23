@@ -14,27 +14,20 @@ export function validateSchema(schemaJson: SchemaObject): {
   valid: boolean;
   errors: any[] | null;
 } {
-  // First validate schema structure and collect all errors
-  const structureErrors = validateSchemaStructure(schemaJson);
-  
-  if (structureErrors.length > 0) {
-    // Return errors in consistent format with validateData
-    return {
-      valid: false,
-      errors: structureErrors.map(err => ({
-        keyword: err.keyword || 'schema',
-        message: err.message,
-        params: { value: err.value },
-        schemaPath: err.path,
-        instancePath: err.path
-      }))
-    };
-  }
-  
   // Create fresh instance for schema validation
   const ajv = createSemSchemaValidator();
   const processed = preprocessSchema(schemaJson);
   
+  // First check custom keyword values with our manual validation
+  const structureErrors = validateSchemaStructure(processed);
+  if (structureErrors.length > 0) {
+    return {
+      valid: false,
+      errors: structureErrors
+    };
+  }
+  
+  // Then let AJV compile and validate the schema
   try {
     ajv.compile(processed);
     return {
@@ -73,6 +66,13 @@ export function validateData(data: any, schemaJson: SchemaObject): {
   valid: boolean;
   errors: any[] | null;
 } {
+  // Validate schema first to catch invalid schemas before compilation
+  const schemaValidation = validateSchema(schemaJson);
+  if (!schemaValidation.valid) {
+    const errorMessages = schemaValidation.errors?.map(e => e.message).join(', ') || 'Unknown validation error';
+    throw new Error(`Invalid schema: ${errorMessages}`);
+  }
+  
   // Create fresh instance for each validation to avoid schema caching issues
   const ajv = createSemSchemaValidator();
   const processed = preprocessSchema(schemaJson);
