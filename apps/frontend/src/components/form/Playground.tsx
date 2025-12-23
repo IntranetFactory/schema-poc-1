@@ -4,6 +4,7 @@ import { json } from '@codemirror/lang-json'
 import { SchemaForm } from '@/components/form'
 import type { SchemaObject } from 'ajv'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { validateSchema } from 'sem-schema'
 
 /**
  * Generate default values from schema
@@ -83,6 +84,18 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
   useEffect(() => {
     try {
       const parsed = JSON.parse(schemaText)
+      
+      // Validate the schema using SemSchema validation
+      const validation = validateSchema(parsed)
+      if (!validation.valid) {
+        const errorMessages = validation.errors?.map(e => 
+          `${e.schemaPath}: ${e.message}`
+        ).join('; ') || 'Unknown schema validation error'
+        setSchemaError(errorMessages)
+        setSchema(null)
+        return
+      }
+      
       setSchema(parsed)
       setSchemaError('')
       

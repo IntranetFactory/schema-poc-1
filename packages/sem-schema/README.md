@@ -185,132 +185,232 @@ The test suite includes:
 
 SemSchema is designed to be extensible. You can add custom formats and keywords to suit your needs.
 
+### Supported Formats
+
+**Custom SemSchema formats (3):**
+- `json`, `html`, `text`
+
+**Standard JSON Schema formats from ajv-formats (24):**
+- **Date/time:** `date`, `time`, `date-time`, `duration`
+- **URI:** `uri`, `uri-reference`, `uri-template`, `url`
+- **Email/Network:** `email`, `hostname`, `ipv4`, `ipv6`
+- **Other:** `regex`, `uuid`, `json-pointer`, `json-pointer-uri-fragment`, `relative-json-pointer`, `byte`, `binary`, `int32`, `int64`, `float`, `double`, `password`
+
+The complete list is maintained in `KNOWN_FORMATS` in [src/utils.ts](src/utils.ts).
+
 ### Adding a Custom Format
 
-To add a new custom format:
+Follow these steps to add a new custom format (e.g., `phone`):
 
-1. **Create a format validator file** in `src/formats/`:
+#### Step 1: Add to KNOWN_FORMATS
 
-```typescript
-// src/formats/my-format.ts
-import Ajv from 'ajv';
-
-/**
- * Validate my custom format
- */
-export function validateMyFormat(data: string): boolean {
-  // Your validation logic here
-  return data.startsWith('MY-');
-}
-
-/**
- * Add custom format to AJV instance
- */
-export function addMyFormat(ajv: Ajv): void {
-  ajv.addFormat('my-format', {
-    validate: validateMyFormat
-  });
-}
-```
-
-2. **Register the format** in `src/formats/index.ts`:
-
-```typescript
-import { addMyFormat } from './my-format';
-
-export function addAllFormats(ajv: Ajv): void {
-  // ... existing formats
-  addMyFormat(ajv);
-}
-```
-
-3. **Add to known formats list** in `src/utils.ts`:
+Edit `src/utils.ts` and add your format to the set:
 
 ```typescript
 const KNOWN_FORMATS = new Set([
-  // ... existing formats
-  'my-format',
+  // Custom SemSchema formats
+  'json',
+  'html',
+  'text',
+  'phone', // ← Add your format here
+  // Standard JSON Schema formats (from ajv-formats)
+  // ...
 ]);
 ```
 
-4. **Add tests** in `src/__tests__/`:
+#### Step 2: Create format validator
+
+Create `src/formats/phone.ts`:
 
 ```typescript
-describe('Format: my-format', () => {
-  it('should validate valid my-format string', () => {
-    const schema = { type: 'string', format: 'my-format' };
-    expect(validateData('MY-123', schema).valid).toBe(true);
+import type { Format } from 'ajv';
+
+/**
+ * Validates phone number in E.164 format
+ */
+export const phoneFormat: Format = {
+  validate: (data: string): boolean => {
+    // E.164 format: +[country code][number]
+    return /^\+?[1-9]\d{1,14}$/.test(data);
+  }
+};
+```
+
+#### Step 3: Export from formats/index.ts
+
+```typescript
+export { jsonFormat } from './json';
+export { htmlFormat } from './html';
+export { textFormat } from './text';
+export { phoneFormat } from './phone'; // ← Add export
+```
+
+#### Step 4: Register in validator.ts
+
+Edit `src/validator.ts` and register your format:
+
+```typescript
+import { jsonFormat, htmlFormat, textFormat, phoneFormat } from './formats';
+
+export function createSemSchemaValidator(): Ajv {
+  // ... existing setup code
+  
+  // Add custom formats
+  ajv.addFormat('json', jsonFormat);
+  ajv.addFormat('html', htmlFormat);
+  ajv.addFormat('text', textFormat);
+  ajv.addFormat('phone', phoneFormat); // ← Add format
+  
+  // ...
+}
+```
+
+#### Step 5: Add schema validation test
+
+Add to `src/__tests__/vocabulary.test.ts`:
+
+```typescript
+describe('Schema Validity - Standard formats', () => {
+  // ... existing tests
+  
+  it('should accept schema with format: phone', () => {
+    const schema = { type: 'string', format: 'phone' };
+    const result = validateSchema(schema);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toBeNull();
   });
 });
 ```
 
+#### Step 6: Add data validation tests
+
+Add to `src/__tests__/data-validation.test.ts`:
+
+```typescript
+describe('Format Validation - phone', () => {
+  it('should validate phone format with valid E.164 number', () => {
+    const schema = { type: 'string', format: 'phone' };
+    const result = validateData('+12025551234', schema);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should reject invalid phone number', () => {
+    const schema = { type: 'string', format: 'phone' };
+    const result = validateData('not-a-phone', schema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toBeDefined();
+  });
+});
+```
+
+**That's it!** Your format will now:
+- ✅ Be recognized as valid in schemas
+- ✅ Validate data correctly
+- ✅ Reject unknown formats and catch typos
+- ✅ Be fully tested
+
 ### Adding a Custom Keyword
 
-To add a new custom keyword:
+To add a new custom keyword (e.g., `maxWords`):
 
-1. **Create a keyword file** in `src/keywords/`:
+#### Step 1: Create keyword file
+
+Create `src/keywords/maxWords.ts`:
 
 ```typescript
-// src/keywords/my-keyword.ts
-import Ajv from 'ajv';
+import type Ajv from 'ajv';
+import type { KeywordDefinition } from 'ajv';
 
 /**
- * Add custom 'my-keyword' keyword to AJV instance
+ * Custom keyword that limits the number of words in a string
  */
-export function addMyKeyword(ajv: Ajv): void {
-  ajv.addKeyword({
-    keyword: 'my-keyword',
-    type: 'string', // or 'number', 'array', etc.
-    schemaType: 'boolean', // type of the keyword value in schema
-    compile(schemaValue: boolean) {
-      return function validate(data: string): boolean {
-        if (!schemaValue) return true;
-        // Your validation logic here
-        return data.length > 0;
-      };
-    },
-    errors: true
-  });
-}
+export const maxWordsKeyword: KeywordDefinition = {
+  keyword: 'maxWords',
+  type: 'string',
+  schemaType: 'number',
+  compile(max: number) {
+    return function validate(data: string): boolean {
+      const wordCount = data.trim().split(/\s+/).length;
+      if (wordCount > max) {
+        validate.errors = [{
+          keyword: 'maxWords',
+          message: `must have at most ${max} words`,
+          params: { max, actual: wordCount }
+        }];
+        return false;
+      }
+      return true;
+    };
+  },
+  errors: true
+};
 ```
 
-2. **Register the keyword** in `src/keywords/index.ts`:
+#### Step 2: Export from keywords/index.ts
 
 ```typescript
-import { addMyKeyword } from './my-keyword';
+export { precisionKeyword } from './precision';
+export { maxWordsKeyword } from './maxWords'; // ← Add export
+```
 
-export function addAllKeywords(ajv: Ajv): void {
-  // ... existing keywords
-  addMyKeyword(ajv);
+#### Step 3: Register in validator.ts
+
+```typescript
+import { precisionKeyword, maxWordsKeyword } from './keywords';
+
+export function createSemSchemaValidator(): Ajv {
+  // ... existing setup
+  
+  ajv.addKeyword(precisionKeyword);
+  ajv.addKeyword(maxWordsKeyword); // ← Add keyword
+  
+  // ...
 }
 ```
 
-3. **Add validation** (optional) in `src/utils.ts` if you need schema-level validation:
+#### Step 4: Add validation in utils.ts (optional)
+
+If you need schema-level validation for your keyword's value:
 
 ```typescript
 export function validateSchemaStructure(schema: SchemaObject, path: string = '#'): SchemaValidationError[] {
-  // ... existing validation
+  // ... existing validations
   
-  // Validate my-keyword
-  if (schema['my-keyword'] !== undefined && typeof schema['my-keyword'] !== 'boolean') {
-    errors.push({
-      path,
-      message: 'my-keyword must be a boolean',
-      keyword: 'my-keyword',
-      value: schema['my-keyword']
-    });
+  // Validate maxWords keyword
+  if (schema.maxWords !== undefined) {
+    if (typeof schema.maxWords !== 'number') {
+      errors.push({
+        schemaPath: path,
+        message: 'maxWords must be a number',
+        keyword: 'maxWords',
+        value: schema.maxWords
+      });
+    } else if (schema.maxWords < 1 || !Number.isInteger(schema.maxWords)) {
+      errors.push({
+        schemaPath: path,
+        message: 'maxWords must be a positive integer',
+        keyword: 'maxWords',
+        value: schema.maxWords
+      });
+    }
   }
+  
+  return errors;
 }
 ```
 
-4. **Add tests** for both schema validity and data validation.
+#### Step 5: Add tests
+
+Add both schema and data validation tests as shown in the format example.
 
 ### Testing Your Extensions
 
-Always add tests for your custom formats and keywords:
+Always add comprehensive tests:
 
-- **Vocabulary tests** (`vocabulary.test.ts`): Test that schemas with your custom keyword/format can be compiled
-- **Data validation tests** (`data-validation.test.ts`): Test that data correctly validates
+- **Schema validation tests** (`vocabulary.test.ts`): Verify schemas with your extension are accepted/rejected correctly
+- **Data validation tests** (`data-validation.test.ts`): Verify data validates correctly against your extension
+- Test both valid and invalid cases
+- Test edge cases and error messages
 
 ## Vocabulary Definition
 

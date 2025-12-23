@@ -215,7 +215,18 @@ describe('Vocabulary Definition Tests', () => {
   });
 
   describe('Schema Validity - Unknown formats', () => {
-    it('should reject schema with unknown format', () => {
+    it('should reject schema with unknown format: bratwurst', () => {
+      const schema = { type: 'string', format: 'bratwurst' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0]?.message).toContain('Unknown format "bratwurst"');
+      expect(result.errors?.[0]?.keyword).toBe('format');
+      expect(result.errors?.[0]?.value).toBe('bratwurst');
+      expect(result.errors?.[0]?.schemaPath).toBe('#');
+    });
+
+    it('should reject schema with unknown format: emailx', () => {
       const schema = { type: 'string', format: 'emailx' };
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
@@ -253,13 +264,29 @@ describe('Vocabulary Definition Tests', () => {
   });
 
   describe('Schema Validity - Standard formats', () => {
-    it('should accept schema with format: email', () => {
-      const schema = { type: 'string', format: 'email' };
+    // Custom SemSchema formats
+    it('should accept schema with format: json', () => {
+      const schema = { type: 'string', format: 'json' };
       const result = validateSchema(schema);
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();
     });
 
+    it('should accept schema with format: html', () => {
+      const schema = { type: 'string', format: 'html' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: text', () => {
+      const schema = { type: 'string', format: 'text' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // Date/time formats
     it('should accept schema with format: date', () => {
       const schema = { type: 'string', format: 'date' };
       const result = validateSchema(schema);
@@ -267,6 +294,28 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.errors).toBeNull();
     });
 
+    it('should accept schema with format: time', () => {
+      const schema = { type: 'string', format: 'time' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: date-time', () => {
+      const schema = { type: 'string', format: 'date-time' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: duration', () => {
+      const schema = { type: 'string', format: 'duration' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // URI formats
     it('should accept schema with format: uri', () => {
       const schema = { type: 'string', format: 'uri' };
       const result = validateSchema(schema);
@@ -274,8 +323,141 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.errors).toBeNull();
     });
 
+    it('should accept schema with format: uri-reference', () => {
+      const schema = { type: 'string', format: 'uri-reference' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: uri-template', () => {
+      const schema = { type: 'string', format: 'uri-template' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: url', () => {
+      const schema = { type: 'string', format: 'url' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // Email and hostname formats
+    it('should accept schema with format: email', () => {
+      const schema = { type: 'string', format: 'email' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: hostname', () => {
+      const schema = { type: 'string', format: 'hostname' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // IP address formats
+    it('should accept schema with format: ipv4', () => {
+      const schema = { type: 'string', format: 'ipv4' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: ipv6', () => {
+      const schema = { type: 'string', format: 'ipv6' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // Regex format
+    it('should accept schema with format: regex', () => {
+      const schema = { type: 'string', format: 'regex' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
     it('should accept schema with format: uuid', () => {
       const schema = { type: 'string', format: 'uuid' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // JSON Pointer formats
+    it('should accept schema with format: json-pointer', () => {
+      const schema = { type: 'string', format: 'json-pointer' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: json-pointer-uri-fragment', () => {
+      const schema = { type: 'string', format: 'json-pointer-uri-fragment' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: relative-json-pointer', () => {
+      const schema = { type: 'string', format: 'relative-json-pointer' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // Binary/encoding formats
+    it('should accept schema with format: byte', () => {
+      const schema = { type: 'string', format: 'byte' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: binary', () => {
+      const schema = { type: 'string', format: 'binary' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // Number formats
+    it('should accept schema with format: int32', () => {
+      const schema = { type: 'string', format: 'int32' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: int64', () => {
+      const schema = { type: 'string', format: 'int64' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: float', () => {
+      const schema = { type: 'string', format: 'float' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: double', () => {
+      const schema = { type: 'string', format: 'double' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    // Security formats
+    it('should accept schema with format: password', () => {
+      const schema = { type: 'string', format: 'password' };
       const result = validateSchema(schema);
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();
