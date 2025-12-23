@@ -34,24 +34,29 @@ export function InputIpv6({
   return (
     <form.Field name={name} validators={validators}>
       {(field: any) => (
-    <div className="space-y-2">
-      <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
-      <Input
-        id={name}
-        name={name}
-        type="text"
-        value={field.state.value || ''}
-        onChange={(e) => field.handleChange(e.target.value)}
-        onBlur={field.handleBlur}
-        disabled={disabled || readonly}
-        placeholder="2001:0db8:85a3::8a2e:0370:7334"
-        aria-invalid={!!field.state.meta.errors?.[0]}
-        aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
-      />
-      <FormDescription description={description} />
-      <FormError name={name} error={field.state.meta.errors?.[0]} />
-    </div>
-        )}
+        <>
+          {(hidden || readonly) && <input type="hidden" name={name} value={field.state.value || ''} />}
+          {!hidden && (
+            <div className="space-y-2">
+              <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
+              <Input
+                id={name}
+                name={readonly ? undefined : name}
+                type="text"
+                value={field.state.value || ''}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                disabled={disabled || readonly}
+                placeholder="2001:0db8:85a3::8a2e:0370:7334"
+                aria-invalid={!!field.state.meta.errors?.[0]}
+                aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+              />
+              <FormDescription description={description} />
+              <FormError name={name} error={field.state.meta.errors?.[0]} />
+            </div>
+          )}
+        </>
+      )}
     </form.Field>
   )
 }

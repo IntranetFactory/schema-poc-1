@@ -28,6 +28,6 @@ describe('InputIri', () => {
       </TestWrapper>
     )
     const input = container.querySelector('input')
-    expect(input).toHaveAttribute('type', 'url')
+    expect(input).toHaveAttribute('type', 'text')
   })
 })

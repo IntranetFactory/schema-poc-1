@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import { SchemaForm } from '@/components/form'
@@ -75,13 +75,9 @@ interface FormPlaygroundProps {
 export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
   const [schemaText, setSchemaText] = useState(initialSchema || defaultSchema)
   const [dataText, setDataText] = useState(defaultData)
-  const [schema, setSchema] = useState<SchemaObject | null>(null)
-  const [data, setData] = useState<Record<string, any> | null>(null)
-  const [schemaError, setSchemaError] = useState<string>('')
-  const [dataError, setDataError] = useState<string>('')
-
-  // Parse schema when schemaText changes and generate default data
-  useEffect(() => {
+  
+  // Parse and validate schema - derived state using useMemo
+  const { schema, schemaError } = useMemo(() => {
     try {
       const parsed = JSON.parse(schemaText)
       
@@ -91,34 +87,38 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
         const errorMessages = validation.errors?.map(e => 
           `${e.schemaPath}: ${e.message}`
         ).join('; ') || 'Unknown schema validation error'
-        setSchemaError(errorMessages)
-        setSchema(null)
-        return
+        return { schema: null, schemaError: errorMessages }
       }
       
-      setSchema(parsed)
-      setSchemaError('')
-      
-      // Generate default values from schema and update dataText
-      const defaultValues = generateDefaultValue(parsed)
-      setDataText(JSON.stringify(defaultValues, null, 2))
+      return { schema: parsed, schemaError: '' }
     } catch (error) {
-      setSchemaError(error instanceof Error ? error.message : String(error))
-      setSchema(null)
+      return { 
+        schema: null, 
+        schemaError: error instanceof Error ? error.message : String(error)
+      }
     }
   }, [schemaText])
 
-  // Parse data when dataText changes
-  useEffect(() => {
+  // Parse data - derived state using useMemo
+  const { data, dataError } = useMemo(() => {
     try {
       const parsed = JSON.parse(dataText)
-      setData(parsed)
-      setDataError('')
+      return { data: parsed, dataError: '' }
     } catch (error) {
-      setDataError(error instanceof Error ? error.message : String(error))
-      setData(null)
+      return { 
+        data: null, 
+        dataError: error instanceof Error ? error.message : String(error)
+      }
     }
   }, [dataText])
+
+  // Update dataText when schema changes to show default values
+  useEffect(() => {
+    if (schema) {
+      const defaultValues = generateDefaultValue(schema)
+      setDataText(JSON.stringify(defaultValues, null, 2))
+    }
+  }, [schema])
 
   const handleSchemaChange = useCallback((value: string) => {
     setSchemaText(value)

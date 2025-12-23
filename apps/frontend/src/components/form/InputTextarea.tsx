@@ -20,50 +20,30 @@ export function InputTextarea({
   const disabled = inputMode === 'disabled'
   const hidden = inputMode === 'hidden'
   
-  if (hidden) {
-    // Hidden fields should render as <input type="hidden"> to be included in form submission
-    return (
-      <form.Field name={name} validators={validators}>
-        {(field: any) => (
-          <input type="hidden" name={name} value={field.state.value || ''} />
-        )}
-      </form.Field>
-    )
-  }
-  
   return (
     <form.Field name={name} validators={validators}>
       {(field: any) => (
-        <div className="space-y-2">
-          <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
-          {readonly ? (
-            <>
+        <>
+          {(hidden || readonly) && <input type="hidden" name={name} value={field.state.value || ''} />}
+          {!hidden && (
+            <div className="space-y-2">
+              <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
               <Textarea
                 id={name}
+                name={readonly ? undefined : name}
                 value={field.state.value || ''}
-                disabled={true}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                disabled={disabled || readonly}
                 rows={5}
                 aria-invalid={!!field.state.meta.errors?.[0]}
                 aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
               />
-              <input type="hidden" name={name} value={field.state.value || ''} />
-            </>
-          ) : (
-            <Textarea
-              id={name}
-              name={name}
-              value={field.state.value || ''}
-              onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
-              disabled={disabled}
-              rows={5}
-              aria-invalid={!!field.state.meta.errors?.[0]}
-              aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
-            />
+              <FormDescription description={description} />
+              <FormError name={name} error={field.state.meta.errors?.[0]} />
+            </div>
           )}
-          <FormDescription description={description} />
-          <FormError name={name} error={field.state.meta.errors?.[0]} />
-        </div>
+        </>
       )}
     </form.Field>
   )

@@ -17,12 +17,15 @@ export const Route = createFileRoute('/form-playground')({
 
 function FormPlaygroundWrapper() {
   const { schema: schemaUrl } = Route.useSearch()
-  const [initialSchema, setInitialSchema] = useState<string | undefined>(undefined)
+  const [schemaJson, setSchemaJson] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (!schemaUrl) {
-      setInitialSchema(undefined)
+      // No schema URL - reset to undefined (but avoid setState in effect by checking current value)
+      if (schemaJson !== undefined) {
+        setSchemaJson(undefined)
+      }
       return
     }
 
@@ -36,14 +39,14 @@ function FormPlaygroundWrapper() {
         return response.json()
       })
       .then((data) => {
-        setInitialSchema(JSON.stringify(data, null, 2))
+        setSchemaJson(JSON.stringify(data, null, 2))
         setLoading(false)
       })
       .catch((err) => {
         console.error('Error loading schema:', err)
         setLoading(false)
       })
-  }, [schemaUrl])
+  }, [schemaUrl, schemaJson])
 
   if (loading) {
     return (
@@ -53,5 +56,5 @@ function FormPlaygroundWrapper() {
     )
   }
 
-  return <FormPlayground initialSchema={initialSchema} />
+  return <FormPlayground initialSchema={schemaJson} />
 }

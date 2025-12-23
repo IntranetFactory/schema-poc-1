@@ -25,13 +25,16 @@ function FormViewer() {
   const { schema: schemaUrl } = Route.useSearch()
   const [schema, setSchema] = useState<SchemaObject | null>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  // Initialize error based on schemaUrl presence
+  const [error, setError] = useState<string | null>(
+    !schemaUrl ? 'No schema URL provided. Please add ?schema=<url> to the URL.' : null
+  )
   const [submitResult, setSubmitResult] = useState<Record<string, unknown> | null>(null)
   const [readonly, setReadonly] = useState(false)
 
   useEffect(() => {
     if (!schemaUrl) {
-      setError('No schema URL provided. Please add ?schema=<url> to the URL.')
+      // Error already set in initial state
       return
     }
 

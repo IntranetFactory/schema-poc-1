@@ -20,20 +20,15 @@ export function InputDate({
   const disabled = inputMode === 'disabled'
   const hidden = inputMode === 'hidden'
   
-  if (hidden) {
-    // Hidden fields should render as <input type="hidden"> to be included in form submission
-    return (
-      <form.Field name={name} validators={validators}>
-        {(field: any) => (
-          <input type="hidden" name={name} value={field.state.value || ''} />
-        )}
-      </form.Field>
-    )
-  }
-  
   return (
     <form.Field name={name} validators={validators}>
       {(field: any) => {
+        // Handle hidden and readonly with hidden input
+        if (hidden || readonly) {
+          const hiddenInput = <input type="hidden" name={name} value={field.state.value || ''} />
+          if (hidden) return hiddenInput
+        }
+        
         // Convert string to Date if needed, validate the date is valid
         const parseDateValue = (val: any): Date | undefined => {
           if (!val) return undefined
@@ -62,6 +57,7 @@ export function InputDate({
               onDateChange={handleDateChange}
               disabled={disabled || readonly}
             />
+            {readonly && <input type="hidden" name={name} value={field.state.value || ''} />}
             <FormDescription description={description} />
             <FormError name={name} error={field.state.meta.errors?.[0]} />
           </div>

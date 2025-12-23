@@ -34,24 +34,28 @@ export function InputTime({
   return (
     <form.Field name={name} validators={validators}>
       {(field: any) => (
-    <div className="space-y-2">
-      <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
-      <Input
-        id={name}
-        name={name}
-        type="time"
-        value={field.state.value || ''}
-        onChange={(e) => field.handleChange(e.target.value)}
-        onBlur={field.handleBlur}
-        disabled={disabled || readonly}
-            
-        aria-invalid={!!field.state.meta.errors?.[0]}
-        aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
-      />
-      <FormDescription description={description} />
-      <FormError name={name} error={field.state.meta.errors?.[0]} />
-    </div>
-        )}
+        <>
+          {(hidden || readonly) && <input type="hidden" name={name} value={field.state.value || ''} />}
+          {!hidden && (
+            <div className="space-y-2">
+              <FormLabel htmlFor={name} label={label} required={required} error={!!field.state.meta.errors?.[0]} />
+              <Input
+                id={name}
+                name={readonly ? undefined : name}
+                type="time"
+                value={field.state.value || ''}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                disabled={disabled || readonly}
+                aria-invalid={!!field.state.meta.errors?.[0]}
+                aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
+              />
+              <FormDescription description={description} />
+              <FormError name={name} error={field.state.meta.errors?.[0]} />
+            </div>
+          )}
+        </>
+      )}
     </form.Field>
   )
 }
