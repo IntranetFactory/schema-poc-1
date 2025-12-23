@@ -1,4 +1,5 @@
-import Ajv from 'ajv';
+import Ajv2020 from 'ajv/dist/2020';
+import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { addAllFormats } from './formats';
 import { addAllKeywords } from './keywords';
@@ -15,7 +16,7 @@ import vocabularySchema from './vocabulary.json';
  * - Type inference (format without type defaults to string)
  */
 export function createSemSchemaValidator(): Ajv {
-  const ajv = new Ajv({
+  const ajv = new Ajv2020({
     allErrors: true,
     strict: false,
     validateFormats: true,

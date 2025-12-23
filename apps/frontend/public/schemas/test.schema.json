@@ -1,12 +1,5 @@
 {
-  "$schema": "https://semantius.com/meta/sem-schema",
-  "$id": "https://semantius.com/schemas/all-formats.schema.json",
-  "$vocabulary": {
-    "https://json-schema.org/draft/2020-12/vocab/core": true,
-    "https://json-schema.org/draft/2020-12/vocab/validation": true,
-    "https://semantius.com/vocab/sem-schema/formats": true,
-    "https://semantius.com/vocab/sem-schema/validation": true
-  },
+  "$schema": "https://semantius.com/meta/sem-schema/v1",
   "title": "Test Formats",
   "description": "A schema showcasing all broken formats",
   "type": "object",

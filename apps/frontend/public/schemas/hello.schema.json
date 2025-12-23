@@ -1,12 +1,6 @@
 {
-  "$schema": "https://semantius.com/meta/sem-schema",
+  "$schema": "https://semantius.com/meta/sem-schema/v1",
   "$id": "https://semantius.com/schemas/hello.schema.json",
-  "$vocabulary": {
-    "https://json-schema.org/draft/2020-12/vocab/core": true,
-    "https://json-schema.org/draft/2020-12/vocab/validation": true,
-    "https://semantius.com/vocab/sem-schema/formats": true,
-    "https://semantius.com/vocab/sem-schema/validation": true
-  },
   "title": "Hello",
   "description": "A minimal schema with just a required name field",
   "type": "object",

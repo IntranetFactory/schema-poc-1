@@ -36,43 +36,6 @@ const KNOWN_FORMATS = new Set([
 ]);
 
 /**
- * Valid JSON Schema types
- */
-const VALID_TYPES = new Set([
-  'string',
-  'number',
-  'integer',
-  'boolean',
-  'object',
-  'array',
-  'null'
-]);
-
-/**
- * Table keyword properties that must be strings
- * Corresponds to vocabulary.json table property definitions
- */
-const TABLE_STRING_PROPERTIES = [
-  'table_name',
-  'singular',
-  'plural',
-  'singular_label',
-  'plural_label',
-  'icon_url',
-  'description'
-] as const;
-
-/**
- * Valid sort order values for grid keyword
- */
-const VALID_SORT_ORDERS = ['asc', 'desc'] as const;
-
-/**
- * Valid inputMode values
- */
-const VALID_INPUT_MODES = ['default', 'required', 'readonly', 'disabled', 'hidden'] as const;
-
-/**
  * Schema validation error
  */
 export interface SchemaValidationError {
@@ -96,7 +59,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     return errors;
   }
 
-  // Validate format
+  // Validate format (AJV only warns about unknown formats, doesn't fail)
   if (schema.format && typeof schema.format === 'string') {
     if (!KNOWN_FORMATS.has(schema.format)) {
       errors.push({
@@ -108,130 +71,8 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
     }
   }
 
-  // Validate type
-  if (schema.type) {
-    const types = Array.isArray(schema.type) ? schema.type : [schema.type];
-    for (const type of types) {
-      if (typeof type !== 'string') {
-        errors.push({
-        schemaPath: path,
-          message: `Invalid type value. Type must be a string, got ${typeof type}`,
-          keyword: 'type',
-          value: type
-        });
-      } else if (!VALID_TYPES.has(type)) {
-        errors.push({
-        schemaPath: path,
-          message: `Invalid type "${type}". Must be one of: ${Array.from(VALID_TYPES).join(', ')}`,
-          keyword: 'type',
-          value: type
-        });
-      }
-    }
-  }
-
-  // Validate precision
-  if (schema.precision !== undefined) {
-    const precision = schema.precision;
-    if (typeof precision !== 'number' || !Number.isInteger(precision) || precision < 0 || precision > 4) {
-      errors.push({
-        schemaPath: path,
-        message: `Invalid precision value "${precision}". Must be an integer between 0 and 4`,
-        keyword: 'precision',
-        value: precision
-      });
-    }
-  }
-
-  // Validate inputMode (vocabulary.json only validates top-level, not nested properties)
-  if ((schema as any).inputMode !== undefined) {
-    const inputMode = (schema as any).inputMode;
-    if (typeof inputMode !== 'string') {
-      errors.push({
-        schemaPath: path,
-        message: `${path}/inputMode must be string, got ${typeof inputMode}`,
-        keyword: 'inputMode',
-        value: inputMode
-      });
-    } else if (!VALID_INPUT_MODES.includes(inputMode as any)) {
-      errors.push({
-        schemaPath: path,
-        message: `${path}/inputMode must be equal to one of the allowed values: ${VALID_INPUT_MODES.join(', ')}`,
-        keyword: 'inputMode',
-        value: inputMode
-      });
-    }
-  }
-
-
-  // Validate table keyword
-  if (schema.table !== undefined) {
-    if (typeof schema.table !== 'object' || schema.table === null || Array.isArray(schema.table)) {
-      errors.push({
-        schemaPath: path,
-        message: `Invalid table value. Must be an object`,
-        keyword: 'table',
-        value: schema.table
-      });
-    } else {
-      // Validate table properties according to vocabulary definition
-      const tableProps = schema.table as Record<string, any>;
-      
-      for (const prop of TABLE_STRING_PROPERTIES) {
-        if (tableProps[prop] !== undefined && typeof tableProps[prop] !== 'string') {
-          errors.push({
-        schemaPath: path,
-            message: `Invalid table.${prop} value. Must be a string, got ${typeof tableProps[prop]}`,
-            keyword: 'table',
-            value: tableProps[prop]
-          });
-        }
-      }
-    }
-  }
-
-  // Validate grid keyword
-  if (schema.grid !== undefined) {
-    if (typeof schema.grid !== 'object' || schema.grid === null || Array.isArray(schema.grid)) {
-      errors.push({
-        schemaPath: path,
-        message: `Invalid grid value. Must be an object`,
-        keyword: 'grid',
-        value: schema.grid
-      });
-    } else {
-      const gridProps = schema.grid as Record<string, any>;
-      
-      // Validate sortField (must be string if present)
-      if (gridProps.sortField !== undefined && typeof gridProps.sortField !== 'string') {
-        errors.push({
-        schemaPath: path,
-          message: `Invalid grid.sortField value. Must be a string, got ${typeof gridProps.sortField}`,
-          keyword: 'grid',
-          value: gridProps.sortField
-        });
-      }
-      
-      // Validate sortOrder (must be 'asc' or 'desc' if present)
-      if (gridProps.sortOrder !== undefined) {
-        if (typeof gridProps.sortOrder !== 'string') {
-          errors.push({
-        schemaPath: path,
-            message: `Invalid grid.sortOrder value. Must be a string, got ${typeof gridProps.sortOrder}`,
-            keyword: 'grid',
-            value: gridProps.sortOrder
-          });
-        } else if (!VALID_SORT_ORDERS.includes(gridProps.sortOrder as any)) {
-          errors.push({
-        schemaPath: path,
-            message: `Invalid grid.sortOrder value "${gridProps.sortOrder}". Must be one of: ${VALID_SORT_ORDERS.join(', ')}`,
-            keyword: 'grid',
-            value: gridProps.sortOrder
-          });
-        }
-      }
-    }
-  }
+  // Type validation is handled by vocabulary.json with draft-2020-12
+  // Custom keyword validation (inputMode, precision, table, grid) is also handled by vocabulary.json
 
   // Validate properties keyword usage and recursively validate property schemas
   if (schema.properties && typeof schema.properties === 'object') {

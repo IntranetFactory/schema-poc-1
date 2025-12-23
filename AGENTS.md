@@ -42,12 +42,20 @@ This file documents the implementation decisions and rationale for the SemSchema
 **CRITICAL RULES:**
 - **❌ NEVER use store_memory tool** - All agent instructions and reminders MUST be stored in this file (agents.md)
 - **❌ DO NOT use proprietary memory tools** - They don't persist across sessions or agents
+- **❌ NEVER create temporary test/debug files** (test-*.js, debug-*.js, etc.) - Use proper test files or run_in_terminal for one-off tests
 - **✅ ALWAYS update agents.md** when you learn important workflow rules or user preferences
 - **✅ This file is the ONLY place** for storing agent instructions and patterns
 
 **FILE PURPOSES:**
 - **agents.md** (THIS FILE) = Agent workflow, visual verification, screenshot requirements, ALL agent instructions
 - **INSTRUCTIONS.md** = Technical details, testing, validation, styling conventions
+
+**DEBUGGING/TESTING RULES:**
+- ❌ DO NOT create test-*.js, debug-*.js, or similar temporary files - they create clutter
+- ✅ Use run_in_terminal with node -e for one-off tests: `node -e "console.log('test')"`
+- ✅ Use existing test files in src/__tests__/ for proper testing
+- ✅ If you need to verify something, use run_in_terminal with inline code
+- **Example:** `node -e "const ajv = require('ajv'); console.log(ajv.version)"`
 
 ## 🚨 CRITICAL: Visual Verification Requirements - READ THIS FIRST 🚨
 

@@ -1,12 +1,6 @@
 {
-  "$schema": "https://semantius.com/meta/sem-schema",
+  "$schema": "https://semantius.com/meta/sem-schema/v1",
   "$id": "https://semantius.com/schemas/blogpost.schema.json",
-  "$vocabulary": {
-    "https://json-schema.org/draft/2020-12/vocab/core": true,
-    "https://json-schema.org/draft/2020-12/vocab/validation": true,
-    "https://semantius.com/vocab/sem-schema/formats": true,
-    "https://semantius.com/vocab/sem-schema/validation": true
-  },
   "title": "BlogPost",
   "description": "A blog post or article",
   "table": {

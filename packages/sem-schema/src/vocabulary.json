@@ -1,16 +1,14 @@
 {
-  "$id": "https://semantius.com/meta/sem-schema",
+  "$id": "https://semantius.com/meta/sem-schema/v1",
   "$vocabulary": {
     "https://json-schema.org/draft/2020-12/vocab/core": true,
     "https://json-schema.org/draft/2020-12/vocab/applicator": true,
-    "https://json-schema.org/draft/2020-12/vocab/validation": true,
-    "https://semantius.com/vocab/sem-schema/formats": true,
-    "https://semantius.com/vocab/sem-schema/validation": true
+    "https://json-schema.org/draft/2020-12/vocab/validation": true
   },
   "$dynamicAnchor": "meta",
   "title": "Custom Schema Vocabulary",
   "allOf": [
-    { "$ref": "http://json-schema.org/draft-07/schema#" }
+    { "$ref": "https://json-schema.org/draft/2020-12/schema" }
   ],
   "type": ["object", "boolean"],
   "properties": {

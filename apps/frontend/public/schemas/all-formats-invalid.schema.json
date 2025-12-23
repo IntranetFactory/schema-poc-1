@@ -1,12 +1,6 @@
 {
-  "$schema": "https://semantius.com/meta/sem-schema",
+  "$schema": "https://semantius.com/meta/sem-schema/v1",
   "$id": "https://semantius.com/schemas/all-formats-invalid.schema.json",
-  "$vocabulary": {
-    "https://json-schema.org/draft/2020-12/vocab/core": true,
-    "https://json-schema.org/draft/2020-12/vocab/validation": true,
-    "https://semantius.com/vocab/sem-schema/formats": true,
-    "https://semantius.com/vocab/sem-schema/validation": true
-  },
   "title": "All Formats (Invalid Defaults)",
   "description": "A schema showcasing all supported format values with intentionally invalid default values for testing",
   "type": "object",

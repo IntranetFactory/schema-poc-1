@@ -81,7 +81,7 @@ function EnumFieldInner({
           aria-describedby={field.state.meta.errors?.[0] ? `${name}-error` : undefined}
           onBlur={() => field.handleBlur()}
         >
-          <SelectValue placeholder={required ? "Select an option *" : "Select an option"} />
+          <SelectValue placeholder="Select an option" />
         </SelectTrigger>
         <SelectContent>
           {enumValues.map((value: string) => (
