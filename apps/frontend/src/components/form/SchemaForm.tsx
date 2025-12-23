@@ -252,6 +252,26 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
           e.preventDefault()
           e.stopPropagation()
           form.handleSubmit()
+          
+          // After validation, scroll to first error field if any
+          // Use setTimeout to ensure validation has completed and DOM has updated
+          setTimeout(() => {
+            // Get all fields from schema
+            const allFields = schema.properties ? Object.keys(schema.properties) : []
+            
+            // Find first field with error
+            for (const fieldName of allFields) {
+              const fieldMeta = form.getFieldMeta(fieldName)
+              if (fieldMeta?.errors && fieldMeta.errors.length > 0) {
+                const errorElement = document.getElementById(fieldName)
+                if (errorElement) {
+                  errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  errorElement.focus({ preventScroll: true })
+                }
+                break
+              }
+            }
+          }, 100)
         }}
         className="space-y-6"
       >
