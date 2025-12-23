@@ -4,10 +4,15 @@ import type { SchemaObject } from 'ajv';
  * Known formats - includes both custom and standard formats
  */
 const KNOWN_FORMATS = new Set([
-  // Custom SemSchema formats
+  // Custom SemSchema formats (not in JSON Schema spec)
   'json',
   'html',
   'text',
+  // Standard JSON Schema formats (missing from ajv-formats, implemented by us)
+  'iri',
+  'iri-reference',
+  'idn-email',
+  'idn-hostname',
   // Standard JSON Schema formats (from ajv-formats)
   'date',
   'time',

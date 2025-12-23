@@ -119,6 +119,12 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         cleanedValue[key] = value[key]
       }
       
+      // Skip validation entirely if form is readonly
+      if (readonly) {
+        onSubmit?.(cleanedValue)
+        return
+      }
+      
       // Validate the entire form
       let result
       try {
@@ -320,16 +326,18 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         )
       })}
 
-      <div className="flex gap-4">
-        <Button type="submit">Submit</Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => form.reset()}
-        >
-          Reset
-        </Button>
-      </div>
+      {!readonly && (
+        <div className="flex gap-4">
+          <Button type="submit">Submit</Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => form.reset()}
+          >
+            Reset
+          </Button>
+        </div>
+      )}
     </form>
     </FormProvider>
   )

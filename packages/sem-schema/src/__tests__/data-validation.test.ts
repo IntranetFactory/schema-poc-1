@@ -298,6 +298,75 @@ describe('Data Validation Tests', () => {
     });
   });
 
+  describe('Standard Formats - iri (implemented by us)', () => {
+    it('should validate valid IRIs', () => {
+      const schema = { type: 'string', format: 'iri' };
+      
+      expect(validateData('https://example.com', schema).valid).toBe(true);
+      expect(validateData('http://例え.jp', schema).valid).toBe(true);
+    });
+
+    it('should reject invalid IRIs', () => {
+      const schema = { type: 'string', format: 'iri' };
+      
+      expect(validateData('not an iri', schema).valid).toBe(false);
+      expect(validateData('', schema).valid).toBe(false);
+    });
+  });
+
+  describe('Standard Formats - iri-reference (implemented by us)', () => {
+    it('should validate valid IRI references', () => {
+      const schema = { type: 'string', format: 'iri-reference' };
+      
+      expect(validateData('https://example.com', schema).valid).toBe(true);
+      expect(validateData('/path/to/resource', schema).valid).toBe(true);
+      expect(validateData('../relative', schema).valid).toBe(true);
+      expect(validateData('#fragment', schema).valid).toBe(true);
+    });
+
+    it('should reject invalid IRI references', () => {
+      const schema = { type: 'string', format: 'iri-reference' };
+      
+      expect(validateData('has spaces', schema).valid).toBe(false);
+      expect(validateData('has<brackets>', schema).valid).toBe(false);
+    });
+  });
+
+  describe('Standard Formats - idn-email (implemented by us)', () => {
+    it('should validate valid IDN emails', () => {
+      const schema = { type: 'string', format: 'idn-email' };
+      
+      expect(validateData('user@example.com', schema).valid).toBe(true);
+      expect(validateData('用户@例え.jp', schema).valid).toBe(true);
+    });
+
+    it('should reject invalid IDN emails', () => {
+      const schema = { type: 'string', format: 'idn-email' };
+      
+      expect(validateData('not-an-email', schema).valid).toBe(false);
+      expect(validateData('@nodomain', schema).valid).toBe(false);
+      expect(validateData('user@', schema).valid).toBe(false);
+    });
+  });
+
+  describe('Standard Formats - idn-hostname (implemented by us)', () => {
+    it('should validate valid IDN hostnames', () => {
+      const schema = { type: 'string', format: 'idn-hostname' };
+      
+      expect(validateData('example.com', schema).valid).toBe(true);
+      expect(validateData('例え.jp', schema).valid).toBe(true);
+      expect(validateData('subdomain.example.com', schema).valid).toBe(true);
+    });
+
+    it('should reject invalid IDN hostnames', () => {
+      const schema = { type: 'string', format: 'idn-hostname' };
+      
+      expect(validateData('.starts-with-dot', schema).valid).toBe(false);
+      expect(validateData('ends-with-dot.', schema).valid).toBe(false);
+      expect(validateData('-starts-with-dash', schema).valid).toBe(false);
+    });
+  });
+
   describe('Standard JSON Schema required array (object-level)', () => {
     it('should reject missing property when in required array', () => {
       const schema = {

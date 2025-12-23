@@ -330,6 +330,20 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.errors).toBeNull();
     });
 
+    it('should accept schema with format: iri', () => {
+      const schema = { type: 'string', format: 'iri' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: iri-reference', () => {
+      const schema = { type: 'string', format: 'iri-reference' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
     it('should accept schema with format: uri-template', () => {
       const schema = { type: 'string', format: 'uri-template' };
       const result = validateSchema(schema);
@@ -352,8 +366,22 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.errors).toBeNull();
     });
 
+    it('should accept schema with format: idn-email', () => {
+      const schema = { type: 'string', format: 'idn-email' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
     it('should accept schema with format: hostname', () => {
       const schema = { type: 'string', format: 'hostname' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: idn-hostname', () => {
+      const schema = { type: 'string', format: 'idn-hostname' };
       const result = validateSchema(schema);
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();
