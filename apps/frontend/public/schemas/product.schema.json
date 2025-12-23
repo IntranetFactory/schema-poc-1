@@ -6,9 +6,9 @@
   "properties": {
     "id": {
       "type": "string",
-      "inputMode": "required",
+      "inputMode": "readonly",
       "title": "ID",
-      "description": "Unique product identifier"
+      "description": "Unique product identifier"      
     },
     "name": {
       "type": "string",

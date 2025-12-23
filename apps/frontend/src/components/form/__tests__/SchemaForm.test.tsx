@@ -245,9 +245,9 @@ describe('SchemaForm', () => {
     })
   })
 
-  describe('Readonly Functionality', () => {
-    it('should make all fields appear disabled when readonly prop is true', () => {
-      render(<SchemaForm schema={basicSchema} readonly={true} />)
+  describe('FormMode Functionality', () => {
+    it('should make all fields appear disabled when formMode is view', () => {
+      render(<SchemaForm schema={basicSchema} formMode="view" />)
 
       const nameInput = screen.getByLabelText(/name/i)
       const emailInput = screen.getByLabelText(/email/i)
@@ -344,8 +344,8 @@ describe('SchemaForm', () => {
       })
     })
 
-    it('should allow editing when readonly prop is false', () => {
-      render(<SchemaForm schema={basicSchema} readonly={false} />)
+    it('should allow editing when formMode is edit (default)', () => {
+      render(<SchemaForm schema={basicSchema} formMode="edit" />)
 
       const nameInput = screen.getByLabelText(/name/i)
       
@@ -353,7 +353,7 @@ describe('SchemaForm', () => {
       expect(nameInput).not.toBeDisabled()
     })
 
-    it('should respect field-level readonly even when form readonly is false', () => {
+    it('should respect field-level readonly even when formMode is edit', () => {
       const schemaWithReadonly: SchemaObject = {
         type: 'object',
         properties: {
@@ -362,7 +362,7 @@ describe('SchemaForm', () => {
         },
       }
 
-      render(<SchemaForm schema={schemaWithReadonly} readonly={false} />)
+      render(<SchemaForm schema={schemaWithReadonly} formMode="edit" />)
 
       const nameInput = screen.getByLabelText(/name/i)
       const emailInput = screen.getByLabelText(/email/i)
@@ -373,7 +373,7 @@ describe('SchemaForm', () => {
       expect(emailInput).not.toBeDisabled()
     })
 
-    it('should make field readonly when either form or field readonly is true', () => {
+    it('should make field readonly when either formMode is view or field inputMode is readonly', () => {
       const schemaWithReadonly: SchemaObject = {
         type: 'object',
         properties: {
@@ -382,7 +382,7 @@ describe('SchemaForm', () => {
         },
       }
 
-      render(<SchemaForm schema={schemaWithReadonly} readonly={true} />)
+      render(<SchemaForm schema={schemaWithReadonly} formMode="view" />)
 
       const nameInput = screen.getByLabelText(/name/i)
       const emailInput = screen.getByLabelText(/email/i)
@@ -499,6 +499,71 @@ describe('SchemaForm', () => {
 
       // Should submit successfully
       expect(onSubmit).toHaveBeenCalled()
+    })
+
+    it('should exclude fields with inputMode readonly when formMode is create', () => {
+      const schemaWithReadonly: SchemaObject = {
+        type: 'object',
+        properties: {
+          id: { type: 'string', title: 'ID', inputMode: 'readonly' },
+          name: { type: 'string', title: 'Name', inputMode: 'required' },
+          email: { type: 'string', format: 'email', title: 'Email' },
+          status: { type: 'string', title: 'Status', inputMode: 'readonly' },
+        },
+      }
+
+      render(<SchemaForm schema={schemaWithReadonly} formMode="create" />)
+
+      // Readonly fields should not be rendered
+      expect(screen.queryByLabelText(/^ID$/i)).not.toBeInTheDocument()
+      expect(screen.queryByLabelText(/^Status$/i)).not.toBeInTheDocument()
+
+      // Non-readonly fields should be rendered
+      expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    })
+
+    it('should include readonly fields when formMode is edit', () => {
+      const schemaWithReadonly: SchemaObject = {
+        type: 'object',
+        properties: {
+          id: { type: 'string', title: 'ID', inputMode: 'readonly' },
+          name: { type: 'string', title: 'Name' },
+        },
+      }
+
+      render(<SchemaForm schema={schemaWithReadonly} formMode="edit" />)
+
+      // All fields should be rendered in edit mode
+      expect(screen.getByLabelText(/^ID$/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
+      
+      // Readonly field should be disabled
+      expect(screen.getByLabelText(/^ID$/i)).toBeDisabled()
+    })
+
+    it('should hide submit and reset buttons in view mode', () => {
+      render(<SchemaForm schema={basicSchema} formMode="view" />)
+
+      // Buttons should not be rendered
+      expect(screen.queryByRole('button', { name: /submit/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /reset/i })).not.toBeInTheDocument()
+    })
+
+    it('should show submit and reset buttons in edit mode', () => {
+      render(<SchemaForm schema={basicSchema} formMode="edit" />)
+
+      // Buttons should be rendered
+      expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument()
+    })
+
+    it('should show submit and reset buttons in create mode', () => {
+      render(<SchemaForm schema={basicSchema} formMode="create" />)
+
+      // Buttons should be rendered
+      expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument()
     })
   })
 

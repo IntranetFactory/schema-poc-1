@@ -6,11 +6,13 @@ import type { SchemaObject } from 'ajv'
 import { InputText } from './InputText'
 import { FormProvider } from './FormContext'
 
+export type FormMode = 'edit' | 'create' | 'view'
+
 interface SchemaFormProps {
   schema: SchemaObject
   initialValue?: Record<string, any>
   onSubmit?: (value: Record<string, any>) => void
-  readonly?: boolean
+  formMode?: FormMode
 }
 
 /**
@@ -98,7 +100,7 @@ function validateField(value: any, fieldSchema: SchemaObject, fieldName: string)
   return undefined
 }
 
-export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }: SchemaFormProps) {
+export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }: SchemaFormProps) {
   // Generate initial value if not provided
   const defaultValue = initialValue && Object.keys(initialValue).length > 0
     ? initialValue
@@ -119,8 +121,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         cleanedValue[key] = value[key]
       }
       
-      // Skip validation entirely if form is readonly
-      if (readonly) {
+      // Skip validation entirely if form is in view mode
+      if (formMode === 'view') {
         onSubmit?.(cleanedValue)
         return
       }
@@ -204,10 +206,12 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         if (firstErrorField) {
           // Use setTimeout to allow DOM to update with error messages first
           setTimeout(() => {
-            const errorElement = document.getElementById(firstErrorField)
-            if (errorElement) {
-              errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-              errorElement.focus({ preventScroll: true })
+            if (firstErrorField) {
+              const errorElement = document.getElementById(firstErrorField)
+              if (errorElement) {
+                errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                errorElement.focus({ preventScroll: true })
+              }
             }
           }, 100)
         }
@@ -336,18 +340,23 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         const label = propSchema.title || key
         const description = propSchema.description
 
-        // Use format if available, otherwise check for enum, otherwise use type as format
-        const controlKey = format || (hasEnum ? 'enum' : type) as string
-        const ControlComponent = controls[controlKey] || InputText
-
         // Get inputMode from schema (defaults to 'default' if not specified)
         let inputMode: 'default' | 'required' | 'readonly' | 'disabled' | 'hidden' = 
           (propSchema as any).inputMode || 'default'
         
-        // Form-level readonly prop overrides schema-level inputMode (except for hidden)
-        if (readonly && inputMode !== 'hidden') {
+        // In create mode, skip fields with inputMode='readonly'
+        if (formMode === 'create' && inputMode === 'readonly') {
+          return null
+        }
+        
+        // Form-level view mode overrides schema-level inputMode (except for hidden)
+        if (formMode === 'view' && inputMode !== 'hidden') {
           inputMode = 'readonly'
         }
+
+        // Use format if available, otherwise check for enum, otherwise use type as format
+        const controlKey = format || (hasEnum ? 'enum' : type) as string
+        const ControlComponent = controls[controlKey] || InputText
 
         // Skip validation for readonly, disabled, and hidden fields
         const shouldValidate = inputMode === 'default' || inputMode === 'required'
@@ -367,7 +376,7 @@ export function SchemaForm({ schema, initialValue, onSubmit, readonly = false }:
         )
       })}
 
-      {!readonly && (
+      {formMode !== 'view' && (
         <div className="flex gap-4">
           <Button type="submit">Submit</Button>
           <Button

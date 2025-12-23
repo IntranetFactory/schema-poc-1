@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "ID",
+      "description": "Unique identifier (readonly)",
+      "inputMode": "readonly",
+      "default": "USR-12345"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date",
+      "title": "Created At",
+      "description": "Creation date (readonly)",
+      "inputMode": "readonly",
+      "default": "2024-01-01"
+    },
+    "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "User's full name",
+      "inputMode": "required"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email",
+      "description": "Contact email address",
+      "inputMode": "required"
+    },
+    "role": {
+      "type": "string",
+      "title": "Role",
+      "enum": ["admin", "user", "guest"],
+      "default": "user"
+    },
+    "bio": {
+      "type": "string",
+      "format": "text",
+      "title": "Bio",
+      "description": "Short biography"
+    }
+  }
+}

@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
-import { SchemaForm } from '@/components/form'
+import { SchemaForm, type FormMode } from '@/components/form'
 import type { SchemaObject } from 'ajv'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { validateSchema } from 'sem-schema'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 
 /**
  * Generate default values from schema
@@ -75,6 +77,7 @@ interface FormPlaygroundProps {
 export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
   const [schemaText, setSchemaText] = useState(initialSchema || defaultSchema)
   const [dataText, setDataText] = useState(defaultData)
+  const [formMode, setFormMode] = useState<FormMode>('edit')
   
   // Parse and validate schema - derived state using useMemo
   const { schema, schemaError } = useMemo(() => {
@@ -205,9 +208,26 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
         <Panel defaultSize={34} minSize={20}>
           <div className="h-full flex flex-col overflow-hidden">
             <div className="p-4 border-b border-gray-300 bg-gray-50">
-              <h2 className="text-sm font-semibold m-0">
-                Form Preview
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold m-0">
+                  Form Preview
+                </h2>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="playground-form-mode" className="text-xs">
+                    Mode:
+                  </Label>
+                  <Select value={formMode} onValueChange={(value) => setFormMode(value as FormMode)}>
+                    <SelectTrigger id="playground-form-mode" className="w-[120px] h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="edit">Edit</SelectItem>
+                      <SelectItem value="create">Create</SelectItem>
+                      <SelectItem value="view">View</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
             <div className="flex-1 overflow-auto p-4">
               {schema && data ? (
@@ -216,6 +236,7 @@ export function FormPlayground({ initialSchema }: FormPlaygroundProps) {
                   schema={schema}
                   initialValue={data}
                   onSubmit={handleFormSubmit}
+                  formMode={formMode}
                 />
               ) : (
                 <div className="text-muted-foreground text-sm">

@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { SchemaForm } from '@/components/form'
+import { SchemaForm, type FormMode } from '@/components/form'
 import type { SchemaObject } from 'ajv'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Switch } from '@/components/ui/switch'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { validateSchema } from 'sem-schema'
 
@@ -30,7 +30,7 @@ function FormViewer() {
     !schemaUrl ? 'No schema URL provided. Please add ?schema=<url> to the URL.' : null
   )
   const [submitResult, setSubmitResult] = useState<Record<string, unknown> | null>(null)
-  const [readonly, setReadonly] = useState(false)
+  const [formMode, setFormMode] = useState<FormMode>('edit')
 
   useEffect(() => {
     if (!schemaUrl) {
@@ -97,18 +97,23 @@ function FormViewer() {
 
           {schema && (
             <>
-              <div className="flex items-center space-x-2 mb-6 p-4 border rounded-md bg-muted">
-                <Switch
-                  id="readonly-mode"
-                  checked={readonly}
-                  onCheckedChange={setReadonly}
-                />
-                <Label htmlFor="readonly-mode" className="cursor-pointer">
-                  Read-only mode
+              <div className="flex items-center space-x-4 mb-6 p-4 border rounded-md bg-muted">
+                <Label htmlFor="form-mode" className="font-medium min-w-fit">
+                  Form Mode:
                 </Label>
+                <Select value={formMode} onValueChange={(value) => setFormMode(value as FormMode)}>
+                  <SelectTrigger id="form-mode" className="w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="edit">Edit</SelectItem>
+                    <SelectItem value="create">Create</SelectItem>
+                    <SelectItem value="view">View</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
-              <SchemaForm schema={schema} onSubmit={handleSubmit} readonly={readonly} />
+              <SchemaForm schema={schema} onSubmit={handleSubmit} formMode={formMode} />
               
               {submitResult && (
                 <div className="mt-8 p-4 border rounded-md bg-muted">

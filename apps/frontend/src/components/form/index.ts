@@ -1,4 +1,5 @@
 export { SchemaForm } from './SchemaForm'
+export type { FormMode } from './SchemaForm'
 export { InputText } from './InputText'
 // Note: InputText handles type="string" (single-line input)
 // InputTextarea handles format="text" (multi-line textarea)
