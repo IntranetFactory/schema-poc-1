@@ -58,63 +58,77 @@ describe('SchemaForm', () => {
     })
   })
 
-  describe('Field-Level Validation (onBlur)', () => {
-    it('should validate required field on blur', async () => {
+  describe('Field-Level Validation (onSubmit)', () => {
+    it('should validate required field on submit', async () => {
       const user = userEvent.setup()
       render(<SchemaForm schema={basicSchema} />)
 
       const nameInput = screen.getByLabelText(/name/i)
+      const submitButton = screen.getByRole('button', { name: /submit/i })
       
-      // Focus then blur without entering value
-      await user.click(nameInput)
-      await user.tab() // Move focus away (blur)
+      // Leave field empty and submit
+      await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByText(/must not be empty/i)).toBeInTheDocument()
-      })
-    })
-
-    it('should validate email format on blur', async () => {
-      const user = userEvent.setup()
-      render(<SchemaForm schema={basicSchema} />)
-
-      const emailInput = screen.getByLabelText(/email/i)
-      
-      // Enter invalid email
-      await user.type(emailInput, 'invalid-email')
-      await user.tab() // Blur
-
-      await waitFor(() => {
-        expect(screen.getByText(/must match format "email"/i)).toBeInTheDocument()
-      })
-    })
-
-    it('should clear error when valid value is entered', async () => {
-      const user = userEvent.setup()
-      render(<SchemaForm schema={basicSchema} />)
-
-      const nameInput = screen.getByLabelText(/name/i)
-      
-      // Trigger error on name field
-      await user.click(nameInput)
-      await user.tab()
-      await waitFor(() => {
-        // Check specifically for name field error using aria-describedby
+        // Both name and email are empty, so both show "must not be empty"
+        const errors = screen.getAllByText(/must not be empty/i)
+        expect(errors.length).toBeGreaterThanOrEqual(1)
         expect(nameInput).toHaveAttribute('aria-invalid', 'true')
-        expect(screen.getByText(/must not be empty/i)).toBeInTheDocument()
       })
+    })
 
-      // Fix error by typing valid value
-      await user.clear(nameInput)
-      await user.type(nameInput, 'John Doe')
+    it('should validate email format on submit', async () => {
+      const user = userEvent.setup()
+      render(<SchemaForm schema={basicSchema} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      const emailInput = screen.getByLabelText(/email/i)
+      const submitButton = screen.getByRole('button', { name: /submit/i })
       
-      // Manually trigger blur to validate
-      nameInput.blur()
+      // Fill name (required) and enter clearly invalid email, then submit
+      await user.type(nameInput, 'John Doe')
+      await user.type(emailInput, 'notanemail')  // No @ symbol - clearly invalid
+      await user.click(submitButton)
 
       await waitFor(() => {
-        // Name field should no longer have error
-        expect(nameInput).toHaveAttribute('aria-invalid', 'false')
-        expect(nameInput).toHaveValue('John Doe')
+        // Email validation should fail
+        expect(screen.getByText(/must match format "email"/i)).toBeInTheDocument()
+        expect(emailInput).toHaveAttribute('aria-invalid', 'true')
+      }, { timeout: 5000 })
+    })
+
+    it('should submit successfully after fixing validation errors', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      render(<SchemaForm schema={basicSchema} onSubmit={onSubmit} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      
+      // Trigger error by submitting empty form
+      await user.click(submitButton)
+      await waitFor(() => {
+        expect(nameInput).toHaveAttribute('aria-invalid', 'true')
+        // Multiple fields empty, so multiple errors
+        const errors = screen.getAllByText(/must not be empty/i)
+        expect(errors.length).toBeGreaterThanOrEqual(1)
+      })
+
+      // Fix error by typing valid values
+      await user.type(nameInput, 'John Doe')
+      await user.type(screen.getByLabelText(/email/i), 'john@example.com')
+      
+      // Submit again - should work on first click
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        // Form should submit successfully
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'John Doe',
+            email: 'john@example.com'
+          })
+        )
       })
     })
   })
@@ -755,6 +769,70 @@ describe('SchemaForm', () => {
 
       // Should not call onSubmit
       expect(onSubmit).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Readonly vs Disabled Field Submission', () => {
+    it('should submit readonly fields but NOT submit disabled fields', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      
+      const schema: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            title: 'Name',
+            inputMode: 'required',
+          },
+          id: {
+            type: 'integer',
+            title: 'ID',
+            inputMode: 'readonly',
+            default: 123,
+          },
+          created_at: {
+            type: 'string',
+            title: 'Created At',
+            inputMode: 'disabled',
+            default: '2025-01-01',
+          },
+          updated_at: {
+            type: 'string',
+            title: 'Updated At',
+            inputMode: 'disabled',
+            default: '2025-01-02',
+          },
+        },
+      }
+
+      const initialValue = {
+        name: '',
+        id: 123,
+        created_at: '2025-01-01',
+        updated_at: '2025-01-02',
+      }
+
+      render(<SchemaForm schema={schema} initialValue={initialValue} onSubmit={onSubmit} formMode="edit" />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+
+      await user.type(nameInput, 'John Doe')
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalled()
+      })
+
+      const submittedData = onSubmit.mock.calls[0][0]
+      
+      // Readonly fields SHOULD be submitted
+      expect(submittedData).toHaveProperty('id', 123)
+      
+      // Disabled fields should NOT be submitted
+      expect(submittedData).not.toHaveProperty('created_at')
+      expect(submittedData).not.toHaveProperty('updated_at')
     })
   })
 })

@@ -1,68 +1,121 @@
 {
-  "$schema": "https://semantius.com/meta/sem-schema/v1",
-  "title": "Test Formats",
-  "description": "A schema showcasing all broken formats",
-  "type": "object",
-  "properties": {
-    "dateTime": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Date Time",
-      "description": "Date and time format",
-      "inputMode": "required"
+    "$schema": "https://semantius.com/meta/sem-schema/v1",
+    "$id": "https://example.com/schemas/customers.schema.json",
+    "title": "Customer",
+    "description": "Customer information and contact details",
+    "table": {
+        "table_name": "customers",
+        "singular": "customer",
+        "plural": "customers",
+        "singular_label": "Customer",
+        "plural_label": "Customers",
+        "icon_url": "",
+        "description": "Customer information and contact details",
+        "module_id": 1001,
+        "view_permission": "public:read",
+        "edit_permission": "sales:manage",
+        "id_column": "id",
+        "label_column": "customer_name",
+        "created_at": "2025-12-23T23:50:35.137783",
+        "updated_at": "2025-12-23T23:50:35.137783"
     },
-    "time": {
-      "type": "string",
-      "format": "time",
-      "title": "Time",
-      "description": "Time format",
-        "inputMode": "required"
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer",
+            "title": "Id",
+            "width": "s",
+            "inputMode": "readonly",
+            "fieldOrder": 0,
+            "description": ""
+        },
+        "customer_name": {
+            "type": "string",
+            "title": "Customer",
+            "width": "m",
+            "default": "",
+            "inputMode": "required",
+            "fieldOrder": 1,
+            "description": ""
+        },
+        "email": {
+            "type": "string",
+            "title": "Email Address",
+            "width": "m",
+            "format": "email",
+            "default": "",
+            "inputMode": "required",
+            "fieldOrder": 10,
+            "description": "Customer primary email address"
+        },
+        "company": {
+            "type": "string",
+            "title": "Company Name",
+            "width": "m",
+            "default": "",
+            "inputMode": "default",
+            "fieldOrder": 20,
+            "description": "Company or organization name"
+        },
+        "phone": {
+            "type": "string",
+            "title": "Phone Number",
+            "width": "m",
+            "default": "",
+            "inputMode": "default",
+            "fieldOrder": 30,
+            "description": "Customer contact phone number"
+        },
+        "status": {
+            "enum": [
+                "active",
+                "inactive",
+                "pending",
+                "suspended"
+            ],
+            "type": "string",
+            "title": "Status",
+            "width": "s",
+            "default": "active",
+            "inputMode": "default",
+            "fieldOrder": 40,
+            "description": "Customer account status (active, inactive, etc.)"
+        },
+        "total_orders": {
+            "type": "integer",
+            "title": "Total Orders",
+            "width": "s",
+            "default": 0,
+            "inputMode": "readonly",
+            "fieldOrder": 50,
+            "description": "Total number of orders placed by customer"
+        },
+        "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "width": "m",
+            "format": "date-time",
+            "default": "",
+            "inputMode": "disabled",
+            "fieldOrder": 999998,
+            "description": ""
+        },
+        "updated_at": {
+            "type": "string",
+            "title": "Updated At",
+            "width": "m",
+            "format": "date-time",
+            "default": "",
+            "inputMode": "disabled",
+            "fieldOrder": 999999,
+            "description": ""
+        }
     },
-    "date": {
-      "type": "string",
-      "format": "date",
-      "title": "Date",
-      "description": "Date format",
-        "inputMode": "required"
-    },
-    "uuid": {
-      "type": "string",
-      "format": "uuid",
-      "title": "UUID",
-      "description": "UUID format",
-        "inputMode": "required"
-    },
-    "text": {
-      "format": "text",
-      "title": "Text",
-      "description": "Multiline text format (custom)"
-    },
-    "json": {
-      "format": "json",
-      "title": "JSON",
-      "description": "JSON format (custom)"
-    },
-    "plainString": {
-      "type": "string",
-      "title": "Plain String",
-      "description": "Plain string without format"
-    },
-    "plainNumber": {
-      "type": "number",
-      "title": "Plain Number",
-      "description": "Plain number without format"
-    },
-    "plainInteger": {
-      "type": "integer",
-      "title": "Plain Integer",
-      "description": "Plain integer without format"
-    },
-
-    "enumField": {
-      "type": "string",
-      "enum": ["option1", "option2", "option3"],
-      "title": "Enum",
-      "description": "Enumerated values"
-    }
-  }
+    "required": [
+        "customer_name",
+        "email",
+        "status",
+        "total_orders"
+    ],
+    "additionalProperties": false
 }

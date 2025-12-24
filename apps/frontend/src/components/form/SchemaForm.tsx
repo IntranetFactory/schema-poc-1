@@ -115,22 +115,57 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
       // Get all possible fields from schema
       const allFields = schema.properties ? Object.keys(schema.properties) : []
       
-      // Include ALL fields from schema, regardless of whether they have values
-      // This ensures optional fields are included in submission and validation
+      // Include fields based on inputMode:
+      // - disabled fields: NEVER submitted (HTML standard behavior)
+      // - readonly fields: ALWAYS submitted (they're part of the data)
+      // - In create mode: readonly fields are not rendered but still submitted if present in initial value
       for (const key of allFields) {
+        const propSchema = (schema.properties as Record<string, SchemaObject>)[key]
+        const inputMode = (propSchema as any).inputMode || 'default'
+        
+        // Disabled fields are NEVER submitted (HTML standard behavior)
+        if (inputMode === 'disabled') {
+          continue
+        }
+        
+        // In create mode, skip readonly fields (they're not rendered and usually don't exist yet)
+        if (formMode === 'create' && inputMode === 'readonly') {
+          continue
+        }
+        
         cleanedValue[key] = value[key]
       }
       
-      // Skip validation entirely if form is in view mode
+      // DEFENSIVE: This should never happen because view mode has no submit button
+      // If we reach here, something is seriously broken in the form rendering logic
       if (formMode === 'view') {
-        onSubmit?.(cleanedValue)
-        return
+        throw new Error('BUG: Form submitted in view mode, but view mode should have no submit button!')
+      }
+      
+      // Modify schema to exclude fields from required validation based on inputMode and formMode
+      let validationSchema = schema
+      if (schema.required && Array.isArray(schema.required)) {
+        const properties = schema.properties as Record<string, SchemaObject>
+        const filteredRequired = schema.required.filter((fieldName: string) => {
+          const propSchema = properties[fieldName]
+          if (!propSchema) return true
+          const inputMode = (propSchema as any).inputMode || 'default'
+          
+          // Disabled fields are never submitted, so never required
+          if (inputMode === 'disabled') return false
+          
+          // In create mode, readonly fields are not rendered, so not required
+          if (formMode === 'create' && inputMode === 'readonly') return false
+          
+          return true
+        })
+        validationSchema = { ...schema, required: filteredRequired }
       }
       
       // Validate the entire form
       let result
       try {
-        result = validateData(cleanedValue, schema)
+        result = validateData(cleanedValue, validationSchema)
       } catch (error) {
         // Schema validation error (invalid schema structure)
         const errorMessage = error instanceof Error ? error.message : 'Invalid schema'
@@ -226,6 +261,15 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
         errors: [],
         errorMap: {}
       }))
+      
+      // Clear field-level errors on successful validation
+      for (const key of allFields) {
+        form.setFieldMeta(key, (meta) => ({
+          ...meta,
+          errors: [],
+          errorMap: {}
+        }))
+      }
       
       // Only call onSubmit when validation passes (with cleaned data)
       onSubmit?.(cleanedValue)
@@ -344,8 +388,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
         let inputMode: 'default' | 'required' | 'readonly' | 'disabled' | 'hidden' = 
           (propSchema as any).inputMode || 'default'
         
-        // In create mode, skip fields with inputMode='readonly'
-        if (formMode === 'create' && inputMode === 'readonly') {
+        // In create mode, skip fields with inputMode='readonly' or 'disabled'
+        if (formMode === 'create' && (inputMode === 'readonly' || inputMode === 'disabled')) {
           return null
         }
         
@@ -369,7 +413,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
             description={description}
             inputMode={inputMode}
             validators={shouldValidate ? {
-              onBlur: ({ value }) => validateField(value, propSchema, key),
+              // Only validate on submit, not on blur
+              // This prevents blur validation from canceling submit button clicks
               onSubmit: ({ value }) => validateField(value, propSchema, key),
             } : undefined}
           />
