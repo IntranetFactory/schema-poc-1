@@ -296,6 +296,7 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
   return (
     <FormProvider value={formContextValue}>
       <form
+        noValidate
         onSubmit={(e) => {
           e.preventDefault()
           e.stopPropagation()

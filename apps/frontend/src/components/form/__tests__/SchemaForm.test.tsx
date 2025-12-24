@@ -114,9 +114,12 @@ describe('SchemaForm', () => {
         expect(errors.length).toBeGreaterThanOrEqual(1)
       })
 
-      // Fix error by typing valid values
+      // Fix error by clearing and typing valid values
+      const emailInput = screen.getByLabelText(/email/i)
+      await user.clear(nameInput)
       await user.type(nameInput, 'John Doe')
-      await user.type(screen.getByLabelText(/email/i), 'john@example.com')
+      await user.clear(emailInput)
+      await user.type(emailInput, 'john@example.com')
       
       // Submit again - should work on first click
       await user.click(submitButton)
