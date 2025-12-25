@@ -12,8 +12,7 @@ export function FormLabel({ htmlFor, label, required, error }: FormLabelProps) {
   
   return (
     <Label htmlFor={htmlFor} className={error ? 'text-destructive' : ''}>
-      {label}
-      {required && <span className="text-destructive ml-1">*</span>}
+      {label}{required && <>&nbsp;<span className="text-destructive">*</span></>}
     </Label>
   )
 }

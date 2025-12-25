@@ -306,6 +306,21 @@ describe('Data Validation Tests', () => {
       expect(validateData('http://例え.jp', schema).valid).toBe(true);
     });
 
+    it('should validate data URLs', () => {
+      const schema = { type: 'string', format: 'iri' };
+      
+      expect(validateData('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zZXR0aW5ncy1pY29uIGx1Y2lkZS1zZXR0aW5ncyI+PHBhdGggZD0iTTkuNjcxIDQuMTM2YTIuMzQgMi4zNCAwIDAgMSA0LjY1OSAwIDIuMzQgMi4zNCAwIDAgMCAzLjMxOSAxLjkxNSAyLjM0IDIuMzQgMCAwIDEgMi4zMyA0LjAzMyAyLjM0IDIuMzQgMCAwIDAgMCAzLjgzMSAyLjM0IDIuMzQgMCAwIDEtMi4zMyA0LjAzMyAyLjM0IDIuMzQgMCAwIDAtMy4zMTkgMS45MTUgMi4zNCAyLjM0IDAgMCAxLTQuNjU5IDAgMi4zNCAyLjM0IDAgMCAwLTMuMzItMS45MTUgMi4zNCAyLjM0IDAgMCAxLTIuMzMtNC4wMzMgMi4zNCAyLjM0IDAgMCAwIDAtMy44MzFBMi4zNCAyLjM0IDAgMCAxIDYuMzUgNi4wNTFhMi4zNCAyLjM0IDAgMCAwIDMuMzE5LTEuOTE1Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIvPjwvc3ZnPg==', schema).valid).toBe(true);
+      expect(validateData('data:text/plain;charset=utf-8,Hello%20World', schema).valid).toBe(true);
+      expect(validateData('data:text/html,<h1>Hello</h1>', schema).valid).toBe(true);
+    });
+
+    it('should validate mailto URLs', () => {
+      const schema = { type: 'string', format: 'iri' };
+      
+      expect(validateData('mailto:support@test.com', schema).valid).toBe(true);
+      expect(validateData('mailto:user@example.org?subject=Test', schema).valid).toBe(true);
+    });
+
     it('should reject invalid IRIs', () => {
       const schema = { type: 'string', format: 'iri' };
       
