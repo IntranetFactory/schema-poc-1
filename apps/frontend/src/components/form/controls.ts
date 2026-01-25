@@ -17,6 +17,8 @@ import { InputBoolean } from './InputBoolean'
 import { InputDate } from './InputDate'
 import { InputJson } from './InputJson'
 import { InputHtml } from './InputHtml'
+import { InputCode } from './InputCode'
+import { InputJsonata } from './InputJsonata'
 import { InputDateTime } from './InputDateTime'
 import { InputTime } from './InputTime'
 import { InputDuration } from './InputDuration'
@@ -48,7 +50,7 @@ import type { FormControlProps } from './types'
  * - URI formats: uri, uri-reference, iri, iri-reference, uri-template
  * - Resource identifiers: uuid, json-pointer, relative-json-pointer
  * - Pattern: regex
- * - Custom formats: text, json, html
+ * - Custom formats: text, json, html, code, jsonata
  * 
  * Type-based controls (when schema has only a type, used as format):
  * - boolean, integer, number, string
@@ -91,6 +93,8 @@ export const controls: Record<string, React.ComponentType<FormControlProps>> = {
   text: InputTextarea,
   json: InputJson,
   html: InputHtml,
+  code: InputCode,
+  jsonata: InputJsonata,
   
   // Type-based controls (when no format is specified)
   boolean: InputBoolean,

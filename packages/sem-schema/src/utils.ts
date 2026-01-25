@@ -8,6 +8,8 @@ const KNOWN_FORMATS = new Set([
   'json',
   'html',
   'text',
+  'code',
+  'jsonata',
   // Standard JSON Schema formats (missing from ajv-formats, implemented by us)
   'iri',
   'iri-reference',
