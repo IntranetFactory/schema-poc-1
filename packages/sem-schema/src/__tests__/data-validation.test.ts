@@ -50,6 +50,28 @@ describe('Data Validation Tests', () => {
     });
   });
 
+  describe('Format: code', () => {
+    it('should validate code strings', () => {
+      const schema = { type: 'string', format: 'code' };
+      
+      expect(validateData('const x = 1;', schema).valid).toBe(true);
+      expect(validateData('function test() { return true; }', schema).valid).toBe(true);
+      expect(validateData('Multi\nline\ncode', schema).valid).toBe(true);
+      expect(validateData('', schema).valid).toBe(true);
+    });
+  });
+
+  describe('Format: jsonata', () => {
+    it('should validate jsonata strings', () => {
+      const schema = { type: 'string', format: 'jsonata' };
+      
+      expect(validateData('$.fieldName', schema).valid).toBe(true);
+      expect(validateData('$sum(items.price)', schema).valid).toBe(true);
+      expect(validateData('items[price > 10]', schema).valid).toBe(true);
+      expect(validateData('', schema).valid).toBe(true);
+    });
+  });
+
   describe('inputMode: required validation', () => {
     it('should reject empty string when inputMode is required', () => {
       const schema = {
