@@ -156,6 +156,18 @@
       "description": "HTML format (custom)",
       "default": "<div><h1>Hello World</h1><p>This is a paragraph.</p></div>"
     },
+    "code": {
+      "format": "code",
+      "title": "Code",
+      "description": "Code format (custom) - plain text with line numbers",
+      "default": "function greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconst result = greet('World');\nconsole.log(result);"
+    },
+    "jsonata": {
+      "format": "jsonata",
+      "title": "JSONata",
+      "description": "JSONata expression format (custom) - plain text with line numbers",
+      "default": "$.items[price > 10].{\n  \"name\": name,\n  \"price\": price,\n  \"total\": price * quantity\n}"
+    },
     "plainString": {
       "type": "string",
       "title": "Plain String",
