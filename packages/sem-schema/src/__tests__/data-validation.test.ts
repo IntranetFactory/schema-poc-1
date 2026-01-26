@@ -11,6 +11,8 @@ describe('Data Validation Tests', () => {
       
       expect(validateData('{"key": "value"}', schema).valid).toBe(true);
       expect(validateData('[]', schema).valid).toBe(true);
+      expect(validateData('["x","y"]', schema).valid).toBe(true);
+      expect(validateData('[1,2,3]', schema).valid).toBe(true);
       expect(validateData('123', schema).valid).toBe(true);
       expect(validateData('"string"', schema).valid).toBe(true);
     });

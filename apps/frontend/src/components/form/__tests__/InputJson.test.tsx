@@ -83,6 +83,7 @@ describe('InputJson', () => {
     expect(validatorFn('{invalid}')).toBe('must be valid JSON')
     expect(validatorFn('{"valid": "json"}')).toBeUndefined()
     expect(validatorFn('[1, 2, 3]')).toBeUndefined()
+    expect(validatorFn('["a","b"]')).toBeUndefined()
     expect(validatorFn('{incomplete')).toBe('must be valid JSON')
   })
 
