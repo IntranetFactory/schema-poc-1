@@ -99,9 +99,10 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
           : types.includes(fmt);
       if (!compatible) {
         const expectedType = fmt === 'integer' ? '"integer" or "number"' : `"${fmt}"`;
+        const actualType = Array.isArray(schema.type) ? schema.type.join(', ') : schema.type;
         errors.push({
           schemaPath: path,
-          message: `Format "${fmt}" is not compatible with type "${Array.isArray(schema.type) ? schema.type.join('|') : schema.type}". Expected type ${expectedType}`,
+          message: `Format "${fmt}" is not compatible with type "${actualType}". Expected type ${expectedType}`,
           keyword: 'format',
           value: schema.format
         });
