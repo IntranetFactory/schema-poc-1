@@ -87,6 +87,25 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
         keyword: 'format',
         value: schema.format
       });
+    } else if (PRIMITIVE_TYPE_FORMATS.has(schema.format) && schema.type) {
+      // When format is a primitive type name, it must be compatible with the declared type.
+      // "integer" and "number" are mutually compatible; all other primitive formats must
+      // match the type exactly.
+      const fmt = schema.format as string;
+      const types = Array.isArray(schema.type) ? schema.type : [schema.type];
+      const compatible =
+        (fmt === 'integer' || fmt === 'number')
+          ? types.some(t => t === 'integer' || t === 'number')
+          : types.includes(fmt);
+      if (!compatible) {
+        const expectedType = fmt === 'integer' ? '"integer" or "number"' : `"${fmt}"`;
+        errors.push({
+          schemaPath: path,
+          message: `Format "${fmt}" is not compatible with type "${Array.isArray(schema.type) ? schema.type.join('|') : schema.type}". Expected type ${expectedType}`,
+          keyword: 'format',
+          value: schema.format
+        });
+      }
     }
   }
 
