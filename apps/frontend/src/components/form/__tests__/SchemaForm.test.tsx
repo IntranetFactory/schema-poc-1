@@ -114,12 +114,12 @@ describe('SchemaForm', () => {
         expect(errors.length).toBeGreaterThanOrEqual(1)
       })
 
-      // Fix error by clearing and typing valid values
+      // Fix error by typing valid values into the empty inputs
       const emailInput = screen.getByLabelText(/email/i)
       await user.clear(nameInput)
-      await user.type(nameInput, 'John Doe', { delay: null })
+      await user.type(nameInput, 'John Doe')
       await user.clear(emailInput)
-      await user.type(emailInput, 'john@example.com', { delay: null })
+      await user.type(emailInput, 'john@example.com')
       
       // Submit again - should work on first click
       await user.click(submitButton)
@@ -208,6 +208,85 @@ describe('SchemaForm', () => {
 
       expect(screen.getByDisplayValue('Provided Name')).toBeInTheDocument()
       expect(screen.queryByDisplayValue('Default Name')).not.toBeInTheDocument()
+    })
+
+    it('should fill missing string fields with "" when initialValue is partial', async () => {
+      // Reproduces: when initialValue is provided without all schema properties,
+      // missing string fields should default to "" not undefined.
+      const schema: SchemaObject = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name', inputMode: 'required' },
+          name2: { type: 'string', title: 'Name 2' },
+        },
+        required: ['name'],
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+
+      // Only provide "name" in initialValue, omit "name2"
+      render(
+        <SchemaForm
+          schema={schema}
+          initialValue={{ name: 'Alice' }}
+          onSubmit={onSubmit}
+        />
+      )
+
+      // name2 should render as an empty text input, not undefined
+      const name2Input = screen.getByLabelText(/name 2/i) as HTMLInputElement
+      expect(name2Input.value).toBe('')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'Alice',
+            name2: '',   // must be "" not undefined
+          })
+        )
+      })
+    })
+
+    it('should fill missing number/integer fields with undefined when initialValue is partial', async () => {
+      const schema: SchemaObject = {
+        type: 'object',
+        properties: {
+          label: { type: 'string', title: 'Label', inputMode: 'required' },
+          count: { type: 'integer', title: 'Count' },
+        },
+      }
+
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+
+      // Only provide "label", omit "count"
+      render(
+        <SchemaForm
+          schema={schema}
+          initialValue={{ label: 'test' }}
+          onSubmit={onSubmit}
+        />
+      )
+
+      // count should render as blank (number default is undefined = empty input)
+      const countInput = screen.getByLabelText(/count/i) as HTMLInputElement
+      expect(countInput.value).toBe('')
+
+      const submitButton = screen.getByRole('button', { name: /submit/i })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            label: 'test',
+            count: undefined,
+          })
+        )
+      })
     })
   })
 
@@ -704,12 +783,13 @@ describe('SchemaForm', () => {
       await user.click(submitButton)
 
       // Should include ALL schema properties, even empty optional ones
+      // number/integer fields remain undefined when the user doesn't interact with them
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
             name: 'John Doe',
             email: '',
-            age: undefined, // or '' depending on field type
+            age: undefined,
           })
         )
       })
