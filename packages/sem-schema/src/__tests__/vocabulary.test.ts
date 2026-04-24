@@ -490,6 +490,63 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();
     });
+
+    // Primitive type formats
+    it('should accept schema with format: string', () => {
+      const schema = { type: 'string', format: 'string' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: boolean', () => {
+      const schema = { type: 'boolean', format: 'boolean' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: integer', () => {
+      const schema = { type: 'integer', format: 'integer' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: number', () => {
+      const schema = { type: 'number', format: 'number' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: string (type inferred)', () => {
+      const schema = { format: 'string' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: boolean (type inferred)', () => {
+      const schema = { format: 'boolean' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: integer (type inferred)', () => {
+      const schema = { format: 'integer' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with format: number (type inferred)', () => {
+      const schema = { format: 'number' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
   });
 
   describe('Schema Validity - Invalid types', () => {

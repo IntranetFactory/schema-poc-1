@@ -1,9 +1,19 @@
 import type { SchemaObject } from 'ajv';
 
 /**
+ * Primitive type names allowed as format values
+ */
+const PRIMITIVE_TYPE_FORMATS = new Set(['boolean', 'integer', 'number', 'string']);
+
+/**
  * Known formats - includes both custom and standard formats
  */
 const KNOWN_FORMATS = new Set([
+  // Primitive type names (allowed as format hints)
+  'boolean',
+  'integer',
+  'number',
+  'string',
   // Custom SemSchema formats (not in JSON Schema spec)
   'json',
   'html',
@@ -147,8 +157,10 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
 /**
  * Preprocess schema to handle default type as string and enum empty string handling
  * 
- * When a schema has a format but no type, this function adds type: "string"
- * This allows schemas like { format: "json" } to work correctly
+ * When a schema has a format but no type, this function infers the type:
+ * - If format is a primitive type name (boolean/integer/number/string), uses that as type
+ * - Otherwise defaults to string (formats like json, html, date, etc. imply a string field)
+ * This allows schemas like { format: "json" } or { format: "number" } to work correctly
  * 
  * When a schema has an enum but inputMode is not "required", this function adds "" to the enum
  * This allows empty strings to be valid for optional enum fields
@@ -160,9 +172,13 @@ export function preprocessSchema(schema: SchemaObject): SchemaObject {
 
   const processed: SchemaObject = { ...schema };
 
-  // If format is provided but type is not, default to string
+  // If format is provided but type is not, infer the type
+  // If format is a primitive type name (boolean/integer/number/string), use it as the type;
+  // otherwise default to string (formats like json, html, date, etc. imply a string field)
   if (processed.format && !processed.type) {
-    processed.type = 'string';
+    processed.type = PRIMITIVE_TYPE_FORMATS.has(processed.format as string)
+      ? (processed.format as string)
+      : 'string';
   }
 
   // If enum is present and inputMode is not "required", add "" to enum if not already present
