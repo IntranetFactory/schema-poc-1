@@ -23,7 +23,8 @@ Each form control provides a consistent interface defined in `types.ts`:
 - **TextInput** - Basic text input (default for string type) - uses shadcn Input
 - **EmailInput** - Email input with validation (format: "email") - uses shadcn Input
 - **NumberInput** - Number/integer input with proper type handling - uses shadcn Input
-- **TextareaInput** - Multi-line text input (format: "text") - uses shadcn Textarea
+- **TextInput** - Single-line text input (format: "text") - uses shadcn Input
+- **TextareaInput** - Multi-line text input (format: "multiline") - uses shadcn Textarea
 - **CheckboxInput** - Boolean checkbox input - uses shadcn Checkbox
 - **DateInput** - Date picker with calendar UI (format: "date") - uses shadcn DatePicker
 - **DateTimeInput** - Date and time picker (format: "date-time") - uses shadcn-based DateTimePicker
@@ -113,7 +114,8 @@ The SchemaForm automatically maps schema types/formats to appropriate shadcn-bas
 | type: "integer" or "number" | NumberInput | Input (type="number") |
 | format: "json" | JsonEditor | CodeMirror |
 | format: "html" | HtmlEditor | CodeMirror |
-| format: "text" | TextareaInput | Textarea |
+| format: "text" | TextInput | Input |
+| format: "multiline" | TextareaInput | Textarea |
 | format: "email" | EmailInput | Input (type="email") |
 | format: "date" | DateInput | DatePicker (Calendar + Popover) |
 | format: "date-time" | DateTimeInput | DateTimePicker (Calendar + Time inputs + Popover) |

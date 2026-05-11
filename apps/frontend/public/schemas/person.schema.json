@@ -41,7 +41,7 @@
       "description": "Age in years"
     },
     "bio": {
-      "format": "text",
+      "format": "multiline",
       "title": "Bio",
       "description": "Biography or personal description"
     },

@@ -35,7 +35,7 @@
       "description": "URL-friendly slug"
     },
     "excerpt": {
-      "format": "text",
+      "format": "multiline",
       "title": "Excerpt",
       "description": "Short excerpt or summary"
     },

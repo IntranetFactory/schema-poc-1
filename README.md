@@ -11,7 +11,7 @@ This is a **pnpm workspace** with packages and applications:
 #### `packages/sem-schema`
 
 The main package implementing SemSchema - a custom JSON Schema vocabulary with additional validation features:
-- Custom formats: `json`, `html`, `text`
+- Custom formats: `json`, `html`, `text`, `multiline`
 - Property-level `required` keyword (validates non-empty strings)
 - Number `precision` keyword (0-4 decimal places)
 - Type inference (format without type defaults to string)
@@ -118,7 +118,8 @@ SemSchema exports two simple methods:
 ### Custom Formats
 - **json**: Validates parseable JSON strings
 - **html**: Validates HTML markup (checks for tags)
-- **text**: Allows multiline text strings
+- **text**: Single-line text string (UI hint — renders as text input)
+- **multiline**: Multi-line text string (UI hint — renders as textarea)
 
 ### Custom Keywords
 - **required** (property-level): Boolean - validates values are not null/undefined, and strings (in ANY format) are not empty

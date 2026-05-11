@@ -26,7 +26,7 @@ describe('InputTextarea', () => {
       schema: { 
         type: 'object', 
         properties: {
-          text: { format: 'text', inputMode }
+          text: { format: 'multiline', inputMode }
         },
         required: inputMode === 'required' ? ['text'] : []
       },

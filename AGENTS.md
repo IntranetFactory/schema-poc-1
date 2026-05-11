@@ -254,7 +254,7 @@ This file documents the implementation decisions and rationale for the SemSchema
 
 SemSchema is a custom JSON Schema vocabulary implemented as an npm package that extends AJV with domain-specific validation constraints. It addresses common JSON Schema limitations by providing:
 
-1. **Custom string formats**: `json`, `html`, `text`
+1. **Custom string formats**: `json`, `html`, `text`, `multiline`
 2. **Property-level required validation**: Validates non-null/undefined and non-empty values (see CRITICAL section above)
 3. **Number precision constraints**: Limits decimal places (0-4)
 4. **Type inference**: Defaults to string type when only format is specified
@@ -284,9 +284,10 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 **Why Needed**: JSON Schema supports format validation, but implementations vary. We need consistent validation for:
 - `json`: Ensures strings are valid JSON (can be parsed)
 - `html`: Ensures strings contain HTML tags (not just plain text)
-- `text`: Allows multiline strings (unlike default string which may restrict newlines)
+- `text`: Single-line text string (UI hint — renders as text input)
+- `multiline`: Multi-line text string (UI hint — renders as textarea)
 
-**Implementation**: Each format implemented in separate file (`formats/json.ts`, `formats/html.ts`, `formats/text.ts`) using AJV's `addFormat` method.
+**Implementation**: Each format implemented in separate file (`formats/json.ts`, `formats/html.ts`, `formats/text.ts`, `formats/multiline.ts`) using AJV's `addFormat` method.
 
 ### 3. Number Precision
 
@@ -326,7 +327,7 @@ The project uses pnpm workspaces with two packages:
 **Structure**:
 ```
 src/
-├── formats/       # One file per format (json.ts, html.ts, text.ts)
+├── formats/       # One file per format (json.ts, html.ts, text.ts, multiline.ts)
 ├── keywords/      # One file per keyword (required.ts, precision.ts)
 ├── api.ts         # Public API implementation
 ├── validator.ts   # Internal validator creation

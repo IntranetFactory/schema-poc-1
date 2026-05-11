@@ -141,6 +141,11 @@
     "text": {
       "format": "text",
       "title": "Text",
+      "description": "Single-line text format (custom)"
+    },
+    "multiline": {
+      "format": "multiline",
+      "title": "Multiline",
       "description": "Multiline text format (custom)"
     },
     "json": {

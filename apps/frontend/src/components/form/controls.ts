@@ -50,7 +50,7 @@ import type { FormControlProps } from './types'
  * - URI formats: uri, uri-reference, iri, iri-reference, uri-template
  * - Resource identifiers: uuid, json-pointer, relative-json-pointer
  * - Pattern: regex
- * - Custom formats: text, json, html, code, jsonata
+ * - Custom formats: text, multiline, json, html, code, jsonata
  * 
  * Type-based controls (when schema has only a type, used as format):
  * - boolean, integer, number, string
@@ -90,7 +90,8 @@ export const controls: Record<string, React.ComponentType<FormControlProps>> = {
   regex: InputRegex,
   
   // Custom formats
-  text: InputTextarea,
+  text: InputText,
+  multiline: InputTextarea,
   json: InputJson,
   html: InputHtml,
   code: InputCode,

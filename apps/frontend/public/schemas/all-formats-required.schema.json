@@ -143,6 +143,12 @@
       "format": "text",
       "inputMode": "required",
       "title": "Text",
+      "description": "Single-line text format (custom)"
+    },
+    "multiline": {
+      "format": "multiline",
+      "inputMode": "required",
+      "title": "Multiline",
       "description": "Multiline text format (custom)"
     },
     "json": {

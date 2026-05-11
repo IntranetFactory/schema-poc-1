@@ -13,7 +13,7 @@ Each format/type has a dedicated form control component:
 - **TextInput** - Basic text input (string type)
 - **EmailInput** - Email input with validation (format: "email")
 - **NumberInput** - Number/integer input
-- **TextareaInput** - Multi-line text (format: "text") 
+- **TextareaInput** - Multi-line text (format: "multiline") 
 - **CheckboxInput** - Boolean checkbox
 - **DateInput** - Date picker with calendar (format: "date")
 - **HtmlEditor** - CodeMirror editor with HTML syntax highlighting (format: "html")
@@ -63,7 +63,7 @@ const schema = {
   properties: {
     name: { type: 'string', required: true, minLength: 1 },
     email: { type: 'string', format: 'email' },
-    bio: { format: 'text' },
+    bio: { format: 'multiline' },
     config: { format: 'json' }
   },
   required: ['name', 'email']
@@ -100,7 +100,7 @@ if (result.valid) {
 ```
 
 Validation uses the sem-schema validator which extends AJV with:
-- Custom formats: `json`, `html`, `text`
+- Custom formats: `json`, `html`, `text`, `multiline`
 - Property-level `required` keyword (non-empty strings)
 - Number `precision` keyword (0-4 decimal places)
 

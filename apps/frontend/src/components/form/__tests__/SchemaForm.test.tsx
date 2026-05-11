@@ -226,18 +226,32 @@ describe('SchemaForm', () => {
       expect(ageInput).toHaveAttribute('type', 'number')
     })
 
-    it('should use TextareaInput for text format', () => {
+    it('should use TextareaInput for multiline format', () => {
+      const schemaWithMultiline: SchemaObject = {
+        type: 'object',
+        properties: {
+          bio: { format: 'multiline', title: 'Bio' },
+        },
+      }
+
+      render(<SchemaForm schema={schemaWithMultiline} />)
+
+      const textarea = screen.getByLabelText(/bio/i)
+      expect(textarea.tagName).toBe('TEXTAREA')
+    })
+
+    it('should use single-line input for text format', () => {
       const schemaWithText: SchemaObject = {
         type: 'object',
         properties: {
-          bio: { format: 'text', title: 'Bio' },
+          label: { format: 'text', title: 'Label' },
         },
       }
 
       render(<SchemaForm schema={schemaWithText} />)
 
-      const textarea = screen.getByLabelText(/bio/i)
-      expect(textarea.tagName).toBe('TEXTAREA')
+      const input = screen.getByLabelText(/label/i)
+      expect(input.tagName).toBe('INPUT')
     })
   })
 

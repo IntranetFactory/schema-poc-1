@@ -1,8 +1,8 @@
 export { SchemaForm } from './SchemaForm'
 export type { FormMode } from './SchemaForm'
 export { InputText } from './InputText'
-// Note: InputText handles type="string" (single-line input)
-// InputTextarea handles format="text" (multi-line textarea)
+// Note: InputText handles type="string" and format="text" (single-line input)
+// InputTextarea handles format="multiline" (multi-line textarea)
 export { InputEmail } from './InputEmail'
 export { InputNumber } from './InputNumber'
 export { InputTextarea } from './InputTextarea'

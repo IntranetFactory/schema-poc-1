@@ -160,6 +160,13 @@
     "text": {
       "format": "text",
       "title": "Text",
+      "description": "Single-line text format (custom)",
+      "default": "A short single-line label.",
+      "inputMode": "readonly"
+    },
+    "multiline": {
+      "format": "multiline",
+      "title": "Multiline",
       "description": "Multiline text format (custom)",
       "default": "This is a multiline text.\nIt spans multiple lines.\nUseful for longer content.",
       "inputMode": "readonly"

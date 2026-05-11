@@ -18,12 +18,12 @@
       "description": "The question text"
     },
     "answer": {
-      "format": "text",
+      "format": "multiline",
       "inputMode": "required",
       "title": "Answer"
     },
     "category": {
-      "format": "text",
+      "format": "multiline",
       "title": "Category",
       "description": "FAQ category"
     },

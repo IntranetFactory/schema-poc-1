@@ -37,7 +37,7 @@
     },
     "bio": {
       "type": "string",
-      "format": "text",
+      "format": "multiline",
       "title": "Bio",
       "description": "Short biography"
     }
