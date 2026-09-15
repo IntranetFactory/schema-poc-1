@@ -1,69 +1,20 @@
 import type { SchemaObject } from 'ajv';
 import { JSON_KEYWORD } from './keywords/json';
 import { JSONLOGIC_KEYWORD } from './keywords/jsonlogic';
+import vocabularySchema from './vocabulary.json';
 
 /**
- * Primitive type names allowed as format values
+ * The JSON types; every one of them is also a format
  */
-const PRIMITIVE_TYPE_FORMATS = new Set(['boolean', 'integer', 'number', 'string']);
+export const JSON_TYPES = ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null'];
 
 /**
- * Formats whose value may be any JSON value, with the type list the Semantius
- * backend emits for them (format_to_json_type in 0070_dd_functions.sql)
+ * The known formats and the JSON type each implies. Read from the one format list,
+ * properties.format.oneOf in vocabulary.json; do not list formats anywhere else.
  */
-const JSON_VALUE_FORMATS = new Set(['json', 'jsonlogic']);
-const JSON_VALUE_TYPES = ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null'];
-
-/**
- * Known formats - includes both custom and standard formats
- */
-const KNOWN_FORMATS = new Set([
-  // Primitive type names (allowed as format hints)
-  'boolean',
-  'integer',
-  'number',
-  'string',
-  // Custom SemSchema formats (not in JSON Schema spec)
-  'json',
-  'html',
-  'text',
-  'multiline',
-  'code',
-  'jsonata',
-  'jsonlogic',
-  'reference',
-  'parent',
-  // Standard JSON Schema formats (missing from ajv-formats, implemented by us)
-  'iri',
-  'iri-reference',
-  'idn-email',
-  'idn-hostname',
-  // Standard JSON Schema formats (from ajv-formats)
-  'date',
-  'time',
-  'date-time',
-  'duration',
-  'uri',
-  'uri-reference',
-  'uri-template',
-  'url',
-  'email',
-  'hostname',
-  'ipv4',
-  'ipv6',
-  'regex',
-  'uuid',
-  'json-pointer',
-  'json-pointer-uri-fragment',
-  'relative-json-pointer',
-  'byte',
-  'int32',
-  'int64',
-  'float',
-  'double',
-  'password',
-  'binary',
-]);
+const FORMAT_JSON_TYPES = new Map<string, string | string[]>(
+  vocabularySchema.properties.format.oneOf.map((entry) => [entry.const, entry.jsonType])
+);
 
 /**
  * Schema validation error
@@ -91,15 +42,15 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
 
   // Validate format (AJV only warns about unknown formats, doesn't fail)
   if (schema.format && typeof schema.format === 'string') {
-    if (!KNOWN_FORMATS.has(schema.format)) {
+    if (!FORMAT_JSON_TYPES.has(schema.format)) {
       errors.push({
         schemaPath: path,
         message: `Unknown format "${schema.format}"`,
         keyword: 'format',
         value: schema.format
       });
-    } else if (PRIMITIVE_TYPE_FORMATS.has(schema.format) && schema.type) {
-      // When format is a primitive type name, it must be compatible with the declared type.
+    } else if (JSON_TYPES.includes(schema.format) && schema.type) {
+      // When format is a JSON type name, it must be compatible with the declared type.
       // "integer" and "number" are mutually compatible; all other primitive formats must
       // match the type exactly.
       const fmt = schema.format as string;
@@ -188,11 +139,9 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
 /**
  * Preprocess schema to handle default type as string and enum empty string handling
  * 
- * When a schema has a format but no type, this function infers the type:
- * - If format is a primitive type name (boolean/integer/number/string), uses that as type
- * - If format is json or jsonlogic, uses every JSON type, as the backend does (the value may be JSON text or any JSON value)
- * - Otherwise defaults to string (formats like html, date, etc. imply a string field)
- * This allows schemas like { format: "json" } or { format: "number" } to work correctly
+ * When a schema has a format but no type, this function sets the type the format implies
+ * (its jsonType in vocabulary.json, e.g. int32 -> integer, json -> every JSON type, html -> string)
+ * This allows schemas like { format: "json" }, { format: "int32" } or { format: "object" } to work correctly
  * 
  * When a schema has an enum but inputMode is not "required", this function adds "" to the enum
  * This allows empty strings to be valid for optional enum fields
@@ -214,16 +163,11 @@ export function preprocessSchema(schema: SchemaObject): SchemaObject {
     processed[JSONLOGIC_KEYWORD] = true;
   }
 
-  // If format is provided but type is not, infer the type
-  // If format is a primitive type name (boolean/integer/number/string), use it as the type;
-  // json and jsonlogic take every JSON type; other formats (html, date, etc.) imply a string field
+  // If format is provided but type is not, use the type the format implies
+  // (an unknown format falls back to string; validateSchemaStructure rejects it)
   if (processed.format && !processed.type) {
-    const format = processed.format as string;
-    processed.type = PRIMITIVE_TYPE_FORMATS.has(format)
-      ? format
-      : JSON_VALUE_FORMATS.has(format)
-        ? [...JSON_VALUE_TYPES]
-        : 'string';
+    const type = FORMAT_JSON_TYPES.get(processed.format as string) ?? 'string';
+    processed.type = Array.isArray(type) ? [...type] : type;
   }
 
   // If enum is present and inputMode is not "required", add "" to enum if not already present

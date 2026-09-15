@@ -41,13 +41,17 @@ This file documents the implementation decisions and rationale for the SemSchema
 
 **CRITICAL RULES:**
 - **❌ NEVER use store_memory tool** - All agent instructions and reminders MUST be stored in this file (agents.md)
-- **❌ DO NOT use proprietary memory tools** - They don't persist across sessions or agents
+- **❌ DO NOT use proprietary memory tools** - They don't persist across sessions or agents (this includes Claude Code's memory directory under `~/.claude/`)
+- **❌ NEVER create or modify files outside this repository** - No memory files, notes or config in home directories or anywhere else
+- **❌ A QUESTION IS NOT A TASK** - When the user asks a question, ANSWER it. Do NOT change code, tests or docs unless the user explicitly asks for a change
+- **❌ NEVER create a separate CLAUDE.md** - `CLAUDE.md` is a symlink to this file; do not replace or edit it
 - **❌ NEVER create temporary test/debug files** (test-*.js, debug-*.js, etc.) - Use proper test files or run_in_terminal for one-off tests
 - **✅ ALWAYS update agents.md** when you learn important workflow rules or user preferences
 - **✅ This file is the ONLY place** for storing agent instructions and patterns
 
 **FILE PURPOSES:**
 - **agents.md** (THIS FILE) = Agent workflow, visual verification, screenshot requirements, ALL agent instructions
+- **CLAUDE.md** = Symlink to this file, so Claude Code loads the same instructions
 - **INSTRUCTIONS.md** = Technical details, testing, validation, styling conventions
 
 **DEBUGGING/TESTING RULES:**
@@ -262,6 +266,14 @@ full by `apps/_core/migrations/0210_raci.sql`; the last definition applied is th
 - `src/__tests__/jsonlogic-backend-sync.test.ts` fails when the operators or `$` variables differ from the backend, or when a rule shipped in the backend migrations stops validating
 - The sync test reads a semantius checkout from `SEMANTIUS_BACKEND_DIR` or `../semantius`; without one it is **skipped**, so run it with a checkout before committing jsonlogic changes (`SEMANTIUS_BACKEND_REQUIRED=1` turns the skip into a failure)
 - Legal-but-suspicious rules (multi-key objects, extra arguments, unknown `$` variables) are **errors**, by decision — there is no warning channel
+
+## 🚨 CRITICAL: Formats Are Defined in ONE Place 🚨
+
+- The format list (name, implied JSON type, description) lives ONLY in `properties.format.oneOf` of `/packages/sem-schema/src/vocabulary.json`
+- **❌ NEVER add a format list anywhere else** (utils.ts, README, frontend, tests) - read it from vocabulary.json or formats.json
+- `/packages/sem-schema/formats.json` is GENERATED from vocabulary.json for the GUI and the backend - **❌ NEVER edit it by hand**; after changing formats run `pnpm generate:formats` in `packages/sem-schema` (a test fails when it is out of date)
+- The Semantius backend has its own copies (`valid_format` CHECK and `format_values` in `0060_dd_schema.sql`, `format_to_json_type()` in `0070_dd_functions.sql`) that must match the list
+- **SemSchema formats are a superset of JSON Schema, by decision:** `email`, `hostname`, `uri` and `uri-reference` accept Unicode and validate EXACTLY like `idn-email`, `idn-hostname`, `iri` and `iri-reference` (`src/formats/internationalized.ts`). Nobody should have to know that the idn/iri name is needed for Unicode; the format descriptions in vocabulary.json say that each pair validates the same
 
 ## Project Overview
 

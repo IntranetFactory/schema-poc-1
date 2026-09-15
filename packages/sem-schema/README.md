@@ -70,9 +70,9 @@ SemSchema uses the **`inputMode: "required"`** keyword that serves BOTH UI and v
   - Example: `precision: 2` allows 99.99 but rejects 99.999
 
 ### Type Inference
-- When `format` is provided without `type`, defaults to `type: "string"`
-- Except `json` and `jsonlogic`: they get every JSON type (`object`, `array`, `string`, `number`, `integer`, `boolean`, `null`), the same type list the Semantius backend emits for them
-- Allows schemas like `{ "format": "json" }` without explicit type declaration
+- When `format` is provided without `type`, the type is the format's `jsonType` in [src/vocabulary.json](src/vocabulary.json) — the type the Semantius backend maps the format to
+- E.g. `html`, `date`, `enum` → `string`; `int32`, `reference` → `integer`; `double` → `number`; `object` → `object`; `json` and `jsonlogic` → every JSON type (`object`, `array`, `string`, `number`, `integer`, `boolean`, `null`)
+- Allows schemas like `{ "format": "json" }` or `{ "format": "int32" }` without explicit type declaration
 
 ### JSON values and AJV
 
@@ -223,37 +223,27 @@ SemSchema is designed to be extensible. You can add custom formats and keywords 
 
 ### Supported Formats
 
-**Custom SemSchema formats (9):**
-- `json`, `html`, `text`, `multiline`, `code`, `jsonata`, `jsonlogic`, `reference`, `parent`
+The formats are defined once, in `properties.format.oneOf` of [src/vocabulary.json](src/vocabulary.json): one entry per format with its name (`const`), the JSON type it implies when a schema has no `type` (`jsonType`) and a description. Schema validation, type inference and the meta-schema all read that list; do not list formats anywhere else. It must match the formats the Semantius backend accepts (`valid_format` and `format_to_json_type`).
 
-**Standard JSON Schema formats from ajv-formats (24):**
-- **Date/time:** `date`, `time`, `date-time`, `duration`
-- **URI:** `uri`, `uri-reference`, `uri-template`, `url`
-- **Email/Network:** `email`, `hostname`, `ipv4`, `ipv6`
-- **Other:** `regex`, `uuid`, `json-pointer`, `json-pointer-uri-fragment`, `relative-json-pointer`, `byte`, `binary`, `int32`, `int64`, `float`, `double`, `password`
+For the GUI and the backend, the same list is written to [formats.json](formats.json) (`{ "<format>": { "type", "description" } }`, importable as `sem-schema/formats.json`). It is generated: never edit it by hand, run `pnpm generate:formats` after changing formats in `vocabulary.json`. A test fails when `formats.json` is out of date.
 
-The complete list is maintained in `KNOWN_FORMATS` in [src/utils.ts](src/utils.ts).
+The JSON type names (`string`, `number`, `integer`, `boolean`, `object`, `array`, `null`) are formats too; when a schema also gives `type`, it must be compatible with the format.
+
+`email`, `hostname`, `uri` and `uri-reference` are not restricted to ASCII: each accepts Unicode and validates exactly like `idn-email`, `idn-hostname`, `iri` and `iri-reference` (e.g. `jörg@müller.de`, `müller.de`, `https://müller.de/straße`). Values are mapped to their ASCII wire form (punycode, percent-encoding) and then checked with the strict ajv-formats validators ([src/formats/internationalized.ts](src/formats/internationalized.ts)).
 
 ### Adding a Custom Format
 
 Follow these steps to add a new custom format (e.g., `phone`):
 
-#### Step 1: Add to KNOWN_FORMATS
+#### Step 1: Add to vocabulary.json
 
-Edit `src/utils.ts` and add your format to the set:
+Add an entry to `properties.format.oneOf` in `src/vocabulary.json`:
 
-```typescript
-const KNOWN_FORMATS = new Set([
-  // Custom SemSchema formats
-  'json',
-  'html',
-  'text',
-  'multiline',
-  'phone', // ← Add your format here
-  // Standard JSON Schema formats (from ajv-formats)
-  // ...
-]);
+```json
+{ "const": "phone", "jsonType": "string", "description": "Phone number, E.164 (+12025551234)" }
 ```
+
+Then regenerate `formats.json`: `pnpm generate:formats`
 
 #### Step 2: Create format validator
 

@@ -464,6 +464,104 @@ describe('Data Validation Tests', () => {
     });
   });
 
+  describe('Format: enum', () => {
+    it('should validate values against the enum list', () => {
+      const schema = { type: 'string', format: 'enum', enum: ['active', 'inactive'] };
+
+      expect(validateData('active', schema).valid).toBe(true);
+      expect(validateData('archived', schema).valid).toBe(false);
+    });
+
+    it('should infer type string when no type is given', () => {
+      const schema = { format: 'enum', enum: ['active', 'inactive'] };
+
+      expect(validateData('inactive', schema).valid).toBe(true);
+      expect(validateData(1, schema).valid).toBe(false);
+    });
+
+    it('should work in an object schema with inputMode', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          status: { type: 'string', format: 'enum', enum: ['active', 'inactive'] },
+          stage: { type: 'string', format: 'enum', enum: ['draft', 'done'], inputMode: 'required' }
+        }
+      };
+
+      expect(validateData({ status: 'active', stage: 'draft' }, schema).valid).toBe(true);
+      expect(validateData({ status: '', stage: 'done' }, schema).valid).toBe(true);
+      expect(validateData({ status: 'active', stage: '' }, schema).valid).toBe(false);
+      expect(validateData({ status: 'archived', stage: 'draft' }, schema).valid).toBe(false);
+    });
+  });
+
+  describe('Format: object', () => {
+    it('should accept objects', () => {
+      const schema = { type: 'object', format: 'object' };
+
+      expect(validateData({}, schema).valid).toBe(true);
+      expect(validateData({ key: 'value' }, schema).valid).toBe(true);
+    });
+
+    it('should infer type object when no type is given', () => {
+      const schema = { format: 'object' };
+
+      expect(validateData({ key: 'value' }, schema).valid).toBe(true);
+      expect(validateData('{"key": "value"}', schema).valid).toBe(false);
+      expect(validateData([1, 2], schema).valid).toBe(false);
+    });
+
+    it('should work in an object schema', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          settings: { type: 'object', format: 'object', default: {} }
+        }
+      };
+
+      expect(validateData({ settings: { theme: 'dark' } }, schema).valid).toBe(true);
+      expect(validateData({ settings: 'dark' }, schema).valid).toBe(false);
+    });
+  });
+
+  describe('Format: array', () => {
+    it('should accept arrays', () => {
+      const schema = { type: 'array', format: 'array' };
+
+      expect(validateData([], schema).valid).toBe(true);
+      expect(validateData([1, 'two', { three: 3 }], schema).valid).toBe(true);
+    });
+
+    it('should infer type array when no type is given', () => {
+      const schema = { format: 'array' };
+
+      expect(validateData(['a', 'b'], schema).valid).toBe(true);
+      expect(validateData('a,b', schema).valid).toBe(false);
+      expect(validateData({ 0: 'a' }, schema).valid).toBe(false);
+    });
+
+    it('should work in an object schema', () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          tags: { type: 'array', format: 'array', default: [] }
+        }
+      };
+
+      expect(validateData({ tags: ['a', 'b'] }, schema).valid).toBe(true);
+      expect(validateData({ tags: 'a' }, schema).valid).toBe(false);
+    });
+  });
+
+  describe('Format: null', () => {
+    it('should infer type null when no type is given', () => {
+      const schema = { format: 'null' };
+
+      expect(validateData(null, schema).valid).toBe(true);
+      expect(validateData('', schema).valid).toBe(false);
+    });
+  });
+
   describe('inputMode: required validation', () => {
     it('should reject empty string when inputMode is required', () => {
       const schema = {
@@ -646,6 +744,21 @@ describe('Data Validation Tests', () => {
       expect(validateData([1, 2], schema).valid).toBe(true);
     });
 
+    it('should infer integer and number types for numeric formats provided without type', () => {
+      expect(validateData(5, { format: 'int32' }).valid).toBe(true);
+      expect(validateData('5', { format: 'int32' }).valid).toBe(false);
+      expect(validateData(9007199254740991, { format: 'int64' }).valid).toBe(true);
+      expect(validateData(1.5, { format: 'double' }).valid).toBe(true);
+      expect(validateData(1.5, { format: 'float' }).valid).toBe(true);
+      expect(validateData('1.5', { format: 'float' }).valid).toBe(false);
+    });
+
+    it('should infer type integer for reference and parent provided without type', () => {
+      expect(validateData(7, { format: 'reference' }).valid).toBe(true);
+      expect(validateData(7, { format: 'parent' }).valid).toBe(true);
+      expect(validateData(1.5, { format: 'reference' }).valid).toBe(false);
+    });
+
     it('should infer type string when a string format is provided without type', () => {
       const schema = { format: 'html' };
 
@@ -735,7 +848,13 @@ describe('Data Validation Tests', () => {
       
       expect(validateData('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zZXR0aW5ncy1pY29uIGx1Y2lkZS1zZXR0aW5ncyI+PHBhdGggZD0iTTkuNjcxIDQuMTM2YTIuMzQgMi4zNCAwIDAgMSA0LjY1OSAwIDIuMzQgMi4zNCAwIDAgMCAzLjMxOSAxLjkxNSAyLjM0IDIuMzQgMCAwIDEgMi4zMyA0LjAzMyAyLjM0IDIuMzQgMCAwIDAgMCAzLjgzMSAyLjM0IDIuMzQgMCAwIDEtMi4zMyA0LjAzMyAyLjM0IDIuMzQgMCAwIDAtMy4zMTkgMS45MTUgMi4zNCAyLjM0IDAgMCAxLTQuNjU5IDAgMi4zNCAyLjM0IDAgMCAwLTMuMzItMS45MTUgMi4zNCAyLjM0IDAgMCAxLTIuMzMtNC4wMzMgMi4zNCAyLjM0IDAgMCAwIDAtMy44MzFBMi4zNCAyLjM0IDAgMCAxIDYuMzUgNi4wNTFhMi4zNCAyLjM0IDAgMCAwIDMuMzE5LTEuOTE1Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIvPjwvc3ZnPg==', schema).valid).toBe(true);
       expect(validateData('data:text/plain;charset=utf-8,Hello%20World', schema).valid).toBe(true);
-      expect(validateData('data:text/html,<h1>Hello</h1>', schema).valid).toBe(true);
+    });
+
+    it('should reject data URLs with characters a URI or IRI must percent-encode, as uri does', () => {
+      const schema = { type: 'string', format: 'iri' };
+
+      expect(validateData('data:text/html,<h1>Hello</h1>', schema).valid).toBe(false);
+      expect(validateData('data:text/html,%3Ch1%3EHello%3C%2Fh1%3E', schema).valid).toBe(true);
     });
 
     it('should validate mailto URLs', () => {
@@ -801,8 +920,69 @@ describe('Data Validation Tests', () => {
       const schema = { type: 'string', format: 'idn-hostname' };
       
       expect(validateData('.starts-with-dot', schema).valid).toBe(false);
-      expect(validateData('ends-with-dot.', schema).valid).toBe(false);
       expect(validateData('-starts-with-dash', schema).valid).toBe(false);
+    });
+
+    it('should accept a fully qualified name ending with a dot, as hostname does', () => {
+      const schema = { type: 'string', format: 'idn-hostname' };
+
+      expect(validateData('ends-with-dot.', schema).valid).toBe(true);
+      expect(validateData('müller.de.', schema).valid).toBe(true);
+    });
+  });
+
+  describe('Standard formats accept Unicode and validate the same as their idn/iri names', () => {
+    const cases: Array<[string, string, Array<[string, boolean]>]> = [
+      ['email', 'idn-email', [
+        ['joerg@mueller.de', true],
+        ['jörg@müller.de', true],
+        ['用户@例え.jp', true],
+        ['joerg@xn--mller-kva.de', true],
+        ['jörg@müller', false],
+        ['jö rg@müller.de', false],
+        ['jörg @müller.de', false],
+        ['jörg..x@müller.de', false],
+        ['jörg@mül ler.de', false],
+        ['a@b@müller.de', false],
+        ['@müller.de', false]
+      ]],
+      ['hostname', 'idn-hostname', [
+        ['mueller.de', true],
+        ['müller.de', true],
+        ['例え.jp', true],
+        ['xn--mller-kva.de', true],
+        ['müller..de', false],
+        ['-müller.de', false],
+        ['müller-.de', false],
+        ['müller.de/pfad', false],
+        ['jörg@müller.de', false],
+        ['mül ler.de', false],
+        [`${'ü'.repeat(70)}.de`, false]
+      ]],
+      ['uri', 'iri', [
+        ['https://example.com/a', true],
+        ['https://müller.de/straße?q=größe#top', true],
+        ['http://例え.jp', true],
+        ['mailto:jörg@müller.de', true],
+        ['/straße', false],
+        ['müller.de', false],
+        ['https://mül ler.de', false]
+      ]],
+      ['uri-reference', 'iri-reference', [
+        ['https://müller.de/straße', true],
+        ['/straße', true],
+        ['../größe', true],
+        ['#größe', true],
+        ['straße mit leerzeichen', false],
+        ['<straße>', false]
+      ]]
+    ];
+
+    describe.each(cases)('%s and %s', (standard, internationalized, values) => {
+      it.each(values)('%s is valid: %s', (value, valid) => {
+        expect(validateData(value, { type: 'string', format: standard }).valid).toBe(valid);
+        expect(validateData(value, { type: 'string', format: internationalized }).valid).toBe(valid);
+      });
     });
   });
 
