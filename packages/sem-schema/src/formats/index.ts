@@ -16,7 +16,7 @@ import { addJsonlogicFormat } from './jsonlogic';
 import { addReferenceFormat } from './reference';
 import { addParentFormat } from './parent';
 import { addInternationalizedFormats } from './internationalized';
-import { JSON_TYPES } from '../utils';
+import { TYPE_NAME_FORMATS } from '../utils';
 
 export { validateJsonFormat, addJsonFormat } from './json';
 export { validateHtmlFormat, addHtmlFormat } from './html';
@@ -56,7 +56,7 @@ export function addAllFormats(ajv: Ajv): void {
   addInternationalizedFormats(ajv);
   // The type these imply (see preprocessSchema) and the enum keyword do the validation;
   // registering them keeps AJV from warning "unknown format ... ignored" on every compile
-  for (const name of [...JSON_TYPES, 'enum']) {
+  for (const name of [...TYPE_NAME_FORMATS, 'enum']) {
     ajv.addFormat(name, true);
   }
 }

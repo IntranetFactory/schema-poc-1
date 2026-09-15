@@ -64,8 +64,7 @@
         { "const": "integer", "jsonType": "integer", "description": "Any integer" },
         { "const": "boolean", "jsonType": "boolean", "description": "true or false" },
         { "const": "object", "jsonType": "object", "description": "Any JSON object" },
-        { "const": "array", "jsonType": "array", "description": "Any JSON array" },
-        { "const": "null", "jsonType": "null", "description": "null" }
+        { "const": "array", "jsonType": "array", "description": "Any JSON array" }
       ]
     },
     "inputMode": {

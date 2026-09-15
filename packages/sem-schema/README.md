@@ -227,7 +227,7 @@ The formats are defined once, in `properties.format.oneOf` of [src/vocabulary.js
 
 For the GUI and the backend, the same list is written to [formats.json](formats.json) (`{ "<format>": { "type", "description" } }`, importable as `sem-schema/formats.json`). It is generated: never edit it by hand, run `pnpm generate:formats` after changing formats in `vocabulary.json`. A test fails when `formats.json` is out of date.
 
-The JSON type names (`string`, `number`, `integer`, `boolean`, `object`, `array`, `null`) are formats too; when a schema also gives `type`, it must be compatible with the format.
+The JSON type names `string`, `number`, `integer`, `boolean`, `object` and `array` are formats too; when a schema also gives `type`, it must be compatible with the format. `null` is not a format: a field that can only hold `null` holds no data.
 
 `email`, `hostname`, `uri` and `uri-reference` are not restricted to ASCII: each accepts Unicode and validates exactly like `idn-email`, `idn-hostname`, `iri` and `iri-reference` (e.g. `jörg@müller.de`, `müller.de`, `https://müller.de/straße`). Values are mapped to their ASCII wire form (punycode, percent-encoding) and then checked with the strict ajv-formats validators ([src/formats/internationalized.ts](src/formats/internationalized.ts)).
 

@@ -4,17 +4,17 @@ import { JSONLOGIC_KEYWORD } from './keywords/jsonlogic';
 import vocabularySchema from './vocabulary.json';
 
 /**
- * The JSON types; every one of them is also a format
- */
-export const JSON_TYPES = ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null'];
-
-/**
  * The known formats and the JSON type each implies. Read from the one format list,
  * properties.format.oneOf in vocabulary.json; do not list formats anywhere else.
  */
 const FORMAT_JSON_TYPES = new Map<string, string | string[]>(
   vocabularySchema.properties.format.oneOf.map((entry) => [entry.const, entry.jsonType])
 );
+
+/**
+ * The formats named after the JSON type they imply (string, integer, object, ...)
+ */
+export const TYPE_NAME_FORMATS = [...FORMAT_JSON_TYPES].filter(([format, type]) => format === type).map(([format]) => format);
 
 /**
  * Schema validation error
@@ -49,7 +49,7 @@ export function validateSchemaStructure(schema: SchemaObject, path: string = '#'
         keyword: 'format',
         value: schema.format
       });
-    } else if (JSON_TYPES.includes(schema.format) && schema.type) {
+    } else if (TYPE_NAME_FORMATS.includes(schema.format) && schema.type) {
       // When format is a JSON type name, it must be compatible with the declared type.
       // "integer" and "number" are mutually compatible; all other primitive formats must
       // match the type exactly.

@@ -553,15 +553,6 @@ describe('Data Validation Tests', () => {
     });
   });
 
-  describe('Format: null', () => {
-    it('should infer type null when no type is given', () => {
-      const schema = { format: 'null' };
-
-      expect(validateData(null, schema).valid).toBe(true);
-      expect(validateData('', schema).valid).toBe(false);
-    });
-  });
-
   describe('inputMode: required validation', () => {
     it('should reject empty string when inputMode is required', () => {
       const schema = {

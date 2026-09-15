@@ -190,9 +190,5 @@
   "array": {
     "type": "array",
     "description": "Any JSON array"
-  },
-  "null": {
-    "type": "null",
-    "description": "null"
   }
 }

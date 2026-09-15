@@ -1198,14 +1198,19 @@ describe('Vocabulary Definition Tests', () => {
     it.each([
       ['object', 'object'],
       ['array', 'array'],
-      ['null', 'null'],
     ])('should accept schema with format: "%s" and type: "%s"', (format, type) => {
       const result = validateSchema({ type, format });
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();
     });
 
-    it.each(['object', 'array', 'null'])('should accept schema with format: "%s" and no type', (format) => {
+    it.each([{}, { type: 'null' }])('should reject format: "null", which can hold no data (%j)', (schema) => {
+      const result = validateSchema({ ...schema, format: 'null' });
+      expect(result.valid).toBe(false);
+      expect(result.errors?.[0]?.message).toContain('Unknown format "null"');
+    });
+
+    it.each(['object', 'array'])('should accept schema with format: "%s" and no type', (format) => {
       const result = validateSchema({ format });
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();

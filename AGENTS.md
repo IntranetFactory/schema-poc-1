@@ -45,6 +45,8 @@ This file documents the implementation decisions and rationale for the SemSchema
 - **❌ NEVER create or modify files outside this repository** - No memory files, notes or config in home directories or anywhere else
 - **❌ A QUESTION IS NOT A TASK** - When the user asks a question, ANSWER it. Do NOT change code, tests or docs unless the user explicitly asks for a change
 - **❌ NEVER create a separate CLAUDE.md** - `CLAUDE.md` is a symlink to this file; do not replace or edit it
+- **❌ NEVER state the state of files, git or tests from memory** - Check it (git status/log, read the file, run the tests) right before you say it; the user may have changed or committed things in the meantime
+- **❌ NEVER promise to behave differently "from now on"** - Record the rule in this file instead; a promise does not survive the session
 - **❌ NEVER create temporary test/debug files** (test-*.js, debug-*.js, etc.) - Use proper test files or run_in_terminal for one-off tests
 - **✅ ALWAYS update agents.md** when you learn important workflow rules or user preferences
 - **✅ This file is the ONLY place** for storing agent instructions and patterns
