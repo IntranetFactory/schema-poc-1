@@ -250,6 +250,19 @@ This file documents the implementation decisions and rationale for the SemSchema
 - Test with empty strings, null, and undefined
 - Verify enum, text, and all string formats
 
+## 🚨 CRITICAL: `jsonlogic` Operators Must Match the Semantius Backend 🚨
+
+The `jsonlogic` format validates rules against a hand-maintained operator table and `$` variable
+list in `/packages/sem-schema/src/jsonlogic/operators.ts`. The operators mirror `evaluate_json_logic()`
+in the semantius repository — defined in `apps/_core/migrations/0015_jsonlogic.sql` and REPLACED in
+full by `apps/_core/migrations/0210_raci.sql`; the last definition applied is the one that runs. The
+`$` variables mirror `build_record_logic_trigger()` in `apps/_core/migrations/0180_computed_validation.sql`.
+
+- When the backend adds, removes or changes an operator or a `$` variable, update `operators.ts` (and the argument checks in `jsonlogic/validate.ts`)
+- `src/__tests__/jsonlogic-backend-sync.test.ts` fails when the operators or `$` variables differ from the backend, or when a rule shipped in the backend migrations stops validating
+- The sync test reads a semantius checkout from `SEMANTIUS_BACKEND_DIR` or `../semantius`; without one it is **skipped**, so run it with a checkout before committing jsonlogic changes (`SEMANTIUS_BACKEND_REQUIRED=1` turns the skip into a failure)
+- Legal-but-suspicious rules (multi-key objects, extra arguments, unknown `$` variables) are **errors**, by decision — there is no warning channel
+
 ## Project Overview
 
 SemSchema is a custom JSON Schema vocabulary implemented as an npm package that extends AJV with domain-specific validation constraints. It addresses common JSON Schema limitations by providing:
@@ -257,7 +270,7 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 1. **Custom string formats**: `json`, `html`, `text`, `multiline`
 2. **Property-level required validation**: Validates non-null/undefined and non-empty values (see CRITICAL section above)
 3. **Number precision constraints**: Limits decimal places (0-4)
-4. **Type inference**: Defaults to string type when only format is specified
+4. **Type inference**: Defaults to string type when only format is specified (`json` and `jsonlogic`: every JSON type)
 
 ## Key Implementation Decisions
 
@@ -282,7 +295,7 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 ### 2. Custom Formats
 
 **Why Needed**: JSON Schema supports format validation, but implementations vary. We need consistent validation for:
-- `json`: Ensures strings are valid JSON (can be parsed)
+- `json`: Ensures JSON text can be parsed and parsed values are real JSON (validated by an internal keyword, because AJV only passes strings to format validators)
 - `html`: Ensures strings contain HTML tags (not just plain text)
 - `text`: Single-line text string (UI hint — renders as text input)
 - `multiline`: Multi-line text string (UI hint — renders as textarea)
@@ -301,7 +314,7 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 
 **Why Needed**: Writing `{ "type": "string", "format": "json" }` is verbose. Format implies type.
 
-**Solution**: Preprocess schemas to add `type: "string"` when only `format` is specified.
+**Solution**: Preprocess schemas to add `type: "string"` when only `format` is specified. `json` and `jsonlogic` get every JSON type instead, matching the type list the Semantius backend emits, because their values are stored as JSON.
 
 **Implementation**: `preprocessSchema` utility recursively walks schema and adds default types.
 

@@ -33,6 +33,13 @@ describe('Vocabulary Definition Tests', () => {
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();
     });
+
+    it('should accept schema with format: jsonlogic', () => {
+      const schema = { type: ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null'], format: 'jsonlogic' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
   });
 
   describe('Schema Validity - Precision keyword', () => {
@@ -90,6 +97,13 @@ describe('Vocabulary Definition Tests', () => {
   describe('Schema Validity - Type inference', () => {
     it('should accept schema with only format property (type inferred)', () => {
       const schema = { format: 'json' };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeNull();
+    });
+
+    it('should accept schema with only format: jsonlogic (every JSON type inferred)', () => {
+      const schema = { format: 'jsonlogic' };
       const result = validateSchema(schema);
       expect(result.valid).toBe(true);
       expect(result.errors).toBeNull();

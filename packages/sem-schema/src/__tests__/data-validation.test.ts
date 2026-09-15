@@ -19,9 +19,63 @@ describe('Data Validation Tests', () => {
 
     it('should reject invalid JSON string', () => {
       const schema = { type: 'string', format: 'json' };
-      
+
       expect(validateData('{invalid json}', schema).valid).toBe(false);
       expect(validateData('{"incomplete":', schema).valid).toBe(false);
+    });
+
+    // get_schema emits json properties with every JSON type
+    const JSON_TYPES = ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null'];
+    const jsonSchema = { type: JSON_TYPES, format: 'json' };
+    const messages = (data: unknown, schema: object = jsonSchema) =>
+      (validateData(data, schema).errors ?? []).map((e: any) => e.message);
+
+    it('should accept parsed JSON values', () => {
+      expect(validateData({ key: 'value', list: [1, true, null] }, jsonSchema).valid).toBe(true);
+      expect(validateData([], jsonSchema).valid).toBe(true);
+      expect(validateData(42, jsonSchema).valid).toBe(true);
+      expect(validateData(false, jsonSchema).valid).toBe(true);
+      expect(validateData(null, jsonSchema).valid).toBe(true);
+    });
+
+    it('should accept the same object referenced twice (not circular)', () => {
+      const shared = { a: 1 };
+      expect(validateData({ first: shared, second: shared }, jsonSchema).valid).toBe(true);
+    });
+
+    it('should explain why JSON text does not parse', () => {
+      const [message] = messages('{"incomplete":');
+      expect(message).toMatch(/^must be valid JSON: .+/);
+    });
+
+    it('should reject values that are not JSON, naming where they are', () => {
+      expect(messages({ a: [1, NaN] })).toEqual(['NaN is not valid JSON at /a/1']);
+      expect(messages({ a: Infinity })).toEqual(['Infinity is not valid JSON at /a']);
+      expect(messages({ a: undefined })).toEqual(['undefined is not valid JSON at /a']);
+      expect(messages({ a: () => 1 })).toEqual(['a function is not valid JSON at /a']);
+      expect(messages({ a: BigInt(1) })).toEqual(['a BigInt is not valid JSON at /a']);
+      expect(messages({ a: new Date(0) })).toEqual(['a Date instance is not valid JSON at /a']);
+      expect(messages([new Map()])).toEqual(['a Map instance is not valid JSON at /0']);
+      expect(messages([1, , 3])).toEqual(['undefined is not valid JSON at /1']);
+    });
+
+    it('should reject circular references', () => {
+      const node: any = { name: 'node' };
+      node.self = node;
+      expect(messages(node)).toEqual(['a circular reference is not valid JSON at /self']);
+    });
+
+    it('should report errors as format errors on the property', () => {
+      const schema = { type: 'object', properties: { config: jsonSchema } };
+      const result = validateData({ config: { a: NaN } }, schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors?.[0]).toMatchObject({
+        keyword: 'format',
+        instancePath: '/config',
+        params: { format: 'json', path: '/a' },
+        message: 'NaN is not valid JSON at /a'
+      });
     });
   });
 
@@ -80,6 +134,290 @@ describe('Data Validation Tests', () => {
       expect(validateData('$sum(items.price)', schema).valid).toBe(true);
       expect(validateData('items[price > 10]', schema).valid).toBe(true);
       expect(validateData('', schema).valid).toBe(true);
+    });
+  });
+
+  describe('Format: jsonlogic', () => {
+    // get_schema emits jsonlogic properties with the same union type as json
+    const JSON_TYPES = ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null'];
+    const ruleSchema = { type: JSON_TYPES, format: 'jsonlogic' };
+    const formSchema = (inputMode = 'default') => ({
+      type: 'object',
+      properties: { rule: { type: JSON_TYPES, format: 'jsonlogic', default: {}, inputMode } }
+    });
+    const messages = (data: unknown, schema: object = ruleSchema) =>
+      (validateData(data, schema).errors ?? []).map((e: any) => e.message);
+
+    describe('valid rules', () => {
+      it('should accept rules stored as JSON (objects, arrays, literals)', () => {
+        // Rules shipped in the backend (0060_dd_schema.sql, 0280_user_bookmarks.sql)
+        expect(validateData({ if: [{ in: [{ var: 'format' }, ['reference', 'parent']] }, 'required', 'hidden'] }, ruleSchema).valid).toBe(true);
+        expect(validateData({ '==': [{ var: 'user_id' }, { var: '$user_id' }] }, ruleSchema).valid).toBe(true);
+        expect(validateData({ if: [{ value_changed: 'origin' }, { '==': [{ var: '$old' }, null] }, true] }, ruleSchema).valid).toBe(true);
+        expect(validateData([{ var: 'a' }, { var: 'b' }], ruleSchema).valid).toBe(true);
+        expect(validateData(true, ruleSchema).valid).toBe(true);
+      });
+
+      it('should accept JSON text, as an editor hands it back', () => {
+        expect(validateData('{"==": [{"var": "status"}, "open"]}', ruleSchema).valid).toBe(true);
+        expect(validateData('true', ruleSchema).valid).toBe(true);
+      });
+
+      it('should treat {}, "" and a missing value as "no rule"', () => {
+        expect(validateData({}, ruleSchema).valid).toBe(true);
+        expect(validateData({ rule: {} }, formSchema()).valid).toBe(true);
+        expect(validateData({ rule: '' }, formSchema()).valid).toBe(true);
+        expect(validateData({}, formSchema()).valid).toBe(true);
+      });
+
+      it('should accept every Semantius operator with valid arguments', () => {
+        const rules = [
+          { let: ['total', { '+': [{ var: 'a' }, { var: 'b' }] }, { '>': [{ var: 'total' }, 10] }] },
+          { set_record: ['order', 'orders', { var: 'order_id' }, { '==': [{ var: 'order.status' }, 'open'] }] },
+          { has_permission: 'orders:approve' },
+          { require_permission: ['orders:approve'] },
+          { concat: ['Order #', { var: 'id' }] },
+          { is_match: [{ var: 'email' }, '^[^@]+@[^@]+$'] },
+          { throw_error: 'Order is already shipped' },
+          { throw_error: ['Order ${id} is already shipped', '99017', ['id', { var: 'id' }]] },
+          { throw_error: ['Order is already shipped', 99017] },
+          { is_raci_actor: ['orders', 'approved', 'accountable'] },
+          { has_consultation: ['orders', 'approved', { var: 'id' }] },
+          { '<': [1, { var: 'qty' }, 10] },
+          { reduce: [{ var: 'lines' }, { '+': [{ var: 'current.qty' }, { var: 'accumulator' }] }, 0] },
+          { missing_some: [1, ['email', 'phone']] }
+        ];
+        for (const rule of rules) {
+          expect(messages(rule)).toEqual([]);
+        }
+      });
+
+      it('should accept every standard operator with valid arguments', () => {
+        const rules = [
+          { missing: ['email', 'phone'] },
+          { '?:': [{ var: 'active' }, 'yes', 'no'] },
+          { '===': [{ var: 'qty' }, 0] },
+          { '!=': [{ var: 'status' }, 'closed'] },
+          { '!==': [{ var: 'status' }, null] },
+          { '!!': [{ var: 'tags' }] },
+          { or: [{ var: 'a' }, { var: 'b' }] },
+          { '<=': [0, { var: 'qty' }, 10] },
+          { max: [{ var: 'a' }, { var: 'b' }] },
+          { min: [1, 2, 3] },
+          { '-': [{ var: 'total' }, { var: 'discount' }] },
+          { '-': { var: 'qty' } },
+          { '/': [{ var: 'total' }, 2] },
+          { '%': [{ var: 'qty' }, 2] },
+          { all: [{ var: 'lines' }, { '>': [{ var: 'qty' }, 0] }] },
+          { none: [{ var: 'lines' }, { '==': [{ var: 'qty' }, 0] }] },
+          { merge: [[1, 2], [3]] },
+          { cat: ['Order #', { var: 'id' }] },
+          { substr: [{ var: 'code' }, 0, 3] },
+          { log: { var: 'qty' } }
+        ];
+        for (const rule of rules) {
+          expect(messages(rule)).toEqual([]);
+        }
+      });
+
+      it('should accept computed_fields entries', () => {
+        const entries = [{ name: 'total', jsonlogic: { '*': [{ var: 'qty' }, { var: 'price' }] }, description: 'Line total' }];
+        expect(validateData(entries, ruleSchema).valid).toBe(true);
+      });
+
+      it('should accept validation_rules entries, including platform rules', () => {
+        const entries = [
+          { code: '99001', message: 'qty must be positive', jsonlogic: { '>': [{ var: 'qty' }, 0] } },
+          { code: '90203', message: 'roles.origin is set on INSERT and cannot be changed', source_module: 'platform', jsonlogic: { if: [{ value_changed: 'origin' }, { '==': [{ var: '$old' }, null] }, true] } }
+        ];
+        expect(validateData(entries, ruleSchema).valid).toBe(true);
+      });
+
+      it('should accept variables bound by let', () => {
+        expect(messages({ let: ['$limit', 10, { '<': [{ var: 'qty' }, { var: '$limit' }] }] })).toEqual([]);
+      });
+
+      it('should accept item fields and names bound inside array operations', () => {
+        expect(messages({ filter: [{ var: 'lines' }, { '>': [{ var: 'qty' }, 0] }] })).toEqual([]);
+        expect(messages({ map: [{ var: 'lines' }, { let: ['total', { '*': [{ var: 'qty' }, { var: 'price' }] }, { var: 'total' }] }] })).toEqual([]);
+        // Only argument 1 is evaluated per item; the array and reduce's initial value see the record
+        expect(messages({ reduce: [{ var: 'lines' }, { '+': [{ var: 'current.qty' }, { var: 'accumulator' }] }, { var: '$user_id' }] })).toEqual([]);
+      });
+
+      it('should accept format jsonlogic without a type (every JSON type is inferred)', () => {
+        expect(validateData({ '==': [1, 1] }, { format: 'jsonlogic' }).valid).toBe(true);
+        expect(validateData('{"==": [1, 1]}', { format: 'jsonlogic' }).valid).toBe(true);
+      });
+    });
+
+    describe('invalid rules', () => {
+      it('should reject invalid JSON text, explaining why', () => {
+        const [message, ...rest] = messages('{"==": [1, }');
+        expect(message).toMatch(/^must be valid JSON: .+/);
+        expect(rest).toEqual([]);
+      });
+
+      it('should reject values that are not JSON', () => {
+        expect(messages({ '==': [{ var: 'qty' }, NaN] })).toEqual(['NaN is not valid JSON at /==/1']);
+      });
+
+      it('should reject $ variables and outer let names inside array operations, as the backend does not provide them there', () => {
+        expect(messages({ some: [{ var: 'lines' }, { '==': [{ var: 'owner_id' }, { var: '$user_id' }] }] })).toEqual([
+          'variable "$user_id" is not available inside "some" logic, which is evaluated against each array item at /some/1/==/1/var'
+        ]);
+        expect(messages({ let: ['limit', 10, { filter: [{ var: 'lines' }, { '>': [{ var: 'qty' }, { var: 'limit' }] }] }] })).toEqual([
+          '"limit" is bound outside "filter" and is not available inside its logic, which is evaluated against each array item at /let/2/filter/1/>/1/var'
+        ]);
+        expect(messages({ reduce: [{ var: 'lines' }, { '+': [{ var: 'accumulator' }, { var: '$old.qty' }] }, 0] })).toEqual([
+          'variable "$old" is not available inside "reduce" logic, which is evaluated against {current, accumulator} at /reduce/1/+/1/var'
+        ]);
+      });
+
+      it('should reject an unknown operator and suggest the closest one', () => {
+        expect(messages({ '=': [{ var: 'status' }, 'open'] })).toEqual(['unknown operator "=" (did you mean "=="?)']);
+        expect(messages({ if: [{ value_changd: 'origin' }, true, false] })).toEqual([
+          'unknown operator "value_changd" (did you mean "value_changed"?) at /if/0'
+        ]);
+      });
+
+      it('should reject an object with more than one key', () => {
+        const [message] = messages({ '==': [{ var: 'qty' }, 0], and: [true] });
+        expect(message).toContain('object has 2 keys ("==", "and")');
+        expect(message).toContain('always truthy');
+      });
+
+      it('should reject a wrong number of arguments', () => {
+        expect(messages({ '==': [1] })).toEqual(['"==" expects 2 arguments, got 1 at /==']);
+        // Legal, but the backend ignores the third argument: >= is not "between"
+        expect(messages({ '>=': [1, { var: 'qty' }, 10] })).toEqual(['">=" expects 2 arguments, got 3 at />=']);
+        expect(messages({ and: [] })).toEqual(['"and" expects at least 1 argument, got 0 at /and']);
+      });
+
+      it('should reject a wrong number of arguments for every standard operator with a limit', () => {
+        const cases: Array<[object, string]> = [
+          [{ '?:': [] }, '"?:" expects at least 1 argument, got 0 at /?:'],
+          [{ or: [] }, '"or" expects at least 1 argument, got 0 at /or'],
+          [{ max: [] }, '"max" expects at least 1 argument, got 0 at /max'],
+          [{ min: [] }, '"min" expects at least 1 argument, got 0 at /min'],
+          [{ '===': [1] }, '"===" expects 2 arguments, got 1 at /==='],
+          [{ '!=': [1] }, '"!=" expects 2 arguments, got 1 at /!='],
+          [{ '!==': [1] }, '"!==" expects 2 arguments, got 1 at /!=='],
+          [{ '/': [1] }, '"/" expects 2 arguments, got 1 at /~1'],
+          [{ '%': [1] }, '"%" expects 2 arguments, got 1 at /%'],
+          [{ all: [{ var: 'lines' }] }, '"all" expects 2 arguments, got 1 at /all'],
+          [{ none: [{ var: 'lines' }] }, '"none" expects 2 arguments, got 1 at /none'],
+          [{ '!!': [1, 2] }, '"!!" expects 1 argument, got 2 at /!!'],
+          [{ log: [1, 2] }, '"log" expects 1 argument, got 2 at /log'],
+          [{ '-': [1, 2, 3] }, '"-" expects 1 to 2 arguments, got 3 at /-'],
+          [{ '<=': [1] }, '"<=" expects 2 to 3 arguments, got 1 at /<='],
+          [{ '<=': [1, 2, 3, 4] }, '"<=" expects 2 to 3 arguments, got 4 at /<='],
+          [{ substr: ['abc'] }, '"substr" expects 2 to 3 arguments, got 1 at /substr'],
+          [{ substr: ['abc', 0, 1, 2] }, '"substr" expects 2 to 3 arguments, got 4 at /substr']
+        ];
+        for (const [rule, message] of cases) {
+          expect(messages(rule)).toEqual([message]);
+        }
+      });
+
+      it('should reject an unknown $ variable', () => {
+        expect(messages({ '==': [{ var: '$user' }, 1] })).toEqual([
+          'unknown variable "$user" (available: "$today", "$now", "$user_id", "$old", "$mode") at /==/0/var'
+        ]);
+      });
+
+      it('should reject a let or set_record name that is not a literal string', () => {
+        expect(messages({ let: [{ var: 'name' }, 1, true] })).toEqual([
+          'must be a non-empty variable name (it is not evaluated) at /let/0'
+        ]);
+        expect(messages({ set_record: ['order', 42, { var: 'id' }, true] })).toEqual([
+          'must be an entity name (it is not evaluated) at /set_record/1'
+        ]);
+      });
+
+      it('should reject invalid throw_error arguments', () => {
+        expect(messages({ throw_error: ['msg', '42501'] })).toEqual(['must be a class 99 error code (99000-99999) at /throw_error/1']);
+        expect(messages({ throw_error: ['msg', '99001', ['id']] })).toEqual([
+          'must contain name, value pairs (an even number of items) at /throw_error/2'
+        ]);
+        expect(messages({ throw_error: ['msg', '99001', ['entity', 'orders']] })).toEqual([
+          '"entity" is a reserved parameter name at /throw_error/2/0'
+        ]);
+        expect(messages({ throw_error: ['msg', '99017', ['rows', [1, 2]]] })).toEqual([
+          'parameter value must be a scalar at /throw_error/2/1'
+        ]);
+      });
+
+      it('should reject literal arguments of the wrong type', () => {
+        expect(messages({ is_raci_actor: ['orders', 'approved', 'owner'] })).toEqual([
+          'must be one of "responsible", "accountable", "consulted", "informed" at /is_raci_actor/2'
+        ]);
+        expect(messages({ has_permission: '' })).toEqual(['must be a permission name at /has_permission']);
+        expect(messages({ var: true })).toEqual(['must be a string path, a number or null at /var']);
+      });
+
+      it('should reject invalid computed_fields entries', () => {
+        expect(messages([{ jsonlogic: { var: 'a' } }])).toEqual(['must be a non-empty string at /0/name']);
+        expect(messages([{ name: 'total', jsonlogic: { '+': [{ var: 'a' }, { vra: 'b' }] } }])).toEqual([
+          'unknown operator "vra" (did you mean "var"?) at /0/jsonlogic/+/1'
+        ]);
+      });
+
+      it('should require jsonlogic in every entry', () => {
+        expect(messages([{ name: 'a', jsonlogic: true }, { name: 'b' }])).toEqual(['is required at /1/jsonlogic']);
+        expect(messages([{ code: '99001', message: 'm', jsonlogic: true }, { code: '99002', message: 'm' }])).toEqual([
+          'is required at /1/jsonlogic'
+        ]);
+      });
+
+      it('should check an array as a rule when no entry has jsonlogic (entries are recognised by that key)', () => {
+        // Current behaviour: {"name": "total"} is read as an operation named "name"
+        expect(messages([{ name: 'total' }])).toEqual(['unknown operator "name" (did you mean "none"?) at /0']);
+      });
+
+      it('should reject invalid validation_rules entries', () => {
+        expect(messages([{ code: 'must_be_positive', message: 'm', jsonlogic: true }])).toEqual([
+          'must be a class 99 error code (99000-99999) at /0/code'
+        ]);
+        expect(messages([{ code: '99001', message: 'm', source_module: 'platform', jsonlogic: true }])).toEqual([
+          'must be a class 90 error code (90000-90999) for a platform rule at /0/code'
+        ]);
+        expect(messages([{ name: 'x', jsonlogic: true }, { code: '99001', jsonlogic: true }])).toEqual([
+          'must be a class 99 error code (99000-99999) at /0/code',
+          'must be a string at /0/message',
+          'must be a string at /1/message'
+        ]);
+      });
+
+      it('should report every problem in a rule', () => {
+        expect(messages({ and: [{ '=': [1, 1] }, { '!': [] }] })).toEqual([
+          'unknown operator "=" (did you mean "=="?) at /and/0',
+          '"!" expects 1 argument, got 0 at /and/1/!'
+        ]);
+      });
+    });
+
+    describe('in an object schema', () => {
+      it('should report errors as format errors on the property', () => {
+        const result = validateData({ rule: { '=': [1, 1] } }, formSchema());
+        expect(result.valid).toBe(false);
+        expect(result.errors).toHaveLength(1);
+        expect(result.errors?.[0]).toMatchObject({
+          keyword: 'format',
+          instancePath: '/rule',
+          params: { format: 'jsonlogic', path: '' },
+          message: 'unknown operator "=" (did you mean "=="?)'
+        });
+      });
+
+      it('should validate a present value on readonly fields, like other formats', () => {
+        expect(validateData({ rule: { '=': [1, 1] } }, formSchema('readonly')).valid).toBe(false);
+        expect(validateData({ rule: '' }, formSchema('readonly')).valid).toBe(true);
+      });
+
+      it('should still require a value when inputMode is required', () => {
+        expect(validateData({ rule: '' }, formSchema('required')).valid).toBe(false);
+        expect(validateData({ rule: { var: 'a' } }, formSchema('required')).valid).toBe(true);
+      });
     });
   });
 
@@ -300,21 +638,31 @@ describe('Data Validation Tests', () => {
   });
 
   describe('Type inference', () => {
-    it('should infer type string when format is provided without type', () => {
+    it('should infer every JSON type when format json is provided without type', () => {
       const schema = { format: 'json' };
-      
+
       expect(validateData('{"key": "value"}', schema).valid).toBe(true);
+      expect(validateData({ key: 'value' }, schema).valid).toBe(true);
+      expect(validateData([1, 2], schema).valid).toBe(true);
+    });
+
+    it('should infer type string when a string format is provided without type', () => {
+      const schema = { format: 'html' };
+
+      expect(validateData('<p>Hello</p>', schema).valid).toBe(true);
+      expect(validateData({ html: '<p>Hello</p>' }, schema).valid).toBe(false);
     });
 
     it('should validate nested properties with inferred types', () => {
       const schema = {
         type: 'object',
         properties: {
-          data: { format: 'json' }  // Type inferred as string
+          data: { format: 'json' }  // Every JSON type inferred
         }
       };
-      
+
       expect(validateData({ data: '{"key": "value"}' }, schema).valid).toBe(true);
+      expect(validateData({ data: { key: 'value' } }, schema).valid).toBe(true);
     });
 
     it('should validate array items with inferred types', () => {

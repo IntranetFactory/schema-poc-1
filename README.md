@@ -11,10 +11,10 @@ This is a **pnpm workspace** with packages and applications:
 #### `packages/sem-schema`
 
 The main package implementing SemSchema - a custom JSON Schema vocabulary with additional validation features:
-- Custom formats: `json`, `html`, `text`, `multiline`
+- Custom formats: `json`, `html`, `text`, `multiline`, `jsonlogic`
 - Property-level `required` keyword (validates non-empty strings)
 - Number `precision` keyword (0-4 decimal places)
-- Type inference (format without type defaults to string)
+- Type inference (format without type defaults to string; `json` and `jsonlogic` take every JSON type)
 
 See [packages/sem-schema/README.md](packages/sem-schema/README.md) for full documentation.
 
@@ -116,10 +116,11 @@ SemSchema exports two simple methods:
 ## Features
 
 ### Custom Formats
-- **json**: Validates parseable JSON strings
+- **json**: Validates JSON text (must parse) and parsed JSON values (must be real JSON)
 - **html**: Validates HTML markup (checks for tags)
 - **text**: Single-line text string (UI hint — renders as text input)
 - **multiline**: Multi-line text string (UI hint — renders as textarea)
+- **jsonlogic**: JsonLogic rule stored as JSON, validated against the Semantius backend's operators (see [packages/sem-schema/README.md](packages/sem-schema/README.md#jsonlogic))
 
 ### Custom Keywords
 - **required** (property-level): Boolean - validates values are not null/undefined, and strings (in ANY format) are not empty
@@ -128,7 +129,7 @@ SemSchema exports two simple methods:
 **Note on required**: The empty string validation applies to ALL string types, regardless of format. Whether it's a custom format (json, html, text) or standard format (date, email, etc.), an empty string will fail validation when `required: true`.
 
 ### Type Inference
-- Schemas with only `format` automatically get `type: "string"`
+- Schemas with only `format` automatically get `type: "string"`; `json` and `jsonlogic` get every JSON type
 
 ## Test Organization
 
