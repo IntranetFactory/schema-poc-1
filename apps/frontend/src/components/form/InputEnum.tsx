@@ -11,6 +11,20 @@ import { FormLabel } from './FormLabel'
 import { FormDescription } from './FormDescription'
 import { FormError } from './FormError'
 
+interface EnumOption {
+  value: string
+  label: string
+}
+
+// An enum entry is a value, or {value, label} to show the label instead of the value
+function toEnumOption(entry: unknown): EnumOption {
+  if (typeof entry === 'object' && entry !== null && !Array.isArray(entry)) {
+    const { value, label } = entry as { value: unknown; label?: unknown }
+    return { value: String(value), label: String(label ?? value) }
+  }
+  return { value: String(entry), label: String(entry) }
+}
+
 interface EnumFieldInnerProps {
   field: any
   name: string
@@ -20,7 +34,7 @@ interface EnumFieldInnerProps {
   disabled: boolean
   readonly: boolean
   hidden: boolean
-  enumValues: string[]
+  options: EnumOption[]
   form: any
   validators?: any
 }
@@ -34,7 +48,7 @@ function EnumFieldInner({
   disabled,
   readonly,
   hidden,
-  enumValues,
+  options,
   form,
   validators,
 }: EnumFieldInnerProps) {
@@ -53,7 +67,7 @@ function EnumFieldInner({
   const currentValue = field.state.value ?? ''
   
   // Only pass valid enum values to Select, otherwise undefined for placeholder
-  const selectValue = currentValue && enumValues.includes(currentValue) ? currentValue : undefined
+  const selectValue = currentValue && options.some((option) => option.value === currentValue) ? currentValue : undefined
   
   return (
     <div className="space-y-2">
@@ -86,9 +100,9 @@ function EnumFieldInner({
           <SelectValue placeholder="Select an option" />
         </SelectTrigger>
         <SelectContent>
-          {enumValues.map((value: string) => (
-            <SelectItem key={value} value={value}>
-              {value}
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
             </SelectItem>
           ))}
         </SelectContent>
@@ -114,9 +128,9 @@ export function InputEnum({
   const disabled = inputMode === 'disabled'
   const hidden = inputMode === 'hidden'
   
-  // Get enum values from schema
+  // Get enum entries from schema
   const fieldSchema = schema.properties?.[name] as any
-  const enumValues = fieldSchema?.enum || []
+  const options = ((fieldSchema?.enum || []) as unknown[]).map(toEnumOption)
   
   return (
     <form.Field 
@@ -135,7 +149,7 @@ export function InputEnum({
           disabled={disabled}
           readonly={readonly}
           hidden={hidden}
-          enumValues={enumValues}
+          options={options}
           form={form}
           validators={validators}
         />

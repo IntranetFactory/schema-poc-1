@@ -283,7 +283,7 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 
 1. **Custom string formats**: `json`, `html`, `text`, `multiline`
 2. **Property-level required validation**: Validates non-null/undefined and non-empty values (see CRITICAL section above)
-3. **Number precision constraints**: Limits decimal places (0-4)
+3. **Number precision constraints**: Limits decimal places (0-9)
 4. **Type inference**: Defaults to string type when only format is specified (`json` and `jsonlogic`: every JSON type)
 
 ## Key Implementation Decisions
@@ -320,7 +320,7 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 
 **Why Needed**: Financial and measurement applications often need to restrict decimal places (e.g., currency with 2 decimals).
 
-**Solution**: Custom `precision` keyword (0-4) that validates maximum decimal places.
+**Solution**: Custom `precision` keyword (0-9) that validates maximum decimal places.
 
 **Implementation**: Uses string conversion to check decimal places (avoids floating-point comparison issues).
 

@@ -102,7 +102,7 @@ if (result.valid) {
 Validation uses the sem-schema validator which extends AJV with:
 - Custom formats: `json`, `html`, `text`, `multiline`
 - Property-level `required` keyword (non-empty strings)
-- Number `precision` keyword (0-4 decimal places)
+- Number `precision` keyword (0-9 decimal places)
 
 ## Styling
 

@@ -11,12 +11,14 @@ describe('InputEnum', () => {
     children, 
     defaultValue,
     inputMode = 'default',
-    validatorFn = () => undefined
-  }: { 
+    validatorFn = () => undefined,
+    enumEntries = ['Option 1', 'Option 2', 'Option 3']
+  }: {
     children: React.ReactNode
     defaultValue?: string
     inputMode?: string
     validatorFn?: (value: any) => string | undefined
+    enumEntries?: unknown[]
   }) {
     const form = useForm({
       defaultValues: { option: defaultValue || '' },
@@ -30,7 +32,7 @@ describe('InputEnum', () => {
         properties: {
           option: { 
             type: 'string',
-            enum: ['Option 1', 'Option 2', 'Option 3'],
+            enum: enumEntries,
             inputMode 
           }
         },
@@ -39,8 +41,21 @@ describe('InputEnum', () => {
       validateField: validatorFn,
     }
 
-    return <FormProvider value={mockContext}>{children}</FormProvider>
+    return (
+      <FormProvider value={mockContext}>
+        {children}
+        <form.Subscribe selector={(state) => state.values.option}>
+          {(value) => <output data-testid="option-value">{value}</output>}
+        </form.Subscribe>
+      </FormProvider>
+    )
   }
+
+  const raciEntries = [
+    { value: 'responsible', label: 'Responsible (R)' },
+    { value: 'accountable', label: 'Accountable (A)' },
+    'something'
+  ]
 
   it('should render select component', () => {
     render(
@@ -70,6 +85,51 @@ describe('InputEnum', () => {
     
     expect(screen.getByRole('option', { name: 'Option 2' })).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'Option 3' })).toBeInTheDocument()
+  })
+
+  it('should display the label of {value, label} entries and the value of plain entries', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestWrapper enumEntries={raciEntries}>
+        <InputEnum name="option" />
+      </TestWrapper>
+    )
+
+    await user.click(screen.getByRole('combobox'))
+
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Responsible (R)' })).toBeInTheDocument()
+    })
+    expect(screen.getByRole('option', { name: 'Accountable (A)' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'something' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'responsible' })).not.toBeInTheDocument()
+  })
+
+  it('should store the value when a labeled option is selected', async () => {
+    const user = userEvent.setup()
+    render(
+      <TestWrapper enumEntries={raciEntries}>
+        <InputEnum name="option" />
+      </TestWrapper>
+    )
+
+    await user.click(screen.getByRole('combobox'))
+    await user.click(await screen.findByRole('option', { name: 'Accountable (A)' }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('option-value')).toHaveTextContent('accountable')
+    })
+    expect(screen.getByRole('combobox')).toHaveTextContent('Accountable (A)')
+  })
+
+  it('should show the label of the current value', () => {
+    render(
+      <TestWrapper enumEntries={raciEntries} defaultValue="responsible">
+        <InputEnum name="option" />
+      </TestWrapper>
+    )
+
+    expect(screen.getByRole('combobox')).toHaveTextContent('Responsible (R)')
   })
 
   it('should show required indicator when field is required', () => {

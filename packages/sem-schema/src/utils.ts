@@ -1,6 +1,7 @@
 import type { SchemaObject } from 'ajv';
 import { JSON_KEYWORD } from './keywords/json';
 import { JSONLOGIC_KEYWORD } from './keywords/jsonlogic';
+import { enumEntryValue } from './keywords/enum';
 import vocabularySchema from './vocabulary.json';
 
 /**
@@ -170,11 +171,12 @@ export function preprocessSchema(schema: SchemaObject): SchemaObject {
     processed.type = Array.isArray(type) ? [...type] : type;
   }
 
-  // If enum is present and inputMode is not "required", add "" to enum if not already present
-  // This allows empty strings for optional enum fields
+  // If enum is present and inputMode is not "required", add "" to enum if no entry has that value
+  // This allows empty strings for optional enum fields. It goes last, as in the Semantius backend,
+  // so the index in a schema error still points at the entry the author wrote
   if (processed.enum && Array.isArray(processed.enum) && (processed as any).inputMode !== 'required') {
-    if (!processed.enum.includes('')) {
-      processed.enum = ['', ...processed.enum];
+    if (!processed.enum.some((entry) => enumEntryValue(entry) === '')) {
+      processed.enum = [...processed.enum, ''];
     }
   }
 

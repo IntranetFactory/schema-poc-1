@@ -99,7 +99,7 @@ export function Home() {
             <ul className="list-disc list-inside space-y-1 text-gray-700">
               <li><strong>Custom Formats:</strong> json, html, text</li>
               <li><strong>Input Mode:</strong> Controls UI state (required/readonly/disabled/hidden) and validation</li>
-              <li><strong>Number Precision:</strong> Control decimal places (0-4)</li>
+              <li><strong>Number Precision:</strong> Control decimal places (0-9)</li>
               <li><strong>Type Inference:</strong> Automatic type detection for formats</li>
             </ul>
           </div>

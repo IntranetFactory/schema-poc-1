@@ -13,7 +13,7 @@ This is a **pnpm workspace** with packages and applications:
 The main package implementing SemSchema - a custom JSON Schema vocabulary with additional validation features:
 - Custom formats: `json`, `html`, `text`, `multiline`, `jsonlogic`
 - Property-level `required` keyword (validates non-empty strings)
-- Number `precision` keyword (0-4 decimal places)
+- Number `precision` keyword (0-9 decimal places)
 - Type inference (format without type defaults to string; `json` and `jsonlogic` take every JSON type)
 
 See [packages/sem-schema/README.md](packages/sem-schema/README.md) for full documentation.
@@ -124,7 +124,8 @@ SemSchema exports two simple methods:
 
 ### Custom Keywords
 - **required** (property-level): Boolean - validates values are not null/undefined, and strings (in ANY format) are not empty
-- **precision**: Integer (0-4) - limits decimal places in numbers
+- **precision**: Integer (0-9) - limits decimal places in numbers
+- **enum**: entries are values or `{ "value", "label" }` objects - data must equal a value, the UI shows the label
 
 **Note on required**: The empty string validation applies to ALL string types, regardless of format. Whether it's a custom format (json, html, text) or standard format (date, email, etc.), an empty string will fail validation when `required: true`.
 
