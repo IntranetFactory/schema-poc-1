@@ -164,6 +164,9 @@ This file documents the implementation decisions and rationale for the SemSchema
 
 **⚠️ NEVER COMMIT CODE WITH FAILING TESTS ⚠️**
 
+- **Tests must be stable**: a test that passes alone but fails in the full suite is a bug — find the race and fix it, never retry or loosen the test. Don't wait for UI state with fixed timers (`setTimeout` in a component, or a typing `delay` to dodge one): await the promise that produces the state. Example: focus-on-error after submit ran on a 100 ms timer and stole focus while a test was typing.
+- **Every change is tested in both places**: SemSchema tests in `packages/sem-schema/src/__tests__`, and pgTAP (`apps/test/tests`) or deno tests in the Semantius backend when the backend changes. A new format or keyword has no existing behavior: test every rule it gets, including the generic ones (inputMode required, empty string, readonly/disabled/hidden).
+
 ### Testing Workflow - ZERO EXCEPTIONS:
 
 1. **ALWAYS run the full test suite BEFORE committing**
@@ -274,7 +277,7 @@ full by `apps/_core/migrations/0210_raci.sql`; the last definition applied is th
 - The format list (name, implied JSON type, description) lives ONLY in `properties.format.oneOf` of `/packages/sem-schema/src/vocabulary.json`
 - **❌ NEVER add a format list anywhere else** (utils.ts, README, frontend, tests) - read it from vocabulary.json or formats.json
 - `/packages/sem-schema/formats.json` is GENERATED from vocabulary.json for the GUI and the backend - **❌ NEVER edit it by hand**; after changing formats run `pnpm generate:formats` in `packages/sem-schema` (a test fails when it is out of date)
-- The Semantius backend has its own copies (`valid_format` CHECK and `format_values` in `0060_dd_schema.sql`, `format_to_json_type()` in `0070_dd_functions.sql`) that must match the list
+- The Semantius backend copies the list: `dd_formats()` in `apps/_core/migrations/0120_dd_formats.sql` is formats.json verbatim (paste new entries unchanged). `valid_format`, `format_values` (`0150_dd_bootstrap.once.sql`) and `format_to_json_type()` (`0160_dd_functions.sql`) are built from it. The column type is mapped by hand in `format_to_data_type()` (`0160_dd_functions.sql`) and mirrored in `baseBuilder()` (`packages/cli/commands/drizzlegen.ts`) and `columnType()` (`packages/cli/commands/kyselygen.ts`); a format that is not TEXT needs a branch in all three
 - **SemSchema formats are a superset of JSON Schema, by decision:** `email`, `hostname`, `uri` and `uri-reference` accept Unicode and validate EXACTLY like `idn-email`, `idn-hostname`, `iri` and `iri-reference` (`src/formats/internationalized.ts`). Nobody should have to know that the idn/iri name is needed for Unicode; the format descriptions in vocabulary.json say that each pair validates the same
 
 ## Project Overview
@@ -331,6 +334,8 @@ SemSchema is a custom JSON Schema vocabulary implemented as an npm package that 
 **Solution**: Preprocess schemas to add `type: "string"` when only `format` is specified. `json` and `jsonlogic` get every JSON type instead, matching the type list the Semantius backend emits, because their values are stored as JSON.
 
 **Implementation**: `preprocessSchema` utility recursively walks schema and adds default types.
+
+**A declared type must match the format, by decision**: `validateSchemaStructure()` rejects a `type` the format does not allow (`{ "type": "string", "format": "int32" }`), because a format only checks values of its own type and would let a wrong-typed value through. `integer` and `number` are interchangeable; `reference` and `parent` also allow `string`, as the backend emits for text, uuid and typeid keys.
 
 ## Project Structure
 

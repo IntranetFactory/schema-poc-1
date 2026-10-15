@@ -189,8 +189,7 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
         
         // Track errors that couldn't be assigned to fields
         const unhandledErrors: string[] = []
-        let firstErrorField: string | null = null
-        
+
         // Set errors on all fields with validation issues
         if (result.errors) {
           result.errors.forEach((error: any) => {
@@ -203,11 +202,6 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
             const fieldExists = fieldPath && schema.properties?.[fieldPath]
             
             if (fieldPath && fieldExists) {
-              // Track first field with error for scrolling
-              if (!firstErrorField) {
-                firstErrorField = fieldPath
-              }
-              
               form.setFieldMeta(fieldPath, (meta) => ({
                 ...meta,
                 errors: [error.message],
@@ -237,21 +231,8 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
           }))
         }
         
-        // Scroll to first error field
-        if (firstErrorField) {
-          // Use setTimeout to allow DOM to update with error messages first
-          setTimeout(() => {
-            if (firstErrorField) {
-              const errorElement = document.getElementById(firstErrorField)
-              if (errorElement) {
-                errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                errorElement.focus({ preventScroll: true })
-              }
-            }
-          }, 100)
-        }
-        
         // Do not call onSubmit callback when validation fails
+        // (the form's submit handler focuses the first field with an error)
         return
       }
       
@@ -297,30 +278,26 @@ export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }
     <FormProvider value={formContextValue}>
       <form
         noValidate
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault()
           e.stopPropagation()
-          form.handleSubmit()
-          
-          // After validation, scroll to first error field if any
-          // Use setTimeout to ensure validation has completed and DOM has updated
-          setTimeout(() => {
-            // Get all fields from schema
-            const allFields = schema.properties ? Object.keys(schema.properties) : []
-            
-            // Find first field with error
-            for (const fieldName of allFields) {
-              const fieldMeta = form.getFieldMeta(fieldName)
-              if (fieldMeta?.errors && fieldMeta.errors.length > 0) {
-                const errorElement = document.getElementById(fieldName)
-                if (errorElement) {
-                  errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                  errorElement.focus({ preventScroll: true })
-                }
-                break
+          await form.handleSubmit()
+
+          // Focus the first field with an error as soon as validation has finished. Not on
+          // a timer: a timer can fire after the user has started typing, and typing clears
+          // that field's error, so focus would jump to the next field mid-word.
+          const allFields = schema.properties ? Object.keys(schema.properties) : []
+          for (const fieldName of allFields) {
+            const fieldMeta = form.getFieldMeta(fieldName)
+            if (fieldMeta?.errors && fieldMeta.errors.length > 0) {
+              const errorElement = document.getElementById(fieldName)
+              if (errorElement) {
+                errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                errorElement.focus({ preventScroll: true })
               }
+              break
             }
-          }, 100)
+          }
         }}
         className="space-y-6"
       >

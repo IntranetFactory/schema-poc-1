@@ -97,6 +97,36 @@ describe('SchemaForm', () => {
       }, { timeout: 5000 })
     })
 
+    it('should focus the first field with an error after a failed submit', async () => {
+      const user = userEvent.setup()
+      render(<SchemaForm schema={basicSchema} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      const emailInput = screen.getByLabelText(/email/i)
+      await user.type(nameInput, 'John Doe')
+      await user.click(screen.getByRole('button', { name: /submit/i }))
+
+      await waitFor(() => {
+        expect(emailInput).toHaveAttribute('aria-invalid', 'true')
+        expect(emailInput).toHaveFocus()
+      })
+    })
+
+    it('should not move focus away from a field the user types in after a failed submit', async () => {
+      const user = userEvent.setup()
+      render(<SchemaForm schema={basicSchema} />)
+
+      const nameInput = screen.getByLabelText(/name/i)
+      await user.click(screen.getByRole('button', { name: /submit/i }))
+      await waitFor(() => expect(nameInput).toHaveAttribute('aria-invalid', 'true'))
+
+      // Typing clears the name error, so email is now the first field with an error;
+      // focus must stay where the user types
+      await user.type(nameInput, 'J')
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      expect(nameInput).toHaveFocus()
+    })
+
     it('should submit successfully after fixing validation errors', async () => {
       const user = userEvent.setup()
       const onSubmit = vi.fn()
@@ -117,9 +147,9 @@ describe('SchemaForm', () => {
       // Fix error by clearing and typing valid values
       const emailInput = screen.getByLabelText(/email/i)
       await user.clear(nameInput)
-      await user.type(nameInput, 'John Doe', { delay: null })
+      await user.type(nameInput, 'John Doe')
       await user.clear(emailInput)
-      await user.type(emailInput, 'john@example.com', { delay: null })
+      await user.type(emailInput, 'john@example.com')
       
       // Submit again - should work on first click
       await user.click(submitButton)
