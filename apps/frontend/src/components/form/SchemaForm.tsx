@@ -101,10 +101,14 @@ function validateField(value: any, fieldSchema: SchemaObject, fieldName: string)
 }
 
 export function SchemaForm({ schema, initialValue, onSubmit, formMode = 'edit' }: SchemaFormProps) {
-  // Generate initial value if not provided
+  // Always generate schema defaults so every property gets a type-appropriate
+  // initial value ("", 0, false, …).  Then merge with any provided initialValue
+  // so explicit values always take precedence while missing fields still get
+  // their proper defaults instead of undefined.
+  const schemaDefaults = generateDefaultValue(schema)
   const defaultValue = initialValue && Object.keys(initialValue).length > 0
-    ? initialValue
-    : generateDefaultValue(schema)
+    ? { ...schemaDefaults, ...initialValue }
+    : schemaDefaults
 
   const form = useForm({
     defaultValues: defaultValue,
